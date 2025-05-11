@@ -1,0 +1,12 @@
+#pragma once
+#include "Character.hpp"
+
+class Player; // Forward declaration of Player class
+
+class Baron: public Character
+{
+public:
+    void invest();
+    void sanctionCoinCompensation();
+    void Action(int actionType) override; // Override the pure virtual function from Character
+};
