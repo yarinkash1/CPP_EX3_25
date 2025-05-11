@@ -4,7 +4,8 @@ class Player; // Forward declaration of Player class
 
 class Spy: public Character
 {
-public:
+private:
     void peekAndPreventArrest(Player &Player);
+public:
     void Action(int actionType) override; // Override the pure virtual function from Character
 };
