@@ -2,6 +2,8 @@
 using namespace std;
 #include "Player.hpp"
 #include <vector>
+#define DECK_SIZE 6 // Define the size of the deck
+
 class Game
 {
 private:
@@ -10,6 +12,7 @@ private:
     vector<Player*> players; // Vector to store players pointers
     int coinsInBank; // Total coins in the bank
     bool isGameOver; // Flag to indicate if the game is over
+
 public:
     Game(int numPlayers, int coinsInBank); // Constructor to initialize the game with a number of players and coins in the bank
     void startGame(); // Function to start the game
@@ -23,4 +26,9 @@ public:
     bool isGameFinished(); // Function to check if the game is finished
     void resetGame(); // Function to reset the game
     string winner(); // Function to get the winner of the game
+
+
+    //METHODS for handling coin-based logic
+    bool canInvest(Player* player) const;
+    void handleInvest(Player* player);  // Performs invest logic
 };

@@ -5,7 +5,7 @@ using namespace std;
 
 class Player
 {
-private:
+protected:
     // Player's attributes
     string name;     // Player's name
     bool is_active;  // Flag to indicate if it's the player's turn
@@ -19,11 +19,10 @@ private:
 
     Character *role; // Pointer to the role (e.g., Governor, Spy)
 
+
 public:
-    Player(std::string name, Character *role, int coins = 0)
-        : name(name), is_active(false), win_counter(0), coins(coins),
-          isArrested(false), isSanctioned(false),
-          isPeekedAndArrestPrevented(false), role(role) {}
+    Player(std::string name, Character* role, int coins = 0)
+        : name(name), coins(coins), role(role) {}
 
     // Getters
     string getName() const { return name; }
@@ -33,6 +32,7 @@ public:
     bool getIsArrested() const { return isArrested; }
     bool getIsSanctioned() const { return isSanctioned; }
     bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; }
+    Character* getRole() const { return role; }
 
     // Setters
     void setIsActive(bool active) { is_active = active; }
@@ -41,4 +41,5 @@ public:
     void setIsArrested(bool arrested) { isArrested = arrested; }
     void setIsSanctioned(bool sanctioned) { isSanctioned = sanctioned; }
     void setIsPeekedAndArrestPrevented(bool peeked_and_arrest_prevented) { isPeekedAndArrestPrevented = peeked_and_arrest_prevented; }
+    void setRole(Character* new_role) { role = new_role; }
 };
