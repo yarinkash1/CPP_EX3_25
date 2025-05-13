@@ -1,7 +1,6 @@
 #include "Baron.hpp"
 #include "Character.hpp"
-
-class Player; // forward declaration
+#include "Player.hpp"
 
 
 Baron::Baron(Player *player)
@@ -12,11 +11,18 @@ void Baron::invest()
 {
     if(player->getCoins() >= 3)
     {
+        // Deduct 3 coins from the player:
         player->setCoins(player->getCoins() -3);
-        // add 3 coins to the bank
 
+        // add 3 coins to the bank:
+
+        // Add 6 coins to the player:
         player->setCoins(player->getCoins() + 6);
-        // deduct 3 coins from the bank
+        // fill here call game->changeCoinsInBank(3);
+
+        // deduct 3 coins from the bank:
+
+
         std::cout << player->getName() << " has invested 3 coins and received 6 coins." << std::endl;
     }
     else

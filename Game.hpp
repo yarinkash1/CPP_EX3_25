@@ -1,8 +1,21 @@
 #pragma once
 using namespace std;
 #include "Player.hpp"
+
+#include "Baron.hpp"
+#include "Spy.hpp"
+#include "Judge.hpp"
+#include "Merchant.hpp"
+#include "Governor.hpp"
+#include "General.hpp"
+
 #include <vector>
-#define DECK_SIZE 6 // Define the size of the deck
+
+#include <algorithm> // For shuffle
+#include <random>    // For mt19937 and random_device
+#include <chrono>    // For time functions
+#include <thread>    // For sleep_for
+#include <iomanip>   // For setw, setfill
 
 class Game
 {
@@ -15,10 +28,9 @@ private:
 
 public:
     Game(int numPlayers, int coinsInBank); // Constructor to initialize the game with a number of players and coins in the bank
-    void startGame(); // Function to start the game
     void endGame(); // Function to end the game
     void nextTurn(); // Function to move to the next player's turn
-    void addPlayer(Player* player); // Function to add a player to the game
+    void addPlayer(); // Function to add a player to the game
     void removePlayer(Player* player); // Function to remove a player from the game
     Player* current_player(); // Function to get the current player
     vector<Player*> active_players(); // Function to get all active players
@@ -26,9 +38,5 @@ public:
     bool isGameFinished(); // Function to check if the game is finished
     void resetGame(); // Function to reset the game
     string winner(); // Function to get the winner of the game
-
-
-    //METHODS for handling coin-based logic
-    bool canInvest(Player* player) const;
-    void handleInvest(Player* player);  // Performs invest logic
+    bool changeCoinsInBank(int amount);
 };

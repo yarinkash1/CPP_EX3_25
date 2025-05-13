@@ -7,8 +7,11 @@
 
 int main()
 {
+    Game game(2, 10); // Create a game with 2 players and 10 coins in the bank
+
     Player player1("Player 1", nullptr, 10);
     Baron baron(&player1);
+    
     baron.Action(1); // Call the invest action
 
     return 0;
