@@ -1,17 +1,17 @@
 #include "Game.hpp"
 
-bool Game::changeCoinsInBank(int amount)
+void Game::changeCoinsInBank(int amount)
 {
     if (coinsInBank + amount < 0)
     {
-        return false;
+        throw invalid_argument("Not enough coins in the bank.");
     }
     coinsInBank += amount;
-    return true;
 }
 
-Game::Game(int numPlayers, int coinsInBank)
+Game::Game()
 {
+    cout << "New game started!" << endl;
     printf("Enter number of players\n");
     cin >> numPlayers;
     if (numPlayers < 2 || numPlayers > 6)
@@ -30,12 +30,13 @@ Game::Game(int numPlayers, int coinsInBank)
     this->currentPlayerIndex = 0;
     this->isGameOver = false;
 
+    cout << "Game initialized with " << numPlayers << " players and " << coinsInBank << " coins in the bank." << endl;
+    cout << "Adding players..." << endl;
     for(int i = 0; i < numPlayers; i++)
     {
         Game::addPlayer();
     }
 }
-
 
 Character* createCharacterByRole(const string& role,Player* player) 
 {
@@ -49,10 +50,11 @@ Character* createCharacterByRole(const string& role,Player* player)
 }
 
 vector<string> roles_vector = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
+int iteration = 0;
 void Game::addPlayer()
 {
-    int iteration = 0;
-    printf("Enter player name\n");
+
+    printf("Enter player %d name\n", iteration + 1);
     string name_of_player;
     cin >> name_of_player;
     Player* player = new Player(name_of_player, nullptr, 0);
@@ -67,4 +69,22 @@ void Game::addPlayer()
     player->setRole(character);
     players.push_back(player);
     printf("Player %s was added to the game with a role of %s.\n", name_of_player.c_str(), role.c_str());
+}
+
+vector<Player*> Game::active_players()
+{
+    vector<Player*> activePlayers;
+    for (Player* player : players)
+    {
+        if (player->getIsActive() == 1) // 1 for true
+        {
+            activePlayers.push_back(player);
+        }
+    }
+    return activePlayers;
+}
+
+int Game::getCoinsInBank()
+{
+    return coinsInBank;
 }

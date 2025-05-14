@@ -2,7 +2,32 @@
 #include "Character.hpp"
 #include "Merchant.hpp"
 
-Merchant::Merchant(Player *player)
+Merchant::Merchant(Player* p) : Character(p) {}
+
+void Merchant::addCoin()
 {
-    this->player = player;
+    // Implementation of the addCoin method
+    // This method is specific to the Merchant character and handles the coin addition action
+}
+
+void Merchant::arrestAlternate()
+{
+    // Implementation of the arrestAlternate method
+    // This method is specific to the Merchant character and handles the alternate arrest action
+}
+
+void Merchant::Action(int actionType)
+{
+    switch (actionType)
+    {
+    case 1: // Delegate action type for addCoin
+        addCoin();
+        break;
+    case 2: // Delegate action type for arrestAlternate
+        arrestAlternate();
+        break;
+    default:
+        std::cout << "Invalid action type for Merchant." << std::endl;
+        break;
+    }
 }

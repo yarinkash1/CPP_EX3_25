@@ -12,6 +12,6 @@ private:
     
 public:
     // Constructor to link the General to a Player
-    General(Player *player);   
+    General(Player* p);  // Declaration only
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

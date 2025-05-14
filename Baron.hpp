@@ -12,6 +12,6 @@ private:
     
 public:
     // Constructor to link the Baron to a Player
-    Baron(Player *player);
+    Baron(Player* p);  // Declaration only
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

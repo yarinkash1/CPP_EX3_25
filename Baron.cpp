@@ -2,11 +2,8 @@
 #include "Character.hpp"
 #include "Player.hpp"
 
+Baron::Baron(Player* p) : Character(p) {}
 
-Baron::Baron(Player *player)
-{
-    this->player = player;
-}
 void Baron::invest()
 {
     if(player->getCoins() >= 3)
@@ -14,13 +11,12 @@ void Baron::invest()
         // Deduct 3 coins from the player:
         player->setCoins(player->getCoins() -3);
 
-        // add 3 coins to the bank:
+        // add 3 coins to the bank: through the game class 
 
         // Add 6 coins to the player:
         player->setCoins(player->getCoins() + 6);
-        // fill here call game->changeCoinsInBank(3);
 
-        // deduct 3 coins from the bank:
+        // deduct 3 coins from the bank: through the game class
 
 
         std::cout << player->getName() << " has invested 3 coins and received 6 coins." << std::endl;

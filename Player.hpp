@@ -21,8 +21,18 @@ protected:
 
 
 public:
-    Player(std::string name, Character* role, int coins = 0)
-        : name(name), coins(coins), role(role) {}
+    // Inline constructor with initializer list
+    Player(string name, Character* role, int coins = 0, bool is_active = true, int win_counter = 0,
+           bool isArrested = false, bool isSanctioned = false, bool isPeekedAndArrestPrevented = false)
+        : name(name),
+          is_active(is_active),
+          win_counter(win_counter),
+          coins(coins),
+          isArrested(isArrested),
+          isSanctioned(isSanctioned),
+          isPeekedAndArrestPrevented(isPeekedAndArrestPrevented),
+          role(role)
+    {}
 
     // Getters
     string getName() const { return name; }

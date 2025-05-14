@@ -7,8 +7,8 @@ TEST_TARGET = test_exe
 
 all: $(TARGET) $(TEST_TARGET)
 
-$(TARGET): main.o Game.o Player.o Character.o Baron.o
-	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o
+$(TARGET): main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
+	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
 
 $(TEST_TARGET): coup_tests.o
 	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) coup_tests.o
@@ -25,8 +25,23 @@ Player.o: Player.cpp Player.hpp Character.hpp
 Character.o: Character.cpp Character.hpp Player.hpp
 	$(CXX) $(CXXFLAGS) -c Character.cpp
 
+Baron.o: Baron.cpp Baron.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c Baron.cpp
 
+General.o: General.cpp General.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c General.cpp
 
+Governor.o: Governor.cpp Governor.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c Governor.cpp
+
+Judge.o: Judge.cpp Judge.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c Judge.cpp
+
+Merchant.o: Merchant.cpp Merchant.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c Merchant.cpp
+
+Spy.o: Spy.cpp Spy.hpp Character.hpp Player.hpp
+	$(CXX) $(CXXFLAGS) -c Spy.cpp
 
 test.o: coup_tests.cpp
 	$(CXX) $(CXXFLAGS) -c coup_tests.cpp

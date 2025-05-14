@@ -12,6 +12,6 @@ private:
     
 public:
     // Constructor to link the Governor to a Player
-    Governor(Player *player);
+    Governor(Player* p);  // Declaration only
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

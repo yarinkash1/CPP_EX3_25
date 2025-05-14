@@ -11,6 +11,6 @@ private:
     
 public:
     // Constructor to link the Spy to a Player
-    Spy(Player *player);
+    Spy(Player* p);  // Declaration only
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

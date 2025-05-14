@@ -12,6 +12,6 @@ private:
     
 public:
     // Constructor to link the Judge to a Player
-    Judge(Player *player);
+    Judge(Player* p);  // Declaration only
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

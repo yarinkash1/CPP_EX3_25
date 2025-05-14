@@ -27,7 +27,7 @@ private:
     bool isGameOver; // Flag to indicate if the game is over
 
 public:
-    Game(int numPlayers, int coinsInBank); // Constructor to initialize the game with a number of players and coins in the bank
+    Game(); // Constructor to initialize the game
     void endGame(); // Function to end the game
     void nextTurn(); // Function to move to the next player's turn
     void addPlayer(); // Function to add a player to the game
@@ -38,5 +38,5 @@ public:
     bool isGameFinished(); // Function to check if the game is finished
     void resetGame(); // Function to reset the game
     string winner(); // Function to get the winner of the game
-    bool changeCoinsInBank(int amount);
+    void changeCoinsInBank(int amount);
 };
