@@ -1,29 +1,28 @@
 #include "Baron.hpp"
 #include "Character.hpp"
 #include "Player.hpp"
+#include "Game.hpp"
 
-Baron::Baron(Player* p) : Character(p) {}
+Baron::Baron(Player* p, Game* g) : Character(p, g){}
 
 void Baron::invest()
 {
-    if(player->getCoins() >= 3)
+    if(owner->getCoins() >= 3)
     {
         // Deduct 3 coins from the player:
-        player->setCoins(player->getCoins() -3);
-
-        // add 3 coins to the bank: through the game class 
+        owner->setCoins(owner->getCoins() -3);
+        game->changeCoinsInBank(+3); // Add 3 coins to the bank
 
         // Add 6 coins to the player:
-        player->setCoins(player->getCoins() + 6);
+        owner->setCoins(owner->getCoins() + 6);
 
-        // deduct 3 coins from the bank: through the game class
+        game->changeCoinsInBank(-6);// deduct 6 coins from the bank
 
-
-        std::cout << player->getName() << " has invested 3 coins and received 6 coins." << std::endl;
+        std::cout << owner->getName() << " has invested 3 coins and received 6 coins." << std::endl;
     }
     else
     {
-        std::cout << player->getName() << " does not have enough coins to invest." << std::endl;
+        std::cout << owner->getName() << " does not have enough coins to invest." << std::endl;
     }
 }
 void Baron::sanctionCoinCompensation()

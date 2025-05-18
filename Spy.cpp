@@ -2,7 +2,7 @@
 #include "Character.hpp"
 #include "Spy.hpp"
 
-Spy::Spy(Player* p) : Character(p) {}
+Spy::Spy(Player* p, Game* g) : Character(p, g), player(p) {}
 
 void Spy::peekAndPreventArrest(Player &Player)
 {

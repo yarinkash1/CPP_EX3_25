@@ -11,7 +11,6 @@ private:
     Player *player; // Pointer to the Player class to link the Merchant to a Player
     
 public:
-    // Constructor to link the Merchant to a Player
-    Merchant(Player* p);  // Declaration only
+    Merchant(Player* p, Game* g); 
     void Action(int actionType) override; // Override the pure virtual function from Character
 };

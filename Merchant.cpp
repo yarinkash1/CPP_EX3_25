@@ -2,7 +2,7 @@
 #include "Character.hpp"
 #include "Merchant.hpp"
 
-Merchant::Merchant(Player* p) : Character(p) {}
+Merchant::Merchant(Player* p, Game* g) : Character(p, g), player(p) {}
 
 void Merchant::addCoin()
 {

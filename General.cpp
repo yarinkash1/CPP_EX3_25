@@ -2,7 +2,7 @@
 #include "Character.hpp"
 #include "General.hpp"
 
-General::General(Player* p) : Character(p) {}
+General::General(Player* p, Game* g) : Character(p, g), player(p) {}
 
 void General::preventCoup(Player &Player)
 {

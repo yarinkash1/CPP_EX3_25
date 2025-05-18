@@ -2,7 +2,7 @@
 #include "Character.hpp"
 #include "Judge.hpp"
 
-Judge::Judge(Player* p) : Character(p) {}
+Judge::Judge(Player* p, Game* g) : Character(p, g), player(p) {}
 
 void Judge::cancelBribe(Player &Player)
 {

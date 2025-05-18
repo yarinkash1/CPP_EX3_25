@@ -28,6 +28,7 @@ private:
 
 public:
     Game(); // Constructor to initialize the game
+    ~Game(); // Destructor to clean up the game
     void endGame(); // Function to end the game
     void nextTurn(); // Function to move to the next player's turn
     void addPlayer(); // Function to add a player to the game
@@ -39,4 +40,6 @@ public:
     void resetGame(); // Function to reset the game
     string winner(); // Function to get the winner of the game
     void changeCoinsInBank(int amount);
+    void SkipTurn(); // Function to skip the current player's turn
+    
 };

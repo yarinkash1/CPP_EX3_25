@@ -2,7 +2,7 @@
 #include "Character.hpp"
 #include "Governor.hpp"
 
-Governor::Governor(Player* p) : Character(p) {}
+Governor::Governor(Player* p, Game* g) : Character(p, g), player(p) {}
 
 void Governor::tax()
 {
