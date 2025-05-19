@@ -8,7 +8,6 @@ class General : public Character
 private:
     void preventCoup(Player &Player);
     void arrestCoinCompensation();
-    Player *player; // Pointer to the Player class to link the General to a Player
     
 public:
     General(Player* p, Game* g); 

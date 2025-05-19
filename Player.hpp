@@ -16,20 +16,21 @@ protected:
     bool isArrested;                 // Flag to indicate if the player is arrested
     bool isSanctioned;               // Flag to indicate if the player is sanctioned until his next turn
     bool isPeekedAndArrestPrevented; // Flag to indicate if the player is peeked and arrest prevented for his next turn
+    bool isCoupPrevented; // Flag to indicate if the player is coup prevented for his next turn
 
     Character *role; // Pointer to the role (e.g., Governor, Spy)
 
 public:
     // Inline constructor with initializer list
     Player(string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
-           bool isArrested = false, bool isSanctioned = false, bool isPeekedAndArrestPrevented = false)
+           bool isArrested = false, bool isSanctioned = false, bool isPeekedAndArrestPrevented = false, bool isCoupPrevented = false)
         : name(name),
           is_active(is_active),
           win_counter(win_counter),
           coins(coins),
           isArrested(isArrested),
           isSanctioned(isSanctioned),
-          isPeekedAndArrestPrevented(isPeekedAndArrestPrevented),
+          isPeekedAndArrestPrevented(isPeekedAndArrestPrevented),isCoupPrevented(isCoupPrevented),
           role(role)
     {
     }
@@ -47,6 +48,7 @@ public:
     bool getIsArrested() const { return isArrested; }
     bool getIsSanctioned() const { return isSanctioned; }
     bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; }
+    bool getIsCoupPrevented() const { return isCoupPrevented; }
     Character *getRole() const { return role; }
 
     // Setters
@@ -58,5 +60,6 @@ public:
     void setIsArrested(bool arrested) { isArrested = arrested; }
     void setIsSanctioned(bool sanctioned) { isSanctioned = sanctioned; }
     void setIsPeekedAndArrestPrevented(bool peeked_and_arrest_prevented) { isPeekedAndArrestPrevented = peeked_and_arrest_prevented; }
+    void setIsCoupPrevented(bool coup_prevented) { isCoupPrevented = coup_prevented; }
     void setRole(Character *new_role) { role = new_role; }
 };

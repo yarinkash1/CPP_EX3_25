@@ -14,11 +14,12 @@ void Baron::invest()
         game->changeCoinsInBank(+3); // Add 3 coins to the bank
 
         // Add 6 coins to the player:
+        game->changeCoinsInBank(-6);// deduct 6 coins from the bank
         owner->setCoins(owner->getCoins() + 6);
 
-        game->changeCoinsInBank(-6);// deduct 6 coins from the bank
-
         std::cout << owner->getName() << " has invested 3 coins and received 6 coins." << std::endl;
+
+        sanctionCoinCompensation(); // Call the sanction coin compensation method
     }
     else
     {
@@ -27,8 +28,13 @@ void Baron::invest()
 }
 void Baron::sanctionCoinCompensation()
 {
-    // Implementation of the sanctionCoinCompensation method
-    // This method is specific to the Baron character and handles the sanction coin compensation action
+    if(owner->getIsSanctioned() == 1) // 1 = True
+    {
+        game->changeCoinsInBank(-1);
+        owner->addNumCoins(1);
+
+        cout << owner->getName() << " has received 1 coin as compensation for being sanctioned." << endl;
+    }
 }
 void Baron::Action(int actionType)
 {
