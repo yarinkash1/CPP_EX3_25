@@ -1,19 +1,31 @@
 #include "Player.hpp"
 #include "Character.hpp"
 #include "Merchant.hpp"
+#include "Game.hpp"
 
-Merchant::Merchant(Player* p, Game* g) : Character(p, g), player(p) {}
+Merchant::Merchant(Player* p, Game* g) : Character(p, g){}
 
 void Merchant::addCoin()
 {
-    // Implementation of the addCoin method
-    // This method is specific to the Merchant character and handles the coin addition action
+    if (owner->getCoins() >= 3)
+    {
+        // If the Merchant has 3 or more coins, he can add a coin to his total
+        game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
+        owner->addNumCoins(1);
+        std::cout << owner->getName() << " has added 1 coin to his total." << std::endl;
+    }
 }
 
 void Merchant::arrestAlternate()
 {
-    // Implementation of the arrestAlternate method
-    // This method is specific to the Merchant character and handles the alternate arrest action
+    if(owner->getIsArrested() == 1)
+    {
+        // If the Merchant is arrested, he pays 2 coins to the bank instead of losing 1 coin to another player
+        owner->removeNumCoins(2); // Remove 2 coins from the Merchant
+        game->changeCoinsInBank(+2); // Add 2 coins to the bank
+
+        std::cout << owner->getName() << " has paid 2 coins to the bank due to arrest." << std::endl;
+    }
 }
 
 void Merchant::Action(int actionType)

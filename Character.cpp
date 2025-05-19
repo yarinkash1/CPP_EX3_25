@@ -91,7 +91,7 @@ Player *Character::target_player()
     int selected_char_index = -1;
     for (int i = 0; i < active_players.size(); i++)
     {
-        if (active_players[i]->getName() == currentPlayer->getName())
+        if (active_players[i]->getId() == currentPlayer->getId())
         {
             selected_char_index = i;
             break;

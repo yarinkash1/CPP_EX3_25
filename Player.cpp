@@ -11,3 +11,5 @@ void Player::removeNumCoins(int num_coins)
         std::cout << "Not enough coins to remove." << std::endl;
     }
 }
+
+int Player::next_id = 1;

@@ -7,7 +7,6 @@ class Spy: public Character
 {
 private:
     void peekAndPreventArrest(Player &Player);
-    Player *player; // Pointer to the Player class to link the Spy to a Player
     
 public:
     Spy(Player* p, Game* g); 
