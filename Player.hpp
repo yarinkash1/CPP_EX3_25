@@ -29,7 +29,7 @@ protected:
 
 public:
     // Inline constructor with initializer list
-    Player(int id, string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
+    Player(string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
            bool isArrested = false, bool isSanctioned = false, bool isPeekedAndArrestPrevented = false,
            bool isCoupPrevented = false, bool isTaxPrevented = false, bool isBribePrevented = false, bool isArrestPrevented = false)
         : id(next_id++), // Increment ID for each new player

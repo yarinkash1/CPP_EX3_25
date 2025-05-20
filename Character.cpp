@@ -27,9 +27,9 @@ void Character::bribe()
     std::cout << "Player " << owner->getName() << " has another turn" << std::endl;
 }
 
-void Character::arrest(Player &player)
+void Character::arrest()
 {
-    
+
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
     {
@@ -43,7 +43,7 @@ void Character::arrest(Player &player)
     std::cout << "Arrest action performed on player: " << targetPlayer->getName() << std::endl;
 }
 
-void Character::sanction(Player &player)
+void Character::sanction()
 {
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
@@ -52,13 +52,13 @@ void Character::sanction(Player &player)
         return;
     }
     targetPlayer->setIsSanctioned(true); // Set the target player as sanctioned
-    owner->removeNumCoins(3);     // Remove 3 coins from the target player
-    game->changeCoinsInBank(3);   // Add 3 coins to the bank
+    owner->removeNumCoins(3);            // Remove 3 coins from the target player
+    game->changeCoinsInBank(3);          // Add 3 coins to the bank
 
     std::cout << "Sanction action performed on player: " << targetPlayer->getName() << std::endl;
 }
 
-void Character::coup(Player &player)
+void Character::coup()
 {
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
@@ -66,12 +66,11 @@ void Character::coup(Player &player)
         std::cout << "Invalid target player." << std::endl;
         return;
     }
-    
-    owner->removeNumCoins(7);        // Remove 7 coins from the player's coins
-    game->changeCoinsInBank(7);      // Add 7 coins to the bank
+
+    owner->removeNumCoins(7);         // Remove 7 coins from the player's coins
+    game->changeCoinsInBank(7);       // Add 7 coins to the bank
     targetPlayer->setIsActive(false); // Set the target player as inactive
     game->removePlayer(targetPlayer); // Remove the target player from the game
-
 
     std::cout << "Coup action performed on player: " << targetPlayer->getName() << std::endl;
 }
@@ -80,7 +79,7 @@ Player *Character::target_player()
 {
     vector<Player *> active_players = game->active_players();
     cout << "Choose a player to arrest from the list (1 - " << active_players.size() << endl;
-    for (int i = 0; i < active_players.size(); i++)
+    for (size_t i = 0; i < active_players.size(); i++)
     {
         cout << i + 1 << ": " << active_players[i]->getName() << endl;
     }
@@ -89,7 +88,7 @@ Player *Character::target_player()
 
     Player *currentPlayer = game->current_player();
     int selected_char_index = -1;
-    for (int i = 0; i < active_players.size(); i++)
+    for (size_t i = 0; i < active_players.size(); i++)
     {
         if (active_players[i]->getId() == currentPlayer->getId())
         {
@@ -98,7 +97,7 @@ Player *Character::target_player()
         }
     }
 
-    if (choice < 1 || choice > active_players.size())
+    if (choice < 1 || choice > static_cast<int>(active_players.size()))
     {
         cout << "Invalid choice. Please try again." << endl;
         return nullptr;

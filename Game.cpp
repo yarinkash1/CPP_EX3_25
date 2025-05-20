@@ -61,11 +61,13 @@ vector<string> roles_vector = {"Baron", "General", "Governor", "Judge", "Merchan
 int iteration = 0;
 void Game::addPlayer()
 {
-
     printf("Enter player %d name\n", iteration + 1);
     string name_of_player;
     cin >> name_of_player;
-    Player* player = new Player(name_of_player, nullptr, 0);
+
+    // Create player without assigning ID manually; let the constructor handle it
+    Player* player = new Player(name_of_player, nullptr);
+
     // do random from the six roles to assign to the player.
     random_device rd;
     mt19937 g(rd());
@@ -117,7 +119,7 @@ Player* Game::current_player()
 void Game::removePlayer(Player* player) // Function to remove a player from the game
 {
     vector<Player*> activePlayers = active_players();
-    for (int i = 0; i < activePlayers.size(); i++)
+    for (size_t i = 0; i < activePlayers.size(); i++)
     {
         if (activePlayers[i]->getName() == player->getName())
         {

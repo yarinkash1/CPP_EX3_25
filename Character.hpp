@@ -17,9 +17,9 @@ public:
     void gather();
     virtual void tax();
     void bribe();
-    void arrest(Player &player);
-    void sanction(Player &player);
-    void coup(Player &player);
+    void arrest();
+    void sanction();
+    void coup();
 
     // Special action handler (for role-specific actions):
     virtual void Action(int actionType) = 0; // Pure virtual function for derived classes to implement their special actions
