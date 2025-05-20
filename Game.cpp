@@ -34,6 +34,8 @@ Game::Game()
         throw invalid_argument("Number of coins in bank must be non-negative.");
     }
 
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+
     this->numPlayers = numPlayers;
     this->coinsInBank = coinsInBank;
     this->currentPlayerIndex = 0;
@@ -71,7 +73,7 @@ void Game::addPlayer()
 {
     printf("Enter player %d name\n", iteration + 1);
     string name_of_player;
-    cin >> name_of_player;
+    getline(cin, name_of_player); // Reads full name with spaces
 
     // Create player without assigning ID manually; let the constructor handle it
     Player *player = new Player(name_of_player, nullptr);
@@ -182,14 +184,4 @@ void Game::resetGame()
     isGameOver = false;
     winner_name = "";
     cout << "Game reset!" << endl;
-}
-
-void Game::nextTurn()
-{
-    Player *currentPlayer = current_player();
-    currentPlayer->setIsActive(0); // Set the current player to inactive
-    int num_of_active_players = active_players().size();
-    // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):
-    Player *nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
-    nextPlayer->setIsActive(1); // Set the next player to active
 }
