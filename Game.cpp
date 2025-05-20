@@ -9,12 +9,13 @@ void Game::changeCoinsInBank(int amount)
     coinsInBank += amount;
 }
 
-Game::~Game() 
+Game::~Game()
 {
-    for (Player* p : players) 
+    for (Player *p : players)
     {
         delete p;
     }
+    players.clear();
 }
 
 Game::Game()
@@ -40,21 +41,28 @@ Game::Game()
 
     cout << "Game initialized with " << numPlayers << " players and " << coinsInBank << " coins in the bank." << endl;
     cout << "Adding players..." << endl;
-    for(int i = 0; i < numPlayers; i++)
+    for (int i = 0; i < numPlayers; i++)
     {
         Game::addPlayer();
     }
 }
 
-Character* createCharacterByRole(const string& role,Player* player, Game* game) 
+Character *createCharacterByRole(const string &role, Player *player, Game *game)
 {
-    if (role == "Baron") return new Baron(player,game);
-    else if (role == "General") return new General(player,game);
-    else if (role == "Governor") return new Governor(player,game);
-    else if (role == "Judge") return new Judge(player,game);
-    else if (role == "Merchant") return new Merchant(player,game);
-    else if (role == "Spy") return new Spy(player,game);
-    else return nullptr; // or throw error
+    if (role == "Baron")
+        return new Baron(player, game);
+    else if (role == "General")
+        return new General(player, game);
+    else if (role == "Governor")
+        return new Governor(player, game);
+    else if (role == "Judge")
+        return new Judge(player, game);
+    else if (role == "Merchant")
+        return new Merchant(player, game);
+    else if (role == "Spy")
+        return new Spy(player, game);
+    else
+        return nullptr; // or throw error
 }
 
 vector<string> roles_vector = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
@@ -66,7 +74,7 @@ void Game::addPlayer()
     cin >> name_of_player;
 
     // Create player without assigning ID manually; let the constructor handle it
-    Player* player = new Player(name_of_player, nullptr);
+    Player *player = new Player(name_of_player, nullptr);
 
     // do random from the six roles to assign to the player.
     random_device rd;
@@ -75,16 +83,16 @@ void Game::addPlayer()
     // Assign the first role to the player
     string role = roles_vector[iteration];
     iteration++;
-    Character* character = createCharacterByRole(role, player, this);
+    Character *character = createCharacterByRole(role, player, this);
     player->setRole(character);
     players.push_back(player);
     printf("Player %s was added to the game with a role of %s.\n", name_of_player.c_str(), role.c_str());
 }
 
-vector<Player*> Game::active_players()
+vector<Player *> Game::active_players()
 {
-    vector<Player*> activePlayers;
-    for (Player* player : players)
+    vector<Player *> activePlayers;
+    for (Player *player : players)
     {
         if (player->getIsActive() == 1) // 1 for true
         {
@@ -102,32 +110,86 @@ int Game::getCoinsInBank()
 void Game::nextTurn()
 {
 
-    Player* currentPlayer = current_player();
+    Player *currentPlayer = current_player();
     currentPlayer->setIsActive(0); // Set the current player to inactive
     int num_of_active_players = active_players().size();
     // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):
-    Player* nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
+    Player *nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
     nextPlayer->setIsActive(1); // Set the next player to active
-
 }
 
-Player* Game::current_player()
+Player *Game::current_player()
 {
     return players[currentPlayerIndex];
 }
 
-void Game::removePlayer(Player* player) // Function to remove a player from the game
+void Game::removePlayer(Player *player) // Function to remove a player from the game
 {
-    vector<Player*> activePlayers = active_players();
+    vector<Player *> activePlayers = active_players();
     for (size_t i = 0; i < activePlayers.size(); i++)
     {
         if (activePlayers[i]->getName() == player->getName())
         {
-            activePlayers[i]->setIsActive(0); // Set the player to inactive
+            activePlayers[i]->setIsActive(0);                                                       // Set the player to inactive
             players.erase(remove(players.begin(), players.end(), activePlayers[i]), players.end()); // Remove the player from the game
             cout << "Player " << activePlayers[i]->getName() << " has been removed from the game." << endl;
             break;
         }
     }
-    
+}
+string Game::winner()
+{
+    vector<Player *> activePlayers = active_players();
+    if (activePlayers.size() == 1)
+    {
+        winner_name = activePlayers[0]->getName();
+        return winner_name;
+    }
+    else
+    {
+        throw invalid_argument("No winner yet!");
+    }
+}
+
+bool Game::isGameFinished()
+{
+    if (winner_name == "")
+    {
+        cout << "No winner yet!" << endl;
+        return false;
+    }
+    return isGameOver = true;
+}
+
+void Game::endGame()
+{
+    if(isGameOver == true)
+    {
+        cout << "Game over!" << endl;
+        cout << "The winner is: " << winner_name << endl;
+    }
+}
+
+void Game::resetGame()
+{
+    for (Player *p : players)
+    {
+        delete p;
+    }
+    players.clear();
+    coinsInBank = 0;
+    currentPlayerIndex = 0;
+    isGameOver = false;
+    winner_name = "";
+    cout << "Game reset!" << endl;
+}
+
+void Game::nextTurn()
+{
+    Player *currentPlayer = current_player();
+    currentPlayer->setIsActive(0); // Set the current player to inactive
+    int num_of_active_players = active_players().size();
+    // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):
+    Player *nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
+    nextPlayer->setIsActive(1); // Set the next player to active
 }

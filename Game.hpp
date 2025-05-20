@@ -25,21 +25,25 @@ private:
     vector<Player*> players; // Vector to store players pointers
     int coinsInBank; // Total coins in the bank
     bool isGameOver; // Flag to indicate if the game is over
+    string winner_name = ""; // Name of the winner
 
 public:
     Game(); // Constructor to initialize the game
     ~Game(); // Destructor to clean up the game
+
     void endGame(); // Function to end the game
-    void nextTurn(); // Function to move to the next player's turn
+    void resetGame(); // Function to reset the game
+    bool isGameFinished(); // Function to check if the game is finished
+    string winner(); // Function to get the winner of the game
+
     void addPlayer(); // Function to add a player to the game
     void removePlayer(Player* player); // Function to remove a player from the game
     Player* current_player(); // Function to get the current player
     vector<Player*> active_players(); // Function to get all active players
+
     int getCoinsInBank(); // Function to get the total coins in the bank
-    bool isGameFinished(); // Function to check if the game is finished
-    void resetGame(); // Function to reset the game
-    string winner(); // Function to get the winner of the game
     void changeCoinsInBank(int amount);
-    void SkipTurn(); // Function to skip the current player's turn
+
+    void nextTurn(); // Function to move to the next player's turn
     
 };
