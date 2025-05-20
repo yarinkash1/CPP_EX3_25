@@ -27,9 +27,20 @@ private:
     bool isGameOver; // Flag to indicate if the game is over
     string winner_name = ""; // Name of the winner
 
+    // Singleton-related
+    Game(); // Constructor is private to prevent instantiation
+    Game(const Game&) = delete; // Prevent copying
+    Game& operator=(const Game&) = delete; // Prevent assignment
+
 public:
-    Game(); // Constructor to initialize the game
     ~Game(); // Destructor to clean up the game
+
+    // Singleton access method
+    static Game& getInstance() 
+    {
+        static Game instance; // Guaranteed to be created once and thread-safe in C++11+
+        return instance;
+    }
 
     void endGame(); // Function to end the game
     void resetGame(); // Function to reset the game

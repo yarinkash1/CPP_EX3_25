@@ -8,9 +8,9 @@ Spy::Spy(Player* p, Game* g) : Character(p, g){}
 void Spy::peekAndPreventArrest(Player &target)
 {
     int target_num_coins = target.getCoins(); // Get the number of coins of the target player
-    cout << target.getName() << " has " << target_num_coins << " coins." << std::endl;
+    cout << target.getName() << " has " << target_num_coins << " coins." << endl;
     target.setIsArrestPrevented(true); // Set the target player as arrest prevented
-    cout << owner->getName() << " has peeked at " << target.getName() << "'s coins and prevented their arrest for their next turn." << std::endl;
+    cout << owner->getName() << " has peeked at " << target.getName() << "'s coins and prevented their arrest for their next turn." << endl;
 }
 
 void Spy::Action(int actionType)
@@ -21,7 +21,7 @@ void Spy::Action(int actionType)
         peekAndPreventArrest(*owner);
         break;
     default:
-        std::cout << "Invalid action type for Spy." << std::endl;
+        cout << "Invalid action type for Spy." << endl;
         break;
     }
 }

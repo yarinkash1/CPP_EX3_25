@@ -8,7 +8,7 @@ Judge::Judge(Player* p, Game* g) : Character(p, g){}
 void Judge::cancelBribe(Player &target)
 {
     target.setIsBribePrevented(true); // Set the target player as bribe prevented
-    cout << owner->getName() << " has canceled the bribe on " << target.getName() << std::endl;
+    cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
 }
 
 void Judge::coinForTheBankOverSanction(Player &target)
@@ -17,7 +17,7 @@ void Judge::coinForTheBankOverSanction(Player &target)
     {
         target.removeNumCoins(1); // Remove 1 coin from the target player
         game->changeCoinsInBank(1); // Add 1 coin to the bank
-        cout << target.getName() << " Was deducted 1 coin for sacntioning a Judge" << std::endl;
+        cout << target.getName() << " Was deducted 1 coin for sacntioning a Judge" << endl;
         
     }
 }
@@ -33,7 +33,7 @@ void Judge::Action(int actionType)
         coinForTheBankOverSanction(*owner);
         break;
     default:
-        std::cout << "Invalid action type for Judge." << std::endl;
+        cout << "Invalid action type for Judge." << endl;
         break;
     }
 }

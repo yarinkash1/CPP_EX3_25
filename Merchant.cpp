@@ -12,7 +12,7 @@ void Merchant::addCoin()
         // If the Merchant has 3 or more coins, he can add a coin to his total
         game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
         owner->addNumCoins(1);
-        std::cout << owner->getName() << " has added 1 coin to his total." << std::endl;
+        cout << owner->getName() << " has added 1 coin to his total." << endl;
     }
 }
 
@@ -24,7 +24,7 @@ void Merchant::arrestAlternate()
         owner->removeNumCoins(2); // Remove 2 coins from the Merchant
         game->changeCoinsInBank(+2); // Add 2 coins to the bank
 
-        std::cout << owner->getName() << " has paid 2 coins to the bank due to arrest." << std::endl;
+        cout << owner->getName() << " has paid 2 coins to the bank due to arrest." << endl;
     }
 }
 
@@ -39,7 +39,7 @@ void Merchant::Action(int actionType)
         arrestAlternate();
         break;
     default:
-        std::cout << "Invalid action type for Merchant." << std::endl;
+        cout << "Invalid action type for Merchant." << endl;
         break;
     }
 }

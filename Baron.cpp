@@ -17,13 +17,13 @@ void Baron::invest()
         game->changeCoinsInBank(-6);// deduct 6 coins from the bank
         owner->setCoins(owner->getCoins() + 6);
 
-        std::cout << owner->getName() << " has invested 3 coins and received 6 coins." << std::endl;
+        cout << owner->getName() << " has invested 3 coins and received 6 coins." << endl;
 
         sanctionCoinCompensation(); // Call the sanction coin compensation method
     }
     else
     {
-        std::cout << owner->getName() << " does not have enough coins to invest." << std::endl;
+        cout << owner->getName() << " does not have enough coins to invest." << endl;
     }
 }
 void Baron::sanctionCoinCompensation()
@@ -47,7 +47,7 @@ void Baron::Action(int actionType)
         sanctionCoinCompensation();
         break;
     default:
-        std::cout << "Invalid action type for Baron." << std::endl;
+        cout << "Invalid action type for Baron." << endl;
         break;
     }
 }

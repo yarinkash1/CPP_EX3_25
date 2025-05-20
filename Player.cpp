@@ -8,7 +8,7 @@ void Player::removeNumCoins(int num_coins)
     }
     else
     {
-        std::cout << "Not enough coins to remove." << std::endl;
+        cout << "Not enough coins to remove." << endl;
     }
 }
 

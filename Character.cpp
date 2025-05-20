@@ -4,27 +4,49 @@
 
 Character::Character(Player *p, Game *g) : owner(p), game(g) {}
 
+/**
+ * @brief Performs the "gather" action, granting the player 1 coin from the bank.
+ *
+ * This action is free (costs nothing) and may be blocked by a sanction.
+ *
+ * @note The action deducts 1 coin from the bank and adds it to the player's coin total.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Character::gather()
 {
     game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
     owner->addNumCoins(1);       // Add 1 coin to the player's coins
-    std::cout << "Gather action performed." << std::endl;
+    cout << "Gather action performed." << endl;
 }
 
+/**
+ * @brief Performs the "tax" action, granting the player 2 coins from the bank.
+ *
+ * This action is free (costs nothing) and may be blocked by a sanction or by a Governor.
+ *
+ * @note The action deducts 2 coins from the bank and adds them to the player's coin total.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Character::tax()
 {
     game->changeCoinsInBank(-2); // Deduct 2 coins from the bank
     owner->addNumCoins(2);       // Add 2 coins to the player's coins
-    std::cout << "Tax action performed." << std::endl;
+    cout << "Tax action performed." << endl;
 }
+
 
 void Character::bribe()
 {
     owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
     game->changeCoinsInBank(+4); // Add 4 coins to the bank
-    std::cout << "Bribe action performed.\n"
-              << std::endl;
-    std::cout << "Player " << owner->getName() << " has another turn" << std::endl;
+    cout << "Bribe action performed.\n" << endl;
+    cout << "Player " << owner->getName() << " has another turn" << endl;
 }
 
 void Character::arrest()
@@ -33,14 +55,14 @@ void Character::arrest()
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
     {
-        std::cout << "Invalid target player." << std::endl;
+        cout << "Invalid target player." << endl;
         return;
     }
     targetPlayer->setIsArrested(true); // Set the target player as arrested
     targetPlayer->removeNumCoins(1);   // Remove 1 coin from the target player
     game->changeCoinsInBank(1);        // Add 1 coin to the bank
 
-    std::cout << "Arrest action performed on player: " << targetPlayer->getName() << std::endl;
+    cout << "Arrest action performed on player: " << targetPlayer->getName() << endl;
 }
 
 void Character::sanction()
@@ -55,7 +77,7 @@ void Character::sanction()
     owner->removeNumCoins(3);            // Remove 3 coins from the target player
     game->changeCoinsInBank(3);          // Add 3 coins to the bank
 
-    std::cout << "Sanction action performed on player: " << targetPlayer->getName() << std::endl;
+    cout << "Sanction action performed on player: " << targetPlayer->getName() << endl;
 }
 
 void Character::coup()
@@ -63,7 +85,7 @@ void Character::coup()
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
     {
-        std::cout << "Invalid target player." << std::endl;
+        cout << "Invalid target player." << endl;
         return;
     }
 
@@ -72,7 +94,7 @@ void Character::coup()
     targetPlayer->setIsActive(false); // Set the target player as inactive
     game->removePlayer(targetPlayer); // Remove the target player from the game
 
-    std::cout << "Coup action performed on player: " << targetPlayer->getName() << std::endl;
+    cout << "Coup action performed on player: " << targetPlayer->getName() << endl;
 }
 
 Player *Character::target_player()

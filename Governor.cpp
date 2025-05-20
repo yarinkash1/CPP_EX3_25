@@ -9,12 +9,12 @@ void Governor::tax()
 {
     game->changeCoinsInBank(-2); // Deduct 2 coins from the bank
     owner->addNumCoins(2); // Add 2 coins to the player's total
-    std::cout << owner->getName() << " has taken 2 coins from the bank." << std::endl;
+    cout << owner->getName() << " has taken 2 coins from the bank." << endl;
 }
 void Governor::cancelTax(Player &target)
 {
     target.setIsTaxPrevented(true); // Set the target player as tax prevented
-    cout << owner->getName() << " has canceled the tax on " << target.getName() << std::endl;
+    cout << owner->getName() << " has canceled the tax on " << target.getName() << endl;
 }
 
 void Governor::Action(int actionType)
@@ -28,7 +28,7 @@ void Governor::Action(int actionType)
         cancelTax(*owner);
         break;
     default:
-        std::cout << "Invalid action type for Governor." << std::endl;
+        cout << "Invalid action type for Governor." << endl;
         break;
     }
 }
