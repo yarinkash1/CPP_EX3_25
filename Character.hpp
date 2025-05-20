@@ -13,7 +13,6 @@ public:
     Character(Player* p, Game* g); // Constructor to initialize the character with a player and game instance
     virtual ~Character() = default; // Virtual destructor for proper cleanup of derived classes
 
-    // Actions — base versions (can be overridden)
     void gather();
     virtual void tax();
     void bribe();

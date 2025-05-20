@@ -4,6 +4,7 @@
 #include "Player.hpp"    // Include the header file for the Player class
 #include "Character.hpp" // Include the header file for the Character class
 #include "Baron.hpp"     // Include the header file for the Baron class
+#include "Character.hpp" // Include the header file for the Character class
 
 int main()
 {
@@ -48,8 +49,6 @@ int main()
 
     // Print the coins in the bank after gathering:
     cout << "Coins in bank after gathering: " << g1.getCoinsInBank() << endl;
-
-    
 
     return 0;
 }
