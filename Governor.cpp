@@ -9,9 +9,9 @@ Governor::Governor(Player *p, Game *g) : Character(p, g) {}
 
 void Governor::tax()
 {
-    game->changeCoinsInBank(-2); // Deduct 2 coins from the bank
-    owner->addNumCoins(2);       // Add 2 coins to the player's total
-    cout << owner->getName() << " has taken 2 coins from the bank." << endl;
+    game->changeCoinsInBank(-3); // Deduct 3 coins from the bank
+    owner->addNumCoins(3);       // Add 3 coins to the player's total
+    cout << owner->getName() << " has taken 3 coins from the bank." << endl;
 }
 void Governor::cancelTax(Player &target)
 {

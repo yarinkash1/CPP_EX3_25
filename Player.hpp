@@ -20,7 +20,6 @@ protected:
     bool is_turn;    // Flag to indicate if it's the player's turn
 
     // Player's state
-    bool isArrested;                 // Flag to indicate if the player is arrested
     bool isSanctioned;               // Flag to indicate if the player is sanctioned until his next turn
     bool isPeekedAndArrestPrevented; // Flag to indicate if the player is peeked and arrest prevented for his next turn
     bool isCoupPrevented;            // Flag to indicate if the player is coup prevented
@@ -41,7 +40,6 @@ public:
           win_counter(win_counter),
           coins(coins),
           is_turn(false),
-          isArrested(isArrested),
           isSanctioned(isSanctioned),
           isPeekedAndArrestPrevented(isPeekedAndArrestPrevented),
           isCoupPrevented(isCoupPrevented),
@@ -64,7 +62,6 @@ public:
     bool getIsActive() const { return is_active; }
     int getWinCounter() const { return win_counter; }
     int getCoins() const { return coins; }
-    bool getIsArrested() const { return isArrested; }
     bool getIsSanctioned() const { return isSanctioned; }
     bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; }
     bool getIsCoupPrevented() const { return isCoupPrevented; }
@@ -81,7 +78,6 @@ public:
     void setCoins(int new_coins) { coins = new_coins; }
     void addNumCoins(int num_coins) { coins += num_coins; }
     void removeNumCoins(int num_coins);
-    void setIsArrested(bool arrested) { isArrested = arrested; }
     void setIsSanctioned(bool sanctioned) { isSanctioned = sanctioned; }
     void setIsPeekedAndArrestPrevented(bool peeked_and_arrest_prevented) { isPeekedAndArrestPrevented = peeked_and_arrest_prevented; }
     void setIsCoupPrevented(bool coup_prevented) { isCoupPrevented = coup_prevented; }
