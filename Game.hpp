@@ -28,19 +28,19 @@ private:
     string winner_name = ""; // Name of the winner
 
     // Singleton-related
-    Game(); // Constructor is private to prevent instantiation
+    Game(); // Private constructor
+    static int initialCoins; // Static variable for configuring initial coins
     Game(const Game&) = delete; // Prevent copying
     Game& operator=(const Game&) = delete; // Prevent assignment
+
 
 public:
     ~Game(); // Destructor to clean up the game
 
+    static void configure(int coins); // Set initial coins before instance is created
+
     // Singleton access method
-    static Game& getInstance() 
-    {
-        static Game instance; // Guaranteed to be created once and thread-safe in C++11+
-        return instance;
-    }
+    static Game& getInstance();
 
     void endGame(); // Function to end the game
     void resetGame(); // Function to reset the game

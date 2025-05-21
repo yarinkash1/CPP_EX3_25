@@ -53,6 +53,24 @@ public:
         delete role;
     }
 
+    void printPlayerInfo()
+    {
+        cout << "Player ID: " << id << endl;
+        cout << "Name: " << name << endl;
+        cout << "Coins: " << coins << endl;
+        cout << "Is Active: " << (is_active ? "Yes" : "No") << endl;
+        cout << "Win Counter: " << win_counter << endl;
+        cout << "Role: " <<  (role ? role->getRoleName() : "None") << endl;
+        cout << "Is Arrested: " << (isArrested ? "Yes" : "No") << endl;
+        cout << "Is Sanctioned: " << (isSanctioned ? "Yes" : "No") << endl;
+        cout << "Is Peeked and Arrest Prevented: " << (isPeekedAndArrestPrevented ? "Yes" : "No") << endl;
+        cout << "Is Coup Prevented: " << (isCoupPrevented ? "Yes" : "No") << endl;
+        cout << "Is Tax Prevented: " << (isTaxPrevented ? "Yes" : "No") << endl;
+        cout << "Is Bribe Prevented: " << (isBribePrevented ? "Yes" : "No") << endl;
+        cout << "Is Arrest Prevented: " << (isArrestPrevented ? "Yes" : "No") << endl;
+        cout << "----------------------------------------------------------------------------------------------------------------" << endl;
+    }
+
     // Getters
     string getName() const { return name; }
     bool getIsActive() const { return is_active; }

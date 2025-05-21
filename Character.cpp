@@ -27,7 +27,7 @@ void Character::gather()
 {
     game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
     owner->addNumCoins(1);       // Add 1 coin to the player's coins
-    cout << "Gather action performed." << endl;
+    cout << " -- Gather action performed. --" << endl;
 }
 
 /**
@@ -45,7 +45,7 @@ void Character::tax()
 {
     game->changeCoinsInBank(-2); // Deduct 2 coins from the bank
     owner->addNumCoins(2);       // Add 2 coins to the player's coins
-    cout << "Tax action performed." << endl;
+    cout << "-- Tax action performed. --" << endl;
 }
 
 /**
@@ -64,8 +64,8 @@ void Character::bribe()
 {
     owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
     game->changeCoinsInBank(+4); // Add 4 coins to the bank
-    cout << "Bribe action performed.\n" << endl;
-    cout << "Player " << owner->getName() << " has another turn" << endl;
+    cout << "-- Bribe action performed. --\n" << endl;
+    cout << "-- Player " << owner->getName() << " has another turn --" << endl;
 }
 
 /**
@@ -96,7 +96,7 @@ void Character::arrest()
     targetPlayer->removeNumCoins(1);   // Remove 1 coin from the target player
     game->changeCoinsInBank(1);        // Add 1 coin to the bank
 
-    cout << "Arrest action performed on player: " << targetPlayer->getName() << endl;
+    cout << "-- Arrest action performed on player: --" << targetPlayer->getName() << endl;
 }
 
 
@@ -125,7 +125,7 @@ void Character::sanction()
     owner->removeNumCoins(3);            // Remove 3 coins from the target player
     game->changeCoinsInBank(3);          // Add 3 coins to the bank
 
-    cout << "Sanction action performed on player: " << targetPlayer->getName() << endl;
+    cout << "-- Sanction action performed on player: --" << targetPlayer->getName() << endl;
 }
 
 /**
@@ -147,7 +147,7 @@ void Character::coup()
     Player *targetPlayer = target_player(); // Get the target player
     if (targetPlayer == nullptr)
     {
-        cout << "Invalid target player." << endl;
+        cout << "-- Invalid target player. --" << endl;
         return;
     }
 
@@ -156,7 +156,7 @@ void Character::coup()
     targetPlayer->setIsActive(false); // Set the target player as inactive
     game->removePlayer(targetPlayer); // Remove the target player from the game
 
-    cout << "Coup action performed on player: " << targetPlayer->getName() << endl;
+    cout << "-- Coup action performed on player: --" << targetPlayer->getName() << endl;
 }
 
 /**
@@ -204,7 +204,7 @@ Player *Character::target_player()
     else
     {
         Player *targetPlayer = active_players[choice - 1];
-        cout << "You have selected player: " << targetPlayer->getName() << endl;
+        cout << "-- You have selected player: " << targetPlayer->getName() << " --" << endl;
         return targetPlayer; // Return the target player
     }
 }

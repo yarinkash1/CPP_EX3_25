@@ -23,4 +23,5 @@ public:
     // Special action handler (for role-specific actions):
     virtual void Action(int actionType) = 0; // Pure virtual function for derived classes to implement their special actions
     Player* target_player(); // Helper function to get the target player
+    virtual std::string getRoleName() const = 0;
 };

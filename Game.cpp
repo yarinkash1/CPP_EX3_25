@@ -1,5 +1,7 @@
 #include "Game.hpp"
 
+int Game::initialCoins = 50; // Default initial coins (can be changed by configure method)
+
 void Game::changeCoinsInBank(int amount)
 {
     if (coinsInBank + amount < 0)
@@ -27,17 +29,10 @@ Game::Game()
     {
         throw invalid_argument("Number of players must be between 2 and 6.");
     }
-    printf("Enter number of coins in bank\n");
-    cin >> coinsInBank;
-    if (coinsInBank < 0)
-    {
-        throw invalid_argument("Number of coins in bank must be non-negative.");
-    }
-
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
 
     this->numPlayers = numPlayers;
-    this->coinsInBank = coinsInBank;
+    this->coinsInBank = initialCoins;
     this->currentPlayerIndex = 0;
     this->isGameOver = false;
 
@@ -184,4 +179,16 @@ void Game::resetGame()
     isGameOver = false;
     winner_name = "";
     cout << "Game reset!" << endl;
+}
+
+
+void Game::configure(int coins)
+{
+    initialCoins = coins;
+}
+
+Game& Game::getInstance()
+{
+    static Game instance;
+    return instance;
 }
