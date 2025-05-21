@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #include "Game.hpp"
 
 int Game::initialCoins = 50; // Default initial coins (can be changed by configure method)
@@ -42,6 +44,9 @@ Game::Game()
     {
         Game::addPlayer();
     }
+
+    // Set the first player as has turn:
+    players[0]->setIsTurn(true);
 }
 
 Character *createCharacterByRole(const string &role, Player *player, Game *game)
@@ -108,16 +113,18 @@ void Game::nextTurn()
 {
 
     Player *currentPlayer = current_player();
-    currentPlayer->setIsActive(0); // Set the current player to inactive
+    currentPlayer->setIsTurn(false); // Set the current player to not have turn anymore
     int num_of_active_players = active_players().size();
     // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):
     Player *nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
-    nextPlayer->setIsActive(1); // Set the next player to active
+    currentPlayerIndex = (currentPlayerIndex + 1) % num_of_active_players; // Move to the next player
+    nextPlayer->setIsTurn(true); // Set the next player to have turn
 }
 
 Player *Game::current_player()
 {
-    return players[currentPlayerIndex];
+    vector<Player *> activePlayers = active_players();
+    return activePlayers[currentPlayerIndex];
 }
 
 void Game::removePlayer(Player *player) // Function to remove a player from the game

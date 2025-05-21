@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #include "Player.hpp"
 #include "Character.hpp"
 #include "Game.hpp"
@@ -208,3 +210,4 @@ Player *Character::target_player()
         return targetPlayer; // Return the target player
     }
 }
+

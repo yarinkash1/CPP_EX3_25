@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include "Character.hpp"
 
@@ -7,6 +9,7 @@ class Spy: public Character
 {
 private:
     void peekAndPreventArrest(Player &Player);
+    void chooseAction() override;
     
 public:
     Spy(Player* p, Game* g); 

@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include "Character.hpp"
 
@@ -8,6 +10,7 @@ class Judge : public Character
 private:
     void cancelBribe(Player &Player);
     void coinForTheBankOverSanction(Player &Player);
+    void chooseAction() override;
     
 public:
     Judge(Player* p, Game* g); 

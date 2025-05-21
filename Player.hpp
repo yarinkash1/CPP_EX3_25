@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include <string>
 #include "Character.hpp"
@@ -15,6 +17,7 @@ protected:
     bool is_active;  // Flag to indicate if it's the player's turn
     int win_counter; // Number of wins
     int coins;       // Number of coins the player has
+    bool is_turn;    // Flag to indicate if it's the player's turn
 
     // Player's state
     bool isArrested;                 // Flag to indicate if the player is arrested
@@ -37,6 +40,7 @@ public:
           is_active(is_active),
           win_counter(win_counter),
           coins(coins),
+          is_turn(false),
           isArrested(isArrested),
           isSanctioned(isSanctioned),
           isPeekedAndArrestPrevented(isPeekedAndArrestPrevented),
@@ -53,23 +57,7 @@ public:
         delete role;
     }
 
-    void printPlayerInfo()
-    {
-        cout << "Player ID: " << id << endl;
-        cout << "Name: " << name << endl;
-        cout << "Coins: " << coins << endl;
-        cout << "Is Active: " << (is_active ? "Yes" : "No") << endl;
-        cout << "Win Counter: " << win_counter << endl;
-        cout << "Role: " <<  (role ? role->getRoleName() : "None") << endl;
-        cout << "Is Arrested: " << (isArrested ? "Yes" : "No") << endl;
-        cout << "Is Sanctioned: " << (isSanctioned ? "Yes" : "No") << endl;
-        cout << "Is Peeked and Arrest Prevented: " << (isPeekedAndArrestPrevented ? "Yes" : "No") << endl;
-        cout << "Is Coup Prevented: " << (isCoupPrevented ? "Yes" : "No") << endl;
-        cout << "Is Tax Prevented: " << (isTaxPrevented ? "Yes" : "No") << endl;
-        cout << "Is Bribe Prevented: " << (isBribePrevented ? "Yes" : "No") << endl;
-        cout << "Is Arrest Prevented: " << (isArrestPrevented ? "Yes" : "No") << endl;
-        cout << "----------------------------------------------------------------------------------------------------------------" << endl;
-    }
+    void printPlayerInfo();
 
     // Getters
     string getName() const { return name; }
@@ -85,6 +73,7 @@ public:
     bool getIsArrestPrevented() const { return isArrestPrevented; }
     int getId() const { return id; }
     Character *getRole() const { return role; }
+    bool getIsTurn() const { return is_turn; }
 
     // Setters
     void setIsActive(bool active) { is_active = active; }
@@ -99,7 +88,8 @@ public:
     void setIsTaxPrevented(bool tax_prevented) { isTaxPrevented = tax_prevented; }
     void setIsBribePrevented(bool bribe_prevented) { isBribePrevented = bribe_prevented; }
     void setIsArrestPrevented(bool arrest_prevented) { isArrestPrevented = arrest_prevented; }
-    static void resetIdCounter() { next_id = 1;}
+    static void resetIdCounter() { next_id = 1; }
     void setId(int new_id) { id = new_id; }
     void setRole(Character *new_role) { role = new_role; }
+    void setIsTurn(bool turn) { is_turn = turn; }
 };

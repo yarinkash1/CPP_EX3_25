@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include "Character.hpp"
 
@@ -8,6 +10,7 @@ class Merchant: public Character
 private:
     void addCoin(); // Adds a coin to the Merchant's total when he starts a turn with 3 coins.
     void arrestAlternate(); // If the Merchant is attacked by arrest action he is paying 2 coins to the bank instead of losing 1 coin to other player.
+    void chooseAction() override;
     
 public:
     Merchant(Player* p, Game* g); 

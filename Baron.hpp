@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include "Character.hpp"
 
@@ -8,6 +10,7 @@ class Baron : public Character
 private:
     void invest();
     void sanctionCoinCompensation();
+    void chooseAction() override;
     
 public:
     Baron(Player* p, Game* g); 

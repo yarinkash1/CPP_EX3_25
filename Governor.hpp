@@ -1,3 +1,5 @@
+// yarinkash1@gmail.com
+
 #pragma once
 #include "Character.hpp"
 
@@ -8,6 +10,7 @@ class Governor : public Character
 private:
     void tax() override; // Governor's custom tax implementation
     void cancelTax(Player &Player); // Governor's cancel tax action of other player
+    void chooseAction() override;
     
 public:
     Governor(Player* p, Game* g); 
