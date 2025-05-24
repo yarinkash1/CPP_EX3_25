@@ -2,6 +2,13 @@
 
 #include "Player.hpp"
 
+/**
+ * @brief Remove a certain amount of coins from the player
+ *
+ * @param num_coins The coins amount
+ * @return void
+ * @throws runtime_error if there are not enough coins to remove
+ */
 void Player::removeNumCoins(int num_coins)
 {
     if (coins >= num_coins)
@@ -10,10 +17,17 @@ void Player::removeNumCoins(int num_coins)
     }
     else
     {
-        cout << "Not enough coins to remove." << endl;
+        throw runtime_error("Not enough coins to remove.");
     }
 }
 
+/**
+ * @brief Print the current status of a player
+ * 
+ * @param none
+ * @return void
+ * @throws none
+ */
 void Player::printPlayerInfo()
 {
     cout << "Player ID: " << id << endl;
@@ -22,7 +36,6 @@ void Player::printPlayerInfo()
     cout << "Is Active: " << (is_active ? "Yes" : "No") << endl;
     cout << "Win Counter: " << win_counter << endl;
     cout << "Role: " << (role ? role->getRoleName() : "None") << endl;
-    cout << "Is Arrested: " << (isArrested ? "Yes" : "No") << endl;
     cout << "Is Sanctioned: " << (isSanctioned ? "Yes" : "No") << endl;
     cout << "Is Peeked and Arrest Prevented: " << (isPeekedAndArrestPrevented ? "Yes" : "No") << endl;
     cout << "Is Coup Prevented: " << (isCoupPrevented ? "Yes" : "No") << endl;
@@ -33,5 +46,10 @@ void Player::printPlayerInfo()
     cout << "----------------------------------------------------------------------------------------------------------------" << endl;
 }
 
+
+
+// next_id is a static data member of the Player class,
+// and static members need to be defined and initialized outside the class definition
+// (usually in the corresponding .cpp file)
 
 int Player::next_id = 1;

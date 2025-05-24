@@ -30,7 +30,20 @@ private:
     string winner_name = ""; // Name of the winner
 
     // Singleton-related
-    Game(); // Private constructor
+    Game(); // Private constructor for random roles
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    static Game* instance;
+
+    ///////////////////////////////////////////////////////////////////////////////
+
+
+    // Private constructor for debugging purposes
+    Game(const std::vector<std::string>& playerNames,
+         int numPlayers,
+         const std::vector<std::string>& roles);
+
     static int initialCoins; // Static variable for configuring initial coins
     Game(const Game&) = delete; // Prevent copying
     Game& operator=(const Game&) = delete; // Prevent assignment
@@ -43,6 +56,12 @@ public:
 
     // Singleton access method
     static Game& getInstance();
+
+        
+    // Overloaded getInstance for creating a game with specific players and roles(debugging purposes)
+    static Game* getInstance(const std::vector<std::string>& playerNames,
+                             int numPlayers,
+                             const std::vector<std::string>& roles);
 
     void endGame(); // Function to end the game
     void resetGame(); // Function to reset the game
