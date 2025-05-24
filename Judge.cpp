@@ -13,31 +13,10 @@ void Judge::cancelBribe(Player &target)
     cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
 }
 
-void Judge::coinForTheBankOverSanction(Player &target)
-{
-    if(owner->getIsSanctioned()==1)
-    {
-        target.removeNumCoins(1); // Remove 1 coin from the target player
-        game->changeCoinsInBank(1); // Add 1 coin to the bank
-        cout << target.getName() << " Was deducted 1 coin for sacntioning a Judge" << endl;
-        
-    }
-}
 
-void Judge::Action(int actionType)
+void Judge::Action()
 {
-    switch (actionType)
-    {
-    case 1: // Delegate action type for cancelBribe
-        cancelBribe(*owner);
-        break;
-    case 2: // Delegate action type for coinForTheBankOverSanction
-        coinForTheBankOverSanction(*owner);
-        break;
-    default:
-        cout << "Invalid action type for Judge." << endl;
-        break;
-    }
+    cancelBribe(*owner);
 }
 
 void Judge::chooseAction()
@@ -51,8 +30,7 @@ void Judge::chooseAction()
     cout << "5. Sanction" << endl;
     cout << "6. Coup" << endl;
     cout << "7. Cancel Bribe" << endl;
-    cout << "8. Coin for the bank" << endl;
-    cout << "9. Skip turn" << endl;
+    cout << "8. Skip turn" << endl;
     cin >> actionType;
 
     if (actionType < 1 || actionType > 8)
@@ -82,12 +60,11 @@ void Judge::chooseAction()
         this->coup();
         break;
     case 7:
-        Action(1); // Call the Action method for cancel bribe
+        Action(); // Call the Action method for cancel bribe
         break;
     case 8:
-        Action(2); // Call the Action method for coin for the bank
-        break;
-    case 9:
+        // Skip turn logic
+        game->nextTurn(); // Move to the next player's turn
         cout << "Turn skipped." << endl;
         break;
     default:

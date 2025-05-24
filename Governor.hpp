@@ -14,6 +14,6 @@ private:
     
 public:
     Governor(Player* p, Game* g); 
-    void Action(int actionType) override; // Override the pure virtual function from Character
+    void Action() override; // Override the pure virtual function from Character
     std::string getRoleName() const override { return "Governor"; }
 };

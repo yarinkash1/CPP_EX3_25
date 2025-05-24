@@ -13,33 +13,11 @@ void General::preventCoup(Player &target)
     game->changeCoinsInBank(+5); // Add 5 coins to the bank
     target.setIsCoupPrevented(true); // Set the target player as coup prevented
     cout << owner->getName() << " has prevented a coup on " << target.getName() << std::endl;
-    arrestCoinCompensation(); // Call the arrest coin compensation method
-}
-void General::arrestCoinCompensation()
-{
-    if(owner->getIsArrested() == 1) // 1 = True
-    {
-        game->changeCoinsInBank(-1);
-        owner->addNumCoins(1);
-
-        cout << owner->getName() << " has received 1 coin as compensation for being arrested." << endl;
-    }
 }
 
-void General::Action(int actionType)
+void General::Action()
 {
-    switch (actionType)
-    {
-    case 1: // Delegate action type for preventCoup
-        preventCoup(*owner);
-        break;
-    case 2: // Delegate action type for arrestCoinCompensation
-        arrestCoinCompensation();
-        break;
-    default:
-        std::cout << "Invalid action type for General." << std::endl;
-        break;
-    }
+    preventCoup(*owner);
 }
 
 void General::chooseAction()
@@ -53,11 +31,10 @@ void General::chooseAction()
     cout << "5. Sanction" << endl;
     cout << "6. Coup" << endl;
     cout << "7. Prevent Coup" << endl;
-    cout << "8. Arrest coin compensation" << endl;
-    cout << "9. Skip turn" << endl;
+    cout << "8. Skip turn" << endl;
     cin >> actionType;
 
-    if (actionType < 1 || actionType > 9)
+    if (actionType < 1 || actionType > 8)
     {
         cout << "Invalid action type. Please try again." << endl;
         chooseAction(); // Retry if invalid
@@ -83,12 +60,10 @@ void General::chooseAction()
             this->coup();
             break;
         case 7:
-            Action(1); // Call the Action method for Prevent Coup
+            Action(); // Call the Action method for Prevent Coup
             break;
         case 8:
-            Action(2); // Call the Action method for arrest coin compensation
-            break;
-        case 9:
+            game->nextTurn(); // Skip the turn
             cout << "Turn skipped." << endl;
             break;
         default:

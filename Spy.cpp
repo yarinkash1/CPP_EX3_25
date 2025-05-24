@@ -15,17 +15,9 @@ void Spy::peekAndPreventArrest(Player &target)
     cout << owner->getName() << " has peeked at " << target.getName() << "'s coins and prevented their arrest for their next turn." << endl;
 }
 
-void Spy::Action(int actionType)
+void Spy::Action()
 {
-    switch (actionType)
-    {
-    case 1: // Delegate action type for peekAndPreventArrest
-        peekAndPreventArrest(*owner);
-        break;
-    default:
-        cout << "Invalid action type for Spy." << endl;
-        break;
-    }
+    peekAndPreventArrest(*owner);
 }
 
 void Spy::chooseAction()
@@ -69,7 +61,7 @@ void Spy::chooseAction()
         this->coup();
         break;
     case 7:
-        Action(1); // Call the Action method for peek cards and prevent arrest
+        Action(); // Call the Action method for peek cards and prevent arrest
         break;
     case 8:
         cout << "Turn skipped." << endl;

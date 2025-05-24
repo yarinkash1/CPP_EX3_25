@@ -169,6 +169,7 @@ void Character::arrest()
  * It sets the target player as sanctioned preventing them from performing economic actions(tax and gather).
  *
  * @note If the target player is a Baron, he gets 1 coin as a compensation.
+ * If the target player is a Judge, the person who performed the saction action on him needs to pay another coin to the bank.
  *
  * @param None
  * @return void
@@ -192,6 +193,12 @@ void Character::sanction()
         game->changeCoinsInBank(-1);  // Deduct 1 coin from the bank
         targetPlayer->addNumCoins(1); // Add 1 coin to the target player as a compensation
         cout << "-- Baron sanctioned, he gets 1 coin as a compensation --" << endl;
+    }
+    else if (targetPlayer->getRole()->getRoleName() == "Judge")
+    {
+        owner->removeNumCoins(1);   // Remove 1 coin from the player who performed the sanction action
+        game->changeCoinsInBank(1); // Add 1 coin to the bank
+        cout << "-- Judge sanctioned, you need to pay another coin to the bank --" << endl;
     }
 
     targetPlayer->setIsSanctioned(true); // Set the target player as sanctioned
