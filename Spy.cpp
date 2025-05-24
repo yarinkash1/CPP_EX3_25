@@ -5,21 +5,59 @@
 #include "Spy.hpp"
 #include "Game.hpp"
 
-Spy::Spy(Player* p, Game* g) : Character(p, g){}
+Spy::Spy(Player *p, Game *g) : Character(p, g) {}
 
+/**
+ * @brief Peeks at the target player's coins and prevents their arrest for the next turn.
+ *
+ * This action allows the Spy to peek at the target player's coins and prevent their arrest for the next turn.
+ * It sets the target player as arrest prevented.
+ * This action is free (costs nothing) and isn't considered a turn action(cannot be performed twice in a row).
+ *
+ * @param target The target player to peek at and prevent arrest.
+ * @return void
+ * @throws None
+ */
 void Spy::peekAndPreventArrest(Player &target)
 {
-    int target_num_coins = target.getCoins(); // Get the number of coins of the target player
-    cout << target.getName() << " has " << target_num_coins << " coins." << endl;
-    target.setIsArrestPrevented(true); // Set the target player as arrest prevented
-    cout << owner->getName() << " has peeked at " << target.getName() << "'s coins and prevented their arrest for their next turn." << endl;
+    if (alreadyPeeked == true)
+    {
+        cout << "You have already peeked at a player's coins this turn. Choose a different action" << endl;
+        chooseAction(); // Prompt the player to choose another action
+    }
+    else
+    {
+        int target_num_coins = target.getCoins(); // Get the number of coins of the target player
+        cout << target.getName() << " has " << target_num_coins << " coins." << endl;
+        target.setIsArrestPrevented(true); // Set the target player as arrest prevented
+        cout << owner->getName() << " has peeked at " << target.getName() << "'s coins and prevented their arrest for their next turn." << endl;
+        chooseAction();       // Prompt the player to choose another action
+        alreadyPeeked = true; // Set the alreadyPeeked flag to true
+    }
 }
 
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the peekAndPreventArrest() method of the Spy.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Spy::Action()
 {
     peekAndPreventArrest(*owner);
 }
 
+/**
+ * @brief Prompts the player to choose an action and executes the selected action.
+ *
+ * This function displays a list of available actions and allows the player to select one.
+ * It handles invalid input and retries if necessary.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Spy::chooseAction()
 {
     int actionType;
@@ -64,6 +102,7 @@ void Spy::chooseAction()
         Action(); // Call the Action method for peek cards and prevent arrest
         break;
     case 8:
+        game->nextTurn(); // Skip the turn
         cout << "Turn skipped." << endl;
         break;
     default:

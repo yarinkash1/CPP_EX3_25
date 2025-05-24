@@ -7,18 +7,43 @@
 
 Judge::Judge(Player* p, Game* g) : Character(p, g){}
 
+/**
+ * @brief Cancels the bribe action on a target player.
+ *
+ * This action sets the target player as bribe prevented, preventing them from performing the Bribe action.
+ *
+ * @param target The target player to cancel the bribe on.
+ * @return void
+ * @throws None
+ */
 void Judge::cancelBribe(Player &target)
 {
     target.setIsBribePrevented(true); // Set the target player as bribe prevented
     cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
 }
 
-
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the cancelBribe() method of the Judge.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Judge::Action()
 {
     cancelBribe(*owner);
 }
 
+/**
+ * @brief Prompts the player to choose an action and executes the selected action.
+ *
+ * This function displays a list of available actions and allows the player to select one.
+ * It handles invalid input and retries if necessary.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Judge::chooseAction()
 {
     int actionType;

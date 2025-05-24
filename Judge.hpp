@@ -13,6 +13,6 @@ private:
     
 public:
     Judge(Player* p, Game* g); 
-    void Action() override; // Override the pure virtual function from Character
+    void Action() override;
     std::string getRoleName() const override { return "Judge"; }
 };

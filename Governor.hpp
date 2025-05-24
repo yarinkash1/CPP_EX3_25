@@ -8,12 +8,12 @@ class Player; // Forward declaration of Player class
 class Governor : public Character 
 {
 private:
-    void tax() override; // Governor's custom tax implementation
-    void cancelTax(Player &Player); // Governor's cancel tax action of other player
+    void tax() override;
+    void cancelTax(Player &Player);
     void chooseAction() override;
     
 public:
     Governor(Player* p, Game* g); 
-    void Action() override; // Override the pure virtual function from Character
+    void Action() override;
     std::string getRoleName() const override { return "Governor"; }
 };

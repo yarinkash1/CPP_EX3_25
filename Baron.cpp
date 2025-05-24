@@ -7,6 +7,16 @@
 
 Baron::Baron(Player* p, Game* g) : Character(p, g){}
 
+/**
+ * @brief Invests 3 coins to receive 6 coins.
+ *
+ * This action allows the Baron to invest 3 coins and receive 6 coins in return.
+ * It checks if the player has enough coins before proceeding with the investment.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Baron::invest()
 {
     if(owner->getCoins() >= 3)
@@ -27,11 +37,28 @@ void Baron::invest()
     }
 }
 
+/**
+ * @brief This funtion delegates the pure virtual function Action() of the Character class to the invest() method of the Baron.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Baron::Action()
 {
     invest();
 }
 
+/**
+ * @brief Prompts the player to choose an action and executes the selected action.
+ *
+ * This function displays a list of available actions and allows the player to select one.
+ * It handles invalid input and retries if necessary.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Baron::chooseAction()
 {
     int actionType;

@@ -7,6 +7,16 @@
 
 Merchant::Merchant(Player* p, Game* g) : Character(p, g){}
 
+/**
+ * @brief Adds a coin to the Merchant's total if he has 3 or more coins.
+ *
+ * This action allows the Merchant to add a coin to his total, but only if he has 3 or more coins.
+ * It deducts 1 coin from the bank and adds it to the Merchant's total.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Merchant::addCoin()
 {
     if (owner->getCoins() >= 3)
@@ -18,12 +28,28 @@ void Merchant::addCoin()
     }
 }
 
-
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the addCoin() method of the Merchant.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Merchant::Action()
 {
         addCoin();
 }
 
+/**
+ * @brief Prompts the player to choose an action and executes the selected action.
+ *
+ * This function displays a list of available actions and allows the player to select one.
+ * It handles invalid input and retries if necessary.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void Merchant::chooseAction()
 {
     int actionType;

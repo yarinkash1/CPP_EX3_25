@@ -8,11 +8,11 @@ class Player; // Forward declaration of Player class
 class Merchant: public Character
 {
 private:
-    void addCoin(); // Adds a coin to the Merchant's total when he starts a turn with 3 coins.
+    void addCoin();
     void chooseAction() override;
     
 public:
     Merchant(Player* p, Game* g); 
-    void Action() override; // Override the pure virtual function from Character
+    void Action() override;
     std::string getRoleName() const override { return "Merchant"; }
 };

@@ -7,6 +7,16 @@
 
 General::General(Player* p, Game* g) : Character(p, g){}
 
+/**
+ * @brief Prevents a coup on the target player.
+ *
+ * This action costs 5 coins
+ * It sets the target player as coup prevented.
+ *
+ * @param target The target player to prevent the coup on.
+ * @return void
+ * @throws None
+ */
 void General::preventCoup(Player &target)
 {
     owner->removeNumCoins(5); // Remove 5 coins from the owner
@@ -15,11 +25,28 @@ void General::preventCoup(Player &target)
     cout << owner->getName() << " has prevented a coup on " << target.getName() << std::endl;
 }
 
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the preventCoup() method of the General.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void General::Action()
 {
     preventCoup(*owner);
 }
 
+/**
+ * @brief Prompts the player to choose an action and executes the selected action.
+ *
+ * This function displays a list of available actions and allows the player to select one.
+ * It handles invalid input and retries if necessary.
+ *
+ * @param None
+ * @return void
+ * @throws None
+ */
 void General::chooseAction()
 {
     int actionType;
