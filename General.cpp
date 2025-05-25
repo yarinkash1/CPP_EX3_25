@@ -23,6 +23,8 @@ void General::preventCoup(Player &target)
     game->changeCoinsInBank(+5); // Add 5 coins to the bank
     target.setIsCoupPrevented(true); // Set the target player as coup prevented
     cout << owner->getName() << " has prevented a coup on " << target.getName() << std::endl;
+    game->nextTurn(); // Move to the next player's turn
+    return;
 }
 
 /**
@@ -95,5 +97,7 @@ void General::chooseAction()
             break;
         default:
             cout << "Invalid action type. Please try again." << endl;
+            chooseAction(); // Retry if invalid
+            break;
     }
 }

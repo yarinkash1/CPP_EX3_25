@@ -25,6 +25,8 @@ void Merchant::addCoin()
         game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
         owner->addNumCoins(1);
         cout << owner->getName() << " has added 1 coin to his total." << endl;
+        game->nextTurn(); // Move to the next player's turn
+        return;
     }
 }
 
@@ -100,5 +102,7 @@ void Merchant::chooseAction()
         break;
     default:
         cout << "Invalid action type. Please try again." << endl;
+        chooseAction(); // Retry if invalid
+        break;
     }
 }

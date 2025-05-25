@@ -107,5 +107,7 @@ void Spy::chooseAction()
         break;
     default:
         cout << "Invalid action type. Please try again." << endl;
+        chooseAction(); // Retry if invalid
+        break;
     }
 }

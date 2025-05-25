@@ -30,11 +30,15 @@ void Baron::invest()
         owner->setCoins(owner->getCoins() + 6);
 
         cout << owner->getName() << " has invested 3 coins and received 6 coins." << endl;
+        game->nextTurn(); // Move to the next player's turn
+        return;
     }
     else
     {
         cout << owner->getName() << " does not have enough coins to invest." << endl;
+        chooseAction(); // Prompt the player to choose another action
     }
+
 }
 
 /**
@@ -107,6 +111,8 @@ void Baron::chooseAction()
             break;
         default:
             cout << "Invalid action type. Please try again." << endl;
+            chooseAction(); // Retry if invalid
+            break;  
     }
 
 }

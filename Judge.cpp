@@ -20,6 +20,8 @@ void Judge::cancelBribe(Player &target)
 {
     target.setIsBribePrevented(true); // Set the target player as bribe prevented
     cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
+    game->nextTurn(); // Move to the next player's turn
+    return;
 }
 
 /**
@@ -94,5 +96,7 @@ void Judge::chooseAction()
         break;
     default:
         cout << "Invalid action type. Please try again." << endl;
+        chooseAction(); // Retry if invalid
+        break;
     }
 }

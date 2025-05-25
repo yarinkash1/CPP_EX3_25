@@ -21,6 +21,8 @@ void Governor::tax()
     game->changeCoinsInBank(-3); // Deduct 3 coins from the bank
     owner->addNumCoins(3);       // Add 3 coins to the player's total
     cout << owner->getName() << " has taken 3 coins from the bank." << endl;
+    game->nextTurn(); // Move to the next player's turn
+    return;
 }
 
 /**
@@ -36,6 +38,8 @@ void Governor::cancelTax(Player &target)
 {
     target.setIsTaxPrevented(true); // Set the target player as tax prevented
     cout << owner->getName() << " has canceled the tax on " << target.getName() << endl;
+    game->nextTurn(); // Move to the next player's turn
+    return;
 }
 
 /**
@@ -109,5 +113,7 @@ void Governor::chooseAction()
         break;
     default:
         cout << "Invalid action type. Please try again." << endl;
+        chooseAction(); // Retry if invalid
+        break;
     }
 }
