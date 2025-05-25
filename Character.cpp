@@ -122,7 +122,7 @@ void Character::bribe()
  */
 void Character::arrest()
 {
-    if (owner->getIsArrestPrevented() == true)
+    if (owner->getIsArrestPrevented() == true || owner->getIsPeekedAndArrestPrevented() == true)
     {
         cout << "You are blocked and cannot perform the arrest action until your next turn." << endl;
         chooseAction(); // Prompt the player to choose another action

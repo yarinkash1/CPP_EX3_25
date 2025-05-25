@@ -62,12 +62,14 @@ public:
     bool getIsActive() const { return is_active; }
     int getWinCounter() const { return win_counter; }
     int getCoins() const { return coins; }
+
     bool getIsSanctioned() const { return isSanctioned; }
-    bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; }
-    bool getIsCoupPrevented() const { return isCoupPrevented; }
-    bool getIsTaxPrevented() const { return isTaxPrevented; }
-    bool getIsBribePrevented() const { return isBribePrevented; }
+    bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; } //
+    bool getIsCoupPrevented() const { return isCoupPrevented; } //
+    bool getIsTaxPrevented() const { return isTaxPrevented; } //
+    bool getIsBribePrevented() const { return isBribePrevented; } //
     bool getIsArrestPrevented() const { return isArrestPrevented; }
+
     int getId() const { return id; }
     Character *getRole() const { return role; }
     bool getIsTurn() const { return is_turn; }

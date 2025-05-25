@@ -213,6 +213,40 @@ int Game::getCoinsInBank()
     return coinsInBank;
 }
 
+void Game::resetPlayerStatus(Player *currentPlayer)
+{
+    // Reset the Spy's peeked status if the current player is a Spy
+    Spy *spyRole = dynamic_cast<Spy *>(currentPlayer->getRole());
+    if (spyRole != nullptr)
+    {
+        spyRole->setAlreadyPeeked(false); // Reset the Spy's peeked status
+    }
+    if(currentPlayer->getIsTaxPrevented() == true)
+    {
+        currentPlayer->setIsTaxPrevented(false); // Reset the tax prevented status after the player finished his turn
+    }
+    if(currentPlayer->getIsBribePrevented() == true)
+    {
+        currentPlayer->setIsBribePrevented(false); // Reset the bribe prevented status after the player finished his turn
+    }
+    if(currentPlayer->getIsCoupPrevented() == true)
+    {
+        currentPlayer->setIsCoupPrevented(false); // Reset the coup prevented status after the player finished his turn
+    }
+    if(currentPlayer->getIsPeekedAndArrestPrevented() == true)
+    {
+        currentPlayer->setIsPeekedAndArrestPrevented(false); // Reset the peeked and arrest prevented status after the player finished his turn
+    }
+    if(currentPlayer->getIsSanctioned() == true)
+    {
+        currentPlayer->setIsSanctioned(false); // Reset the sanctioned status after the player finished his turn
+    }
+    if(currentPlayer->getIsArrestPrevented() == true)
+    {
+        currentPlayer->setIsArrestPrevented(false); // Reset the arrest prevented status after the player finished his turn
+    }
+}
+
 /**
  * @brief Move to the next player's turn.
  * This function sets the current player to not have a turn anymore, finds the next active player,
@@ -224,8 +258,10 @@ int Game::getCoinsInBank()
  */
 void Game::nextTurn()
 {
-
     Player *currentPlayer = current_player();
+
+    resetPlayerStatus(currentPlayer); // Reset the current player's status at the end of their turn
+
     currentPlayer->setIsTurn(false); // Set the current player to not have turn anymore
     int num_of_active_players = active_players().size();
     // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):

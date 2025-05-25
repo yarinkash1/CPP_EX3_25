@@ -77,5 +77,7 @@ public:
     void changeCoinsInBank(int amount);
 
     void nextTurn(); // Function to move to the next player's turn
+
+    void resetPlayerStatus(Player* currentPlayer); // Function to reset player status at the end of their turn
     
 };
