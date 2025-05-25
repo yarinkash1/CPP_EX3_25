@@ -4,14 +4,18 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++2a
 TARGET = main_exe
 TEST_TARGET = test_exe
+GUI_TARGET = sfml-app
 
-all: $(TARGET) $(TEST_TARGET)
+all: $(TARGET) $(TEST_TARGET) $(GUI_TARGET)
 
 $(TARGET): main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
-	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
+	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o -lsfml-graphics -lsfml-window -lsfml-system
 
 $(TEST_TARGET): coup_tests.o
 	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) coup_tests.o
+
+$(GUI_TARGET): main.o
+	$(CXX) $(CXXFLAGS) -o $(GUI_TARGET) main.o -lsfml-graphics -lsfml-window -lsfml-system
 
 main.o: main.cpp Game.hpp Player.hpp Character.hpp Baron.hpp
 	$(CXX) $(CXXFLAGS) -c main.cpp
