@@ -240,7 +240,10 @@ void Character::coup()
             owner->removeNumCoins(5);    // Remove 5 coins from the player's coins
             game->changeCoinsInBank(+5); // Deduct 5 coins from the bank
 
-            cout << "-- Merchant prevented the coup action on himself --" << endl;
+            cout << "-- Merchant prevented the coup action --" << endl;
+            game->nextTurn(); // Move to the next player's turn
+            return;
+
         }
         else
         {

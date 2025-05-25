@@ -4,10 +4,7 @@
 
 int Game::initialCoins = 50; // Default initial coins (can be changed by configure method)
 
-/////////////////////////////////////////////
-
 Game* Game::instance = nullptr;  // Singleton instance pointer
-////////////////////////////////////////////////
 
 
 /**
@@ -37,8 +34,6 @@ Character *createCharacterByRole(const string &role, Player *player, Game *game)
     else
         throw invalid_argument("Invalid role: " + role);
 }
-
-
 
 
 /**
@@ -76,39 +71,79 @@ Game::~Game()
     players.clear();
 }
 
+
+/**
+ * @brief Adds a player to the game with a specified name.
+ * This function creates a Player object with a random role and adds it to the game's player list.
+ * Multiple players can have the same role.
+ *
+ * @param playerName The name of the player to be added.
+ * @return void
+ * @throws none
+ */
+void Game::addPlayerWithName(const string& playerName)
+{
+    Player *player = new Player(playerName, nullptr);
+
+    // Available roles
+    vector<string> available_roles = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
+    
+    // Randomly select a role (duplicates allowed)
+    random_device rd;
+    mt19937 g(rd());
+    uniform_int_distribution<int> dist(0, available_roles.size() - 1);
+    string role = available_roles[dist(g)];
+    
+    Character *character = createCharacterByRole(role, player, this);
+    player->setRole(character);
+    players.push_back(player);
+    numPlayers++; // Update the player count
+    printf("Player %s was added to the game with a role of %s.\n", playerName.c_str(), role.c_str());
+}
+
 /**
  * @brief Constructor for the Game class.
- * Initializes the game with a specified number of players(chosen by the user) and sets up the game providing each player with a random role.
+ * Initializes the game with a specified number of players(chosen by the user in the GUI)
+ * and sets up the game providing each player with a random role.
  *
- * @param none
+ * @param numPlayers The number of players in the game.
+ * @param playerNames A vector of strings containing the names of the players.
  * @return void
  * @throws invalid_argument if the number of players is not between 2 and 6.
  */
-Game::Game()
+Game::Game(int numPlayers, const vector<string>& playerNames)
 {
     cout << "New game started!" << endl;
-    printf("Enter number of players\n");
-    cin >> numPlayers;
+
     if (numPlayers < 2 || numPlayers > 6)
     {
         throw invalid_argument("Number of players must be between 2 and 6.");
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
 
-    this->numPlayers = numPlayers;
+    if (playerNames.size() != static_cast<size_t>(numPlayers))
+    {
+        throw invalid_argument("Number of player names must match number of players.");
+    }
+
+    this->numPlayers = 0; // Will be incremented by addPlayerWithName
     this->coinsInBank = initialCoins;
     this->currentPlayerIndex = 0;
     this->isGameOver = false;
 
     cout << "Game initialized with " << numPlayers << " players and " << coinsInBank << " coins in the bank." << endl;
     cout << "Adding players..." << endl;
-    for (int i = 0; i < numPlayers; i++)
+    
+    // Use the provided player names instead of asking for input
+    for (const string& playerName : playerNames)
     {
-        Game::addPlayer();
+        addPlayerWithName(playerName); // Use the names from the popup
     }
 
     // Set the first player as has turn:
-    players[0]->setIsTurn(true);
+    if (!players.empty()) 
+    {
+        players[0]->setIsTurn(true);
+    }
 }
 
 /**
@@ -146,6 +181,7 @@ Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const st
     players[0]->setIsTurn(true);
 }
 
+
 /**
  * @brief Add a player to the game.
  * This function prompts the user for a player's name, creates a Player object with a random role(by using the createCharacterByRole function),
@@ -155,27 +191,27 @@ Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const st
  * @return void
  * @throws none
  */
-vector<string> roles_vector = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
-int iteration = 0;
 void Game::addPlayer()
 {
-    printf("Enter player %d name\n", iteration + 1);
+    printf("Enter player %d name\n", numPlayers + 1);
     string name_of_player;
-    getline(cin, name_of_player); // Reads full name with spaces
+    getline(cin, name_of_player);
 
-    // Create player without assigning ID manually; let the constructor handle it
     Player *player = new Player(name_of_player, nullptr);
 
-    // do random from the six roles to assign to the player.
+    // Available roles
+    vector<string> available_roles = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
+    
+    // Randomly select a role (duplicates allowed)
     random_device rd;
     mt19937 g(rd());
-    shuffle(roles_vector.begin(), roles_vector.end(), g);
-    // Assign the first role to the player
-    string role = roles_vector[iteration];
-    iteration++;
+    uniform_int_distribution<int> dist(0, available_roles.size() - 1);
+    string role = available_roles[dist(g)];
+    
     Character *character = createCharacterByRole(role, player, this);
     player->setRole(character);
     players.push_back(player);
+    numPlayers++; // Update the player count
     printf("Player %s was added to the game with a role of %s.\n", name_of_player.c_str(), role.c_str());
 }
 
@@ -406,22 +442,6 @@ void Game::configure(int coins)
 }
 
 /**
- * @brief Get the singleton instance of the Game class.
- * This function returns a reference to the singleton instance of the Game class.
- * It uses a static local variable to ensure that only one instance is created.
- *
- * @param none
- * @return Game& Reference to the singleton Game instance.
- * @throws none
- */
-Game &Game::getInstance()
-{
-    static Game instance;
-    return instance;
-}
-
-
-/**
  * @brief Get the singleton instance of the Game class with specific player names and roles (for debugging purposes).
  * This function creates a new Game instance with the provided player names and roles if it doesn't already exist.
  *
@@ -438,4 +458,21 @@ Game* Game::getInstance(const vector<string>& playerNames,int numPlayers,const v
         instance = new Game(playerNames, numPlayers, roles);
     }
     return instance;
+}
+
+/**
+ * @brief Get the singleton instance of the Game class with player setup.
+ * This function creates a new Game instance with the provided player setup if it doesn't already exist.
+ *
+ * @param numPlayers The number of players in the game.
+ * @param playerNames A vector of strings containing the names of the players.
+ * @return Game& Reference to the singleton Game instance.
+ * @throws invalid_argument if parameters are invalid.
+ */
+Game& Game::getInstance(int numPlayers, const vector<string>& playerNames)
+{
+    if (!instance) {
+        instance = new Game(numPlayers, playerNames);
+    }
+    return *instance;
 }

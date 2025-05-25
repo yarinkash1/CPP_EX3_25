@@ -12,12 +12,13 @@ using namespace std;
 #include "General.hpp"
 
 #include <vector>
-
 #include <algorithm> // For shuffle
 #include <random>    // For mt19937 and random_device
 #include <chrono>    // For time functions
 #include <thread>    // For sleep_for
 #include <iomanip>   // For setw, setfill
+
+
 
 class Game
 {
@@ -30,8 +31,8 @@ private:
     string winner_name = ""; // Name of the winner
 
     // Singleton-related
-    Game(); // Private constructor for random roles
-
+    Game(int numPlayers, const vector<string>& playerNames); // Private constructor for random roles
+    
 
     ////////////////////////////////////////////////////////////////////////////////
     static Game* instance;
@@ -40,14 +41,11 @@ private:
 
 
     // Private constructor for debugging purposes
-    Game(const std::vector<std::string>& playerNames,
-         int numPlayers,
-         const std::vector<std::string>& roles);
+    Game(const std::vector<std::string>& playerNames,int numPlayers,const std::vector<std::string>& roles);
 
     static int initialCoins; // Static variable for configuring initial coins
     Game(const Game&) = delete; // Prevent copying
     Game& operator=(const Game&) = delete; // Prevent assignment
-
 
 public:
     ~Game(); // Destructor to clean up the game
@@ -57,11 +55,11 @@ public:
     // Singleton access method
     static Game& getInstance();
 
+    // Regular game creation
+    static Game& getInstance(int numPlayers, const vector<string>& playerNames);
         
     // Overloaded getInstance for creating a game with specific players and roles(debugging purposes)
-    static Game* getInstance(const std::vector<std::string>& playerNames,
-                             int numPlayers,
-                             const std::vector<std::string>& roles);
+    static Game* getInstance(const std::vector<std::string>& playerNames,int numPlayers,const std::vector<std::string>& roles);
 
     void endGame(); // Function to end the game
     void resetGame(); // Function to reset the game
@@ -79,5 +77,5 @@ public:
     void nextTurn(); // Function to move to the next player's turn
 
     void resetPlayerStatus(Player* currentPlayer); // Function to reset player status at the end of their turn
-    
+    void addPlayerWithName(const string& playerName);
 };
