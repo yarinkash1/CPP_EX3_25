@@ -109,8 +109,6 @@ make all
 ./main_exe
 ```
 
-****************************** Will be added here ******************************
-
 ## Author
 
 **Yarin Keshet**  
