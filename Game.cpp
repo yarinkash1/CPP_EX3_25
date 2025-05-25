@@ -6,7 +6,7 @@ int Game::initialCoins = 50; // Default initial coins (can be changed by configu
 
 /////////////////////////////////////////////
 
-Game* Game::instance = nullptr; 
+Game* Game::instance = nullptr;  // Singleton instance pointer
 ////////////////////////////////////////////////
 
 
@@ -111,10 +111,21 @@ Game::Game()
     players[0]->setIsTurn(true);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const std::vector<std::string>& roles) {
-    if (playerNames.size() != static_cast<size_t>(numPlayers) || roles.size() != static_cast<size_t>(numPlayers)) {
+/**
+ * @brief Constructor for the Game class with custom player names and roles(for debugging purposes).
+ * Initializes the game with a specified number of players and assigns roles to each player based on the provided vectors.
+ * 
+ * @param playerNames A vector of strings containing the names of the players.
+ * @param numPlayers The number of players in the game.
+ * @param roles A vector of strings containing the roles assigned to each player.
+ * @return void
+ * @throws invalid_argument if the number of player names or roles does not match numPlayers.
+ *
+ */
+Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const std::vector<std::string>& roles) 
+{
+    if (playerNames.size() != static_cast<size_t>(numPlayers) || roles.size() != static_cast<size_t>(numPlayers)) 
+    {
         throw std::invalid_argument("Number of players and roles must match numPlayers.");
     }
 
@@ -134,19 +145,6 @@ Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const st
     // Set the first player as has turn:
     players[0]->setIsTurn(true);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @brief Add a player to the game.
@@ -387,17 +385,21 @@ Game &Game::getInstance()
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// Singleton getter for custom setup
-Game* Game::getInstance(const std::vector<std::string>& playerNames,
-                        int numPlayers,
-                        const std::vector<std::string>& roles) {
-    if (!instance) {
+/**
+ * @brief Get the singleton instance of the Game class with specific player names and roles (for debugging purposes).
+ * This function creates a new Game instance with the provided player names and roles if it doesn't already exist.
+ *
+ * @param playerNames A vector of strings containing the names of the players.
+ * @param numPlayers The number of players in the game.
+ * @param roles A vector of strings containing the roles assigned to each player.
+ * @return Game* Pointer to the singleton Game instance.
+ * @throws none
+ */
+Game* Game::getInstance(const vector<string>& playerNames,int numPlayers,const vector<string>& roles) 
+{
+    if (!instance) 
+    {
         instance = new Game(playerNames, numPlayers, roles);
     }
     return instance;
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
