@@ -46,10 +46,5 @@ void Player::printPlayerInfo()
     cout << "----------------------------------------------------------------------------------------------------------------" << endl;
 }
 
-
-
-// next_id is a static data member of the Player class,
-// and static members need to be defined and initialized outside the class definition
-// (usually in the corresponding .cpp file)
-
+// Static member initialization
 int Player::next_id = 1;

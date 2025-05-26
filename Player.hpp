@@ -32,7 +32,7 @@ protected:
 public:
     // Inline constructor with initializer list
     Player(string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
-        bool isSanctioned = false, bool isPeekedAndArrestPrevented = false,
+           bool isSanctioned = false, bool isPeekedAndArrestPrevented = false,
            bool isCoupPrevented = false, bool isTaxPrevented = false, bool isBribePrevented = false, bool isArrestPrevented = false)
         : id(next_id++), // Increment ID for each new player
           name(name),
@@ -57,6 +57,10 @@ public:
 
     void printPlayerInfo();
 
+    // Forward declaration to avoid dependency on sf::Font in header
+    class Font; // Forward declare Font if possible, or include <SFML/Graphics/Font.hpp> if needed
+    friend void showPlayerStatsPopup(Player *player, Font &font);
+
     // Getters
     string getName() const { return name; }
     bool getIsActive() const { return is_active; }
@@ -65,9 +69,9 @@ public:
 
     bool getIsSanctioned() const { return isSanctioned; }
     bool getIsPeekedAndArrestPrevented() const { return isPeekedAndArrestPrevented; } //
-    bool getIsCoupPrevented() const { return isCoupPrevented; } //
-    bool getIsTaxPrevented() const { return isTaxPrevented; } //
-    bool getIsBribePrevented() const { return isBribePrevented; } //
+    bool getIsCoupPrevented() const { return isCoupPrevented; }                       //
+    bool getIsTaxPrevented() const { return isTaxPrevented; }                         //
+    bool getIsBribePrevented() const { return isBribePrevented; }                     //
     bool getIsArrestPrevented() const { return isArrestPrevented; }
 
     int getId() const { return id; }

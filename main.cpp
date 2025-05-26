@@ -13,6 +13,7 @@
 #include "Spy.hpp"           // Include the header file for the Spy class
 #include <vector>
 #include <sstream>
+#include <utility> 
 
 using namespace std;
 
@@ -180,6 +181,254 @@ GameSetupData showGameSetupPopup(sf::Font &font)
     }
 
     return data;
+}
+
+// Function to show player stats in a popup window
+void showPlayerStatsPopup(Player* player, sf::Font& font)
+{
+    sf::RenderWindow popup(sf::VideoMode(500, 600), "Player Stats - " + player->getName());
+    
+    // Title
+    sf::Text title("Player Statistics", font, 24);
+    title.setFillColor(sf::Color::White);
+    title.setPosition(150, 20);
+    
+    // Create table data - using printPlayerInfo data
+    vector<pair<string, string>> stats = {
+        {"Player ID:", to_string(player->getId())},
+        {"Name:", player->getName()},
+        {"Coins:", to_string(player->getCoins())},
+        {"Is Active:", player->getIsActive() ? "Yes" : "No"},
+        {"Win Counter:", to_string(player->getWinCounter())},
+        {"Role:", player->getRole() ? player->getRole()->getRoleName() : "None"},
+        {"Is Turn:", player->getIsTurn() ? "Yes" : "No"}
+    };
+    
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || 
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+            }
+        }
+        
+        popup.clear(sf::Color::Black);
+        
+        // Draw title
+        popup.draw(title);
+        
+        // Draw table rows
+        for (size_t i = 0; i < stats.size(); i++)
+        {
+            float rowY = 80 + i * 40;
+            
+            // Draw attribute name
+            sf::Text attrText(stats[i].first, font, 16);
+            attrText.setFillColor(sf::Color::White);
+            attrText.setPosition(30, rowY);
+            popup.draw(attrText);
+            
+            // Draw attribute value
+            sf::Text valueText(stats[i].second, font, 16);
+            valueText.setFillColor(sf::Color::Cyan);
+            valueText.setPosition(250, rowY);
+            popup.draw(valueText);
+        }
+        
+        // Close instruction
+        sf::Text closeText("Press ESC to close", font, 14);
+        closeText.setFillColor(sf::Color::Yellow);
+        closeText.setPosition(30, 500);
+        popup.draw(closeText);
+        
+        popup.display();
+    }
+}
+
+// Function to show player action selection popup
+void showPlayerActionPopup(Player* player, sf::Font& font)
+{
+    sf::RenderWindow popup(sf::VideoMode(400, 500), "Choose Action - " + player->getName());
+    
+    // Title
+    sf::Text title(player->getName() + " (" + player->getRole()->getRoleName() + ")", font, 20);
+    title.setFillColor(sf::Color::White);
+    title.setPosition(20, 20);
+    
+    // Get role-specific actions
+    vector<string> actions;
+    string roleSpecificAction = "";
+    
+    string roleName = player->getRole()->getRoleName();
+    if (roleName == "Baron") {
+        roleSpecificAction = "7. Invest";
+    } else if (roleName == "General") {
+        roleSpecificAction = "7. Prevent Coup";
+    } else if (roleName == "Governor") {
+        roleSpecificAction = "7. Cancel Tax";
+    } else if (roleName == "Judge") {
+        roleSpecificAction = "7. Cancel Bribe";
+    } else if (roleName == "Merchant") {
+        roleSpecificAction = "7. Add Coin";
+    } else if (roleName == "Spy") {
+        roleSpecificAction = "7. Peek Cards and Prevent Arrest";
+    }
+    
+    // Common actions for all roles
+    actions = {
+        "1. Gather",
+        "2. Tax",
+        "3. Bribe", 
+        "4. Arrest",
+        "5. Sanction",
+        "6. Coup",
+        roleSpecificAction,
+        "8. Skip Turn"
+    };
+    
+    // Special case for Governor - they have "Tax(Governor)" instead of regular tax
+    if (roleName == "Governor") {
+        actions[1] = "2. Tax(Governor)";
+    }
+    
+    // Create action buttons
+    vector<sf::RectangleShape> actionButtons;
+    vector<sf::Text> actionTexts;
+    
+    float buttonWidth = 350;
+    float buttonHeight = 35;
+    float startY = 70;
+    
+    for (size_t i = 0; i < actions.size(); i++) {
+        // Button background
+        sf::RectangleShape button;
+        button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+        button.setPosition(25, startY + i * 45);
+        button.setFillColor(sf::Color(60, 60, 60));
+        button.setOutlineThickness(2);
+        button.setOutlineColor(sf::Color::White);
+        actionButtons.push_back(button);
+        
+        // Button text
+        sf::Text buttonText(actions[i], font, 16);
+        buttonText.setFillColor(sf::Color::White);
+        buttonText.setPosition(35, startY + i * 45 + 8);
+        actionTexts.push_back(buttonText);
+    }
+    
+    // Instructions
+    sf::Text instruction("Click an action or press ESC to cancel", font, 14);
+    instruction.setFillColor(sf::Color::Yellow);
+    instruction.setPosition(20, 450);
+    
+    int selectedAction = -1;
+    
+    while (popup.isOpen() && selectedAction == -1)
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || 
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+                return; // Cancel action selection
+            }
+            
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+                
+                // Check which button was clicked
+                for (size_t i = 0; i < actionButtons.size(); i++)
+                {
+                    if (actionButtons[i].getGlobalBounds().contains(mousePos))
+                    {
+                        selectedAction = i + 1; // Actions are numbered 1-8
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Handle hover effects
+        sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+        for (size_t i = 0; i < actionButtons.size(); i++)
+        {
+            if (actionButtons[i].getGlobalBounds().contains(mousePos))
+            {
+                actionButtons[i].setFillColor(sf::Color::Yellow);
+                actionTexts[i].setFillColor(sf::Color::Black);
+            }
+            else
+            {
+                actionButtons[i].setFillColor(sf::Color(60, 60, 60));
+                actionTexts[i].setFillColor(sf::Color::White);
+            }
+        }
+        
+        popup.clear(sf::Color::Black);
+        
+        // Draw all elements
+        popup.draw(title);
+        popup.draw(instruction);
+        
+        for (size_t i = 0; i < actionButtons.size(); i++)
+        {
+            popup.draw(actionButtons[i]);
+            popup.draw(actionTexts[i]);
+        }
+        
+        popup.display();
+    }
+    
+    // Execute the selected action
+    if (selectedAction != -1)
+    {
+        popup.close();
+        
+        // Call the appropriate action based on selection
+        Character* character = player->getRole();
+        
+        switch (selectedAction)
+        {
+            case 1:
+                character->gather();
+                break;
+            case 2:
+                character->tax();
+                break;
+            case 3:
+                character->bribe();
+                break;
+            case 4:
+                character->arrest();
+                break;
+            case 5:
+                character->sanction();
+                break;
+            case 6:
+                character->coup();
+                break;
+            case 7:
+                character->Action(); // Call role-specific action
+                break;
+            case 8:
+                // Skip turn
+                cout << player->getName() << " skipped their turn." << endl;
+                // You may want to handle turn progression in your main game loop after this popup closes.
+                break;
+            default:
+                cout << "Invalid action selected." << endl;
+                break;
+        }
+        
+        cout << player->getName() << " selected action " << selectedAction << ": " << actions[selectedAction-1] << endl;
+    }
 }
 
 int main()
@@ -364,6 +613,7 @@ int main()
                         if (playTurnBounds.contains(mousePos))
                         {
                             cout << "Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
+                            showPlayerActionPopup(activePlayers[i], font); // Add this line
                         }
                         
                         // Show Stats button bounds  
@@ -371,6 +621,7 @@ int main()
                         if (showStatsBounds.contains(mousePos))
                         {
                             cout << "Show Stats clicked for player: " << activePlayers[i]->getName() << endl;
+                            showPlayerStatsPopup(activePlayers[i], font); // Add this line
                         }
                     }
                 }
@@ -402,6 +653,7 @@ int main()
                             if (playTurnBounds.contains(mousePos))
                             {
                                 cout << "Dev Mode - Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
+                                showPlayerActionPopup(activePlayers[i], font); // Add this line
                             }
                             
                             // Show Stats button bounds
@@ -409,6 +661,7 @@ int main()
                             if (showStatsBounds.contains(mousePos))
                             {
                                 cout << "Dev Mode - Show Stats clicked for player: " << activePlayers[i]->getName() << endl;
+                                showPlayerStatsPopup(activePlayers[i], font); // Add this line
                             }
                         }
                     }
