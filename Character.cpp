@@ -84,25 +84,34 @@ void Character::tax()
  */
 void Character::bribe()
 {
-    if (owner->getIsBribePrevented() == true)
+    if (owner->getCoins() < 4)
     {
-        cout << "You are blocked and cannot perform the bribe action." << endl;
-        game->changeCoinsInBank(+4); // Add 4 coins to the bank the bank
-        owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
-        cout << "You lost the 4 coins you payed." << endl;
+        cout << "You don't have enough coins to perform the bribe action. choose another action" << endl;
+        chooseAction(); // Prompt the player to choose another action
         return;
     }
     else
     {
-        owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
-        game->changeCoinsInBank(+4); // Add 4 coins to the bank
-        cout << "-- Bribe action performed. --\n"
-             << endl;
-        cout << "-- Player " << owner->getName() << " has another turn --" << endl;
-        chooseAction(); // Prompt the player to choose another action
+        if (owner->getIsBribePrevented() == true)
+        {
+            cout << "You were bribe prevented and cannot perform the bribe action." << endl;
+            game->changeCoinsInBank(+4); // Add 4 coins to the bank the bank
+            owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
+            cout << "You lost the 4 coins you payed." << endl;
+            return;
+        }
+        else
+        {
+            owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
+            game->changeCoinsInBank(+4); // Add 4 coins to the bank
+            cout << "-- Bribe action performed. --\n"
+                 << endl;
+            cout << "-- Player " << owner->getName() << " has another turn --" << endl;
+            chooseAction(); // Prompt the player to choose another action
+        }
+        game->nextTurn(); // Move to the next player's turn once he finished bribing
+        return;
     }
-    game->nextTurn(); // Move to the next player's turn once he finished bribing
-    return;
 }
 
 /**
@@ -137,6 +146,12 @@ void Character::arrest()
         }
         if (targetPlayer->getRole()->getRoleName() == "Merchant")
         {
+            if (targetPlayer->getCoins() < 2)
+            {
+                cout << "You don't have enough coins to perform the arrest action on the current player. choose another action or another target" << endl;
+                chooseAction(); // Prompt the player to choose another action
+                return;
+            }
             targetPlayer->removeNumCoins(2); // Remove 2 coins from the target player
             game->changeCoinsInBank(+2);     // Add 2 coins to the bank
             cout << "-- Merchant arrested, he pays 2 coins to the bank instead of the player who targeted him --" << endl;
@@ -145,16 +160,23 @@ void Character::arrest()
         }
         else
         {
+            if (targetPlayer->getCoins() < 1)
+            {
+                cout << "You don't have enough coins to perform the arrest action on the current player. choose another action or another target" << endl;
+                chooseAction(); // Prompt the player to choose another action
+                return;
+            }
             targetPlayer->removeNumCoins(1); // Remove 1 coin from the target player
             game->changeCoinsInBank(1);      // Add 1 coin to the bank
             owner->addNumCoins(1);           // Add 1 coin to the player who performed the arrest action
-            cout << "-- Arrest action performed on player: --" << targetPlayer->getName() << endl;
-        }
 
-        if (targetPlayer->getRole()->getRoleName() == "General")
-        {
-            targetPlayer->addNumCoins(1); // Add 1 coin to the target player(gets his coin back)
-            cout << "-- General arrested, he gets his coin back --" << endl;
+            // If the target player is a General, he gets his coin back:
+            if (targetPlayer->getRole()->getRoleName() == "General")
+            {
+                targetPlayer->addNumCoins(1); // Add 1 coin to the target player(gets his coin back)
+                cout << "-- General arrested, he gets his coin back --" << endl;
+            }
+            cout << "-- Arrest action performed on player: --" << targetPlayer->getName() << endl;
         }
 
         game->nextTurn(); // Move to the next player's turn
@@ -177,33 +199,60 @@ void Character::arrest()
  */
 void Character::sanction()
 {
-    Player *targetPlayer = target_player(); // Get the target player
-    if (targetPlayer == nullptr)
+    if (owner->getCoins() < 3)
     {
-        std::cout << "Invalid target player." << std::endl;
+        cout << "You don't have enough coins to perform the sanction action. choose another action" << endl;
+        chooseAction(); // Prompt the player to choose another action
         return;
     }
-
-    owner->removeNumCoins(3);   // Remove 3 coins from the target player
-    game->changeCoinsInBank(3); // Add 3 coins to the bank
-    cout << "-- Sanction action performed on player: --" << targetPlayer->getName() << endl;
-
-    if (targetPlayer->getRole()->getRoleName() == "Baron")
+    else
     {
-        game->changeCoinsInBank(-1);  // Deduct 1 coin from the bank
-        targetPlayer->addNumCoins(1); // Add 1 coin to the target player as a compensation
-        cout << "-- Baron sanctioned, he gets 1 coin as a compensation --" << endl;
-    }
-    else if (targetPlayer->getRole()->getRoleName() == "Judge")
-    {
-        owner->removeNumCoins(1);   // Remove 1 coin from the player who performed the sanction action
-        game->changeCoinsInBank(1); // Add 1 coin to the bank
-        cout << "-- Judge sanctioned, you need to pay another coin to the bank --" << endl;
-    }
+        Player *targetPlayer = target_player(); // Get the target player
+        if (targetPlayer == nullptr)
+        {
+            std::cout << "Invalid target player." << std::endl;
+            return;
+        }
 
-    targetPlayer->setIsSanctioned(true); // Set the target player as sanctioned
-    game->nextTurn();                    // Move to the next player's turn
-    return;
+        if (targetPlayer->getRole()->getRoleName() == "Baron")
+        {
+            owner->removeNumCoins(3);   // Remove 3 coins from the target player
+            game->changeCoinsInBank(3); // Add 3 coins to the bank
+            cout << "-- Sanction action performed on player: --" << targetPlayer->getName() << endl;
+
+            game->changeCoinsInBank(-1);  // Deduct 1 coin from the bank
+            targetPlayer->addNumCoins(1); // Add 1 coin to the target player as a compensation
+            cout << "-- Baron sanctioned, he gets 1 coin as a compensation --" << endl;
+        }
+        else if (targetPlayer->getRole()->getRoleName() == "Judge")
+        {
+            if (owner->getCoins() < 4)
+            {
+                cout << "You don't have enough coins to perform the sanction action on the current player. choose another action or another target" << endl;
+                chooseAction(); // Prompt the player to choose another action
+                return;
+            }
+            else
+            {
+                owner->removeNumCoins(3);   // Remove 3 coins from the target player
+                game->changeCoinsInBank(3); // Add 3 coins to the bank
+                cout << "-- Sanction action performed on player: --" << targetPlayer->getName() << endl;
+                owner->removeNumCoins(1);   // Remove 1 coin from the player who performed the sanction action
+                game->changeCoinsInBank(1); // Add 1 coin to the bank
+                cout << "-- Judge sanctioned, you need to pay another coin to the bank --" << endl;
+            }
+        }
+        else
+        {
+            owner->removeNumCoins(3);   // Remove 3 coins from the target player
+            game->changeCoinsInBank(3); // Add 3 coins to the bank
+            cout << "-- Sanction action performed on player: --" << targetPlayer->getName() << endl;
+        }
+        // end turn:
+        targetPlayer->setIsSanctioned(true); // Set the target player as sanctioned
+        game->nextTurn();                    // Move to the next player's turn
+        return;
+    }
 }
 
 /**
@@ -222,62 +271,66 @@ void Character::sanction()
  */
 void Character::coup()
 {
-    if (owner->getIsCoupPrevented() == true)
+    if (owner->getCoins() < 7)
     {
-        cout << "You are blocked and cannot perform the coup action." << endl;
+        cout << "You don't have enough coins to perform the coup action. choose another action" << endl;
         chooseAction(); // Prompt the player to choose another action
+        return;
     }
     else
     {
-        Player *targetPlayer = target_player(); // Get the target player
-        if (targetPlayer == nullptr)
+        if (owner->getIsCoupPrevented() == true)
         {
-            cout << "-- Invalid target player. --" << endl;
+            cout << "You are blocked and cannot perform the coup action." << endl;
+            chooseAction(); // Prompt the player to choose another action
             return;
-        }
-        else if (targetPlayer->getRole()->getRoleName() == "Merchant")
-        {
-            owner->removeNumCoins(5);    // Remove 5 coins from the player's coins
-            game->changeCoinsInBank(+5); // Deduct 5 coins from the bank
-
-            cout << "-- Merchant prevented the coup action --" << endl;
-            game->nextTurn(); // Move to the next player's turn
-            return;
-
         }
         else
         {
-            // Check if the merchant wants to prevent the coup action on the player it was performed on
-             vector <Player*> active_players_vec = game->active_players();
-            for (size_t i = 0; i < active_players_vec.size(); i++)
+            Player *targetPlayer = target_player(); // Get the target player
+            if (targetPlayer == nullptr)
             {
-                if(active_players_vec[i]->getRole()->getRoleName() == "Merchant")
-                {
-                    cout << " Do you want to prevent the coup action on " << targetPlayer->getName() << " ? (y/n)" << endl;
-                    char choice;
-                    cin >> choice;
-                    if (choice == 'y' || choice == 'Y')
-                    {
-                        active_players_vec[i]->removeNumCoins(5);    // Remove 5 coins from the player's coins
-                        game->changeCoinsInBank(+5); // Deduct 5 coins from the bank
-                        cout << "-- Merchant prevented the coup action on " << targetPlayer->getName() << " --" << endl;
-                        game->nextTurn(); // Move to the next player's turn
-                        return;
-                    }
-                }
+                cout << "-- Invalid target player. --" << endl;
+                return;
             }
+            else
+            {
+                // Check if there is a merchant with enough coins who wants to prevent the coup action
+                vector<Player *> active_players_vec = game->active_players();
+                for (size_t i = 0; i < active_players_vec.size(); i++)
+                {
+                    if (active_players_vec[i]->getRole()->getRoleName() == "Merchant" && active_players_vec[i]->getId() != owner->getId() && active_players_vec[i]->getCoins() >= 5)
+                    {
+                        cout << "Player " << active_players_vec[i]->getName() << " is a Merchant and has enough coins to prevent the coup action." << endl;
+                        {
+                            cout << " Do you want to prevent the coup action on " << targetPlayer->getName() << " ? (y/n)" << endl;
+                            char choice;
+                            cin >> choice;
+                            if (choice == 'y' || choice == 'Y')
+                            {
 
-            targetPlayer->setIsActive(false); // Set the target player as inactive
-            game->removePlayer(targetPlayer); // Remove the target player from the game
+                                active_players_vec[i]->removeNumCoins(5); // Remove 5 coins from the player's coins
+                                game->changeCoinsInBank(+5);              // Deduct 5 coins from the bank
+                                cout << "-- Merchant prevented the coup action on " << targetPlayer->getName() << " --" << endl;
+                                game->nextTurn(); // Move to the next player's turn
+                                return;
+                            }
+                        }
+                    }
 
-            cout << "-- Coup action performed on player: --" << targetPlayer->getName() << endl;
+                    targetPlayer->setIsActive(false); // Set the target player as inactive
+                    game->removePlayer(targetPlayer); // Remove the target player from the game
+
+                    cout << "-- Coup action performed on player: --" << targetPlayer->getName() << endl;
+                }
+
+                owner->removeNumCoins(7);   // Remove 7 coins from the player's coins
+                game->changeCoinsInBank(7); // Add 7 coins to the bank
+
+                game->nextTurn(); // Move to the next player's turn
+                return;
+            }
         }
-
-        owner->removeNumCoins(7);   // Remove 7 coins from the player's coins
-        game->changeCoinsInBank(7); // Add 7 coins to the bank
-
-        game->nextTurn(); // Move to the next player's turn
-        return;
     }
 }
 
@@ -294,7 +347,7 @@ void Character::coup()
 Player *Character::target_player()
 {
     vector<Player *> active_players = game->active_players();
-    cout << "Choose a player to arrest from the list (1 - " << active_players.size() << endl;
+    cout << "Choose a player to arrest from the list (1 - " << active_players.size() << ")" << endl;
     for (size_t i = 0; i < active_players.size(); i++)
     {
         cout << i + 1 << ": " << active_players[i]->getName() << endl;

@@ -28,7 +28,8 @@ void Governor::tax()
 /**
  * @brief Cancels the tax action on a target player.
  *
- * This action sets the target player as tax prevented, preventing them from being taxed.
+ * This action is free (costs nothing).
+ * Sets the target player as tax prevented, preventing them from being taxed.
  *
  * @param target The target player to cancel the tax on.
  * @return void

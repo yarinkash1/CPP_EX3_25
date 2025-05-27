@@ -10,7 +10,8 @@ Judge::Judge(Player* p, Game* g) : Character(p, g){}
 /**
  * @brief Cancels the bribe action on a target player.
  *
- * This action sets the target player as bribe prevented, preventing them from performing the Bribe action.
+ * This action is free (costs nothing). 
+ * Sets the target player as bribe prevented, preventing them from performing the Bribe action.
  *
  * @param target The target player to cancel the bribe on.
  * @return void

@@ -10,7 +10,7 @@ Merchant::Merchant(Player* p, Game* g) : Character(p, g){}
 /**
  * @brief Adds a coin to the Merchant's total if he has 3 or more coins.
  *
- * This action allows the Merchant to add a coin to his total, but only if he has 3 or more coins.
+ * This action is free and it allows the Merchant to add a coin to his total, but only if he has 3 or more coins.
  * It deducts 1 coin from the bank and adds it to the Merchant's total.
  *
  * @param None

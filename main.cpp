@@ -13,7 +13,7 @@
 #include "Spy.hpp"           // Include the header file for the Spy class
 #include <vector>
 #include <sstream>
-#include <utility> 
+#include <utility>
 
 using namespace std;
 
@@ -184,15 +184,15 @@ GameSetupData showGameSetupPopup(sf::Font &font)
 }
 
 // Function to show player stats in a popup window
-void showPlayerStatsPopup(Player* player, sf::Font& font)
+void showPlayerStatsPopup(Player *player, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(500, 600), "Player Stats - " + player->getName());
-    
+
     // Title
     sf::Text title("Player Statistics", font, 24);
     title.setFillColor(sf::Color::White);
     title.setPosition(150, 20);
-    
+
     // Create table data - using printPlayerInfo data
     vector<pair<string, string>> stats = {
         {"Player ID:", to_string(player->getId())},
@@ -201,109 +201,120 @@ void showPlayerStatsPopup(Player* player, sf::Font& font)
         {"Is Active:", player->getIsActive() ? "Yes" : "No"},
         {"Win Counter:", to_string(player->getWinCounter())},
         {"Role:", player->getRole() ? player->getRole()->getRoleName() : "None"},
-        {"Is Turn:", player->getIsTurn() ? "Yes" : "No"}
-    };
-    
+        {"Is Turn:", player->getIsTurn() ? "Yes" : "No"}};
+
     while (popup.isOpen())
     {
         sf::Event event;
         while (popup.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed || 
+            if (event.type == sf::Event::Closed ||
                 (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
             {
                 popup.close();
             }
         }
-        
+
         popup.clear(sf::Color::Black);
-        
+
         // Draw title
         popup.draw(title);
-        
+
         // Draw table rows
         for (size_t i = 0; i < stats.size(); i++)
         {
             float rowY = 80 + i * 40;
-            
+
             // Draw attribute name
             sf::Text attrText(stats[i].first, font, 16);
             attrText.setFillColor(sf::Color::White);
             attrText.setPosition(30, rowY);
             popup.draw(attrText);
-            
+
             // Draw attribute value
             sf::Text valueText(stats[i].second, font, 16);
             valueText.setFillColor(sf::Color::Cyan);
             valueText.setPosition(250, rowY);
             popup.draw(valueText);
         }
-        
+
         // Close instruction
         sf::Text closeText("Press ESC to close", font, 14);
         closeText.setFillColor(sf::Color::Yellow);
         closeText.setPosition(30, 500);
         popup.draw(closeText);
-        
+
         popup.display();
     }
 }
 
 // Function to show player action selection popup
-void showPlayerActionPopup(Player* player, sf::Font& font)
+void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 500), "Choose Action - " + player->getName());
-    
+
     // Title
     sf::Text title(player->getName() + " (" + player->getRole()->getRoleName() + ")", font, 20);
     title.setFillColor(sf::Color::White);
     title.setPosition(20, 20);
-    
+
     // Get role-specific actions
     vector<string> actions;
     string roleSpecificAction = "";
-    
+
     string roleName = player->getRole()->getRoleName();
-    if (roleName == "Baron") {
-        roleSpecificAction = "7. Invest";
-    } else if (roleName == "General") {
-        roleSpecificAction = "7. Prevent Coup";
-    } else if (roleName == "Governor") {
-        roleSpecificAction = "7. Cancel Tax";
-    } else if (roleName == "Judge") {
-        roleSpecificAction = "7. Cancel Bribe";
-    } else if (roleName == "Merchant") {
-        roleSpecificAction = "7. Add Coin";
-    } else if (roleName == "Spy") {
-        roleSpecificAction = "7. Peek Cards and Prevent Arrest";
+    if (roleName == "Baron")
+    {
+        roleSpecificAction = "7. Invest (3 coins)";
     }
-    
+    else if (roleName == "General")
+    {
+        roleSpecificAction = "7. Prevent Coup (5 coins)";
+    }
+    else if (roleName == "Governor")
+    {
+        roleSpecificAction = "7. Cancel Tax (free)";
+    }
+    else if (roleName == "Judge")
+    {
+        roleSpecificAction = "7. Cancel Bribe (free)";
+    }
+    else if (roleName == "Merchant")
+    {
+        roleSpecificAction = "7. Add Coin (free)";
+    }
+    else if (roleName == "Spy")
+    {
+        roleSpecificAction = "7. Peek Cards and Prevent Arrest (free)";
+    }
+
     // Common actions for all roles
     actions = {
-        "1. Gather",
-        "2. Tax",
-        "3. Bribe", 
-        "4. Arrest",
-        "5. Sanction",
-        "6. Coup",
+        "1. Gather (free)",
+        "2. Tax (free)",
+        "3. Bribe (4 coins)",
+        "4. Arrest (free)",
+        "5. Sanction (3 coins)",
+        "6. Coup (7 coins)",
         roleSpecificAction,
-        "8. Skip Turn"
-    };
-    
+        "8. Skip Turn (free)"};
+
     // Special case for Governor - they have "Tax(Governor)" instead of regular tax
-    if (roleName == "Governor") {
+    if (roleName == "Governor")
+    {
         actions[1] = "2. Tax(Governor)";
     }
-    
+
     // Create action buttons
     vector<sf::RectangleShape> actionButtons;
     vector<sf::Text> actionTexts;
-    
+
     float buttonWidth = 350;
     float buttonHeight = 35;
     float startY = 70;
-    
-    for (size_t i = 0; i < actions.size(); i++) {
+
+    for (size_t i = 0; i < actions.size(); i++)
+    {
         // Button background
         sf::RectangleShape button;
         button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
@@ -312,37 +323,37 @@ void showPlayerActionPopup(Player* player, sf::Font& font)
         button.setOutlineThickness(2);
         button.setOutlineColor(sf::Color::White);
         actionButtons.push_back(button);
-        
+
         // Button text
         sf::Text buttonText(actions[i], font, 16);
         buttonText.setFillColor(sf::Color::White);
         buttonText.setPosition(35, startY + i * 45 + 8);
         actionTexts.push_back(buttonText);
     }
-    
+
     // Instructions
     sf::Text instruction("Click an action or press ESC to cancel", font, 14);
     instruction.setFillColor(sf::Color::Yellow);
     instruction.setPosition(20, 450);
-    
+
     int selectedAction = -1;
-    
+
     while (popup.isOpen() && selectedAction == -1)
     {
         sf::Event event;
         while (popup.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed || 
+            if (event.type == sf::Event::Closed ||
                 (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
             {
                 popup.close();
                 return; // Cancel action selection
             }
-            
+
             if (event.type == sf::Event::MouseButtonPressed)
             {
                 sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
-                
+
                 // Check which button was clicked
                 for (size_t i = 0; i < actionButtons.size(); i++)
                 {
@@ -354,7 +365,7 @@ void showPlayerActionPopup(Player* player, sf::Font& font)
                 }
             }
         }
-        
+
         // Handle hover effects
         sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
         for (size_t i = 0; i < actionButtons.size(); i++)
@@ -370,64 +381,117 @@ void showPlayerActionPopup(Player* player, sf::Font& font)
                 actionTexts[i].setFillColor(sf::Color::White);
             }
         }
-        
+
         popup.clear(sf::Color::Black);
-        
+
         // Draw all elements
         popup.draw(title);
         popup.draw(instruction);
-        
+
         for (size_t i = 0; i < actionButtons.size(); i++)
         {
             popup.draw(actionButtons[i]);
             popup.draw(actionTexts[i]);
         }
-        
+
         popup.display();
     }
-    
+
     // Execute the selected action
     if (selectedAction != -1)
     {
         popup.close();
-        
+
         // Call the appropriate action based on selection
-        Character* character = player->getRole();
-        
+        Character *character = player->getRole();
+
         switch (selectedAction)
         {
-            case 1:
-                character->gather();
-                break;
-            case 2:
-                character->tax();
-                break;
-            case 3:
-                character->bribe();
-                break;
-            case 4:
-                character->arrest();
-                break;
-            case 5:
-                character->sanction();
-                break;
-            case 6:
-                character->coup();
-                break;
-            case 7:
-                character->Action(); // Call role-specific action
-                break;
-            case 8:
-                // Skip turn
-                cout << player->getName() << " skipped their turn." << endl;
-                // You may want to handle turn progression in your main game loop after this popup closes.
-                break;
-            default:
-                cout << "Invalid action selected." << endl;
-                break;
+        case 1:
+            character->gather();
+            break;
+        case 2:
+            character->tax();
+            break;
+        case 3:
+            character->bribe();
+            break;
+        case 4:
+            character->arrest();
+            break;
+        case 5:
+            character->sanction();
+            break;
+        case 6:
+            character->coup();
+            break;
+        case 7:
+            character->Action(); // Call role-specific action
+            break;
+        case 8:
+        {
+            // Skip turn
+            gameInstance->nextTurn(); // Same logic as character classes
+            cout << player->getName() << " skipped their turn." << endl;
+            break;
         }
-        
-        cout << player->getName() << " selected action " << selectedAction << ": " << actions[selectedAction-1] << endl;
+        break;
+        default:
+            cout << "Invalid action selected." << endl;
+            break;
+        }
+
+        cout << player->getName() << " selected action " << selectedAction << ": " << actions[selectedAction - 1] << endl;
+    }
+}
+
+// Function to show "Not Your Turn" message popup
+void showNotYourTurnPopup(Player *player, sf::Font &font)
+{
+    sf::RenderWindow popup(sf::VideoMode(400, 200), "Turn Error");
+
+    // Title
+    sf::Text title("Not Your Turn!", font, 24);
+    title.setFillColor(sf::Color::Red);
+    title.setPosition(120, 30);
+
+    // Message
+    sf::Text message("It's not " + player->getName() + "'s turn yet.", font, 16);
+    message.setFillColor(sf::Color::White);
+    message.setPosition(50, 80);
+
+    // Current turn info
+    sf::Text currentTurnText("Please wait for your turn.", font, 14);
+    currentTurnText.setFillColor(sf::Color::Yellow);
+    currentTurnText.setPosition(50, 110);
+
+    // Close instruction
+    sf::Text closeText("Click anywhere in this window or press ESC to close", font, 12);
+    closeText.setFillColor(sf::Color::Cyan);
+    closeText.setPosition(50, 150);
+
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed ||
+                event.type == sf::Event::MouseButtonPressed ||
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+            }
+        }
+
+        popup.clear(sf::Color::Black);
+
+        // Draw all elements
+        popup.draw(title);
+        popup.draw(message);
+        popup.draw(currentTurnText);
+        popup.draw(closeText);
+
+        popup.display();
     }
 }
 
@@ -495,12 +559,8 @@ int main()
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
             {
                 currentState = MENU;
-                // Clean up game instance if it exists
-                if (gameInstance)
-                {
-                    delete gameInstance;
-                    gameInstance = nullptr;
-                }
+                // For singleton, just reset the pointer
+                gameInstance = nullptr; // Don't delete, just reset pointer
             }
 
             // Handle input based on current state
@@ -538,7 +598,7 @@ int main()
 
                                 int coins_in_bank = game.getCoinsInBank();
                                 cout << "Coins in bank: " << coins_in_bank << endl;
-                                
+
                                 // Switch to playing state
                                 currentState = PLAYING;
                             }
@@ -566,17 +626,32 @@ int main()
                             vector<string> player_names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
 
                             Game::configure(60);
-                            // Use debug constructor with roles parameter
-                            gameInstance = Game::getInstance(player_names, 6, all_characters); // Store in gameInstance!
+                            
+                            // Use the EXACT same pattern as PLAYING mode
+                            try {
+                                Game &game = Game::getInstance(player_names.size(), player_names); // Same signature as PLAYING
+                                gameInstance = &game; // Same assignment pattern as PLAYING
+                                
+                                // Manually set roles after creation (if needed)
+                                vector<Player *> activePlayers = gameInstance->active_players();
+                                for (size_t i = 0; i < activePlayers.size() && i < all_characters.size(); i++)
+                                {
+                                    // You might need to add a method to set roles or handle this differently
+                                    // depending on your Game class implementation
+                                }
+                                
+                                for (Player *player : activePlayers)
+                                {
+                                    player->printPlayerInfo();
+                                }
 
-                            vector<Player *> activePlayers = gameInstance->active_players();
-                            for (Player *player : activePlayers)
-                            {
-                                player->printPlayerInfo();
+                                // Switch to dev mode state
+                                currentState = DEV_MODE;
                             }
-
-                            // Switch to dev mode state
-                            currentState = DEV_MODE;
+                            catch (const exception &e)
+                            {
+                                cout << "Error creating dev mode game: " << e.what() << endl;
+                            }
                         }
                         else
                         {
@@ -594,34 +669,41 @@ int main()
                 if (event.type == sf::Event::MouseButtonPressed && gameInstance)
                 {
                     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                    vector<Player*> activePlayers = gameInstance->active_players();
+                    vector<Player *> activePlayers = gameInstance->active_players();
                     int numPlayers = activePlayers.size();
-                    
+
                     // Card dimensions and layout (same as rendering) - remove unused variables
                     float cardSpacingX = 250;
                     float cardSpacingY = 180;
                     float startX = 50;
                     float startY = 80;
-                    
+
                     for (int i = 0; i < numPlayers; i++)
                     {
                         float cardX = startX + (i % 3) * cardSpacingX;
                         float cardY = startY + (i / 3) * cardSpacingY;
-                        
+
                         // Play Turn button bounds
                         sf::FloatRect playTurnBounds(cardX + 20, cardY + 50, 180, 30);
                         if (playTurnBounds.contains(mousePos))
                         {
                             cout << "Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
-                            showPlayerActionPopup(activePlayers[i], font); // Add this line
+                            if (activePlayers[i]->getIsTurn() == true)
+                            {
+                                showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                            }
+                            else
+                            {
+                                showNotYourTurnPopup(activePlayers[i], font);
+                            }
                         }
-                        
-                        // Show Stats button bounds  
+
+                        // Show Stats button bounds
                         sf::FloatRect showStatsBounds(cardX + 20, cardY + 90, 180, 30);
                         if (showStatsBounds.contains(mousePos))
                         {
                             cout << "Show Stats clicked for player: " << activePlayers[i]->getName() << endl;
-                            showPlayerStatsPopup(activePlayers[i], font); // Add this line
+                            showPlayerStatsPopup(activePlayers[i], font);
                         }
                     }
                 }
@@ -632,14 +714,14 @@ int main()
                 if (event.type == sf::Event::MouseButtonPressed && gameInstance)
                 {
                     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                    vector<Player*> activePlayers = gameInstance->active_players();
-                    
+                    vector<Player *> activePlayers = gameInstance->active_players();
+
                     // Card dimensions and layout (same as rendering) - remove unused variables
                     float cardSpacingX = 250;
                     float cardSpacingY = 180;
                     float startX = 50;
                     float startY = 80;
-                    
+
                     for (int i = 0; i < 6; i++)
                     {
                         // Only handle clicks for active players
@@ -647,21 +729,28 @@ int main()
                         {
                             float cardX = startX + (i % 3) * cardSpacingX;
                             float cardY = startY + (i / 3) * cardSpacingY;
-                            
+
                             // Play Turn button bounds
                             sf::FloatRect playTurnBounds(cardX + 20, cardY + 50, 180, 30);
                             if (playTurnBounds.contains(mousePos))
                             {
                                 cout << "Dev Mode - Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
-                                showPlayerActionPopup(activePlayers[i], font); // Add this line
+                                if (activePlayers[i]->getIsTurn() == true)
+                                {
+                                    showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                }
+                                else
+                                {
+                                    showNotYourTurnPopup(activePlayers[i], font);
+                                }
                             }
-                            
+
                             // Show Stats button bounds
                             sf::FloatRect showStatsBounds(cardX + 20, cardY + 90, 180, 30);
                             if (showStatsBounds.contains(mousePos))
                             {
                                 cout << "Dev Mode - Show Stats clicked for player: " << activePlayers[i]->getName() << endl;
-                                showPlayerStatsPopup(activePlayers[i], font); // Add this line
+                                showPlayerStatsPopup(activePlayers[i], font);
                             }
                         }
                     }
@@ -716,9 +805,9 @@ int main()
             if (gameInstance)
             {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)); // For hover detection
-                vector<Player*> activePlayers = gameInstance->active_players();
+                vector<Player *> activePlayers = gameInstance->active_players();
                 int numPlayers = activePlayers.size();
-                
+
                 // Card dimensions and layout
                 float cardWidth = 220;
                 float cardHeight = 150;
@@ -726,14 +815,14 @@ int main()
                 float cardSpacingY = 180;
                 float startX = 50;
                 float startY = 80;
-                
+
                 // Draw cards only for actual players
                 for (int i = 0; i < numPlayers; i++)
                 {
                     // Calculate card position (3 cards per row)
                     float cardX = startX + (i % 3) * cardSpacingX;
                     float cardY = startY + (i / 3) * cardSpacingY;
-                    
+
                     // Create card rectangle
                     sf::RectangleShape cardRect;
                     cardRect.setSize(sf::Vector2f(cardWidth, cardHeight));
@@ -741,7 +830,7 @@ int main()
                     cardRect.setFillColor(sf::Color(60, 80, 60)); // Green for active players
                     cardRect.setOutlineThickness(2);
                     cardRect.setOutlineColor(sf::Color::White);
-                    
+
                     // Player name text
                     sf::Text playerName;
                     playerName.setFont(font);
@@ -749,49 +838,49 @@ int main()
                     playerName.setFillColor(sf::Color::White);
                     playerName.setString(activePlayers[i]->getName());
                     playerName.setPosition(cardX + 10, cardY + 10);
-                    
+
                     // Play Turn button with hover effect
                     sf::RectangleShape playTurnButton;
                     playTurnButton.setSize(sf::Vector2f(180, 30));
                     playTurnButton.setPosition(cardX + 20, cardY + 50);
                     playTurnButton.setOutlineThickness(1);
                     playTurnButton.setOutlineColor(sf::Color::White);
-                    
+
                     // Check if mouse is hovering over Play Turn button
                     sf::FloatRect playTurnBounds(cardX + 20, cardY + 50, 180, 30);
                     if (playTurnBounds.contains(mousePos))
                         playTurnButton.setFillColor(sf::Color::Yellow); // Hover color
                     else
                         playTurnButton.setFillColor(sf::Color(70, 70, 150)); // Normal blue
-                    
+
                     sf::Text playTurnText;
                     playTurnText.setFont(font);
                     playTurnText.setString("Play Turn");
                     playTurnText.setCharacterSize(14);
                     playTurnText.setFillColor(sf::Color::White);
                     playTurnText.setPosition(cardX + 65, cardY + 58);
-                    
+
                     // Show Stats button with hover effect
                     sf::RectangleShape showStatsButton;
                     showStatsButton.setSize(sf::Vector2f(180, 30));
                     showStatsButton.setPosition(cardX + 20, cardY + 90);
                     showStatsButton.setOutlineThickness(1);
                     showStatsButton.setOutlineColor(sf::Color::White);
-                    
+
                     // Check if mouse is hovering over Show Stats button
                     sf::FloatRect showStatsBounds(cardX + 20, cardY + 90, 180, 30);
                     if (showStatsBounds.contains(mousePos))
                         showStatsButton.setFillColor(sf::Color::Yellow); // Hover color
                     else
                         showStatsButton.setFillColor(sf::Color(150, 70, 70)); // Normal red
-                    
+
                     sf::Text showStatsText;
                     showStatsText.setFont(font);
                     showStatsText.setString("Show Stats");
                     showStatsText.setCharacterSize(14);
                     showStatsText.setFillColor(sf::Color::White);
                     showStatsText.setPosition(cardX + 60, cardY + 98);
-                    
+
                     // Draw all card elements
                     window.draw(cardRect);
                     window.draw(playerName);
@@ -814,8 +903,8 @@ int main()
             if (gameInstance)
             {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)); // For hover detection
-                vector<Player*> activePlayers = gameInstance->active_players();
-                
+                vector<Player *> activePlayers = gameInstance->active_players();
+
                 // Card dimensions and layout
                 float cardWidth = 220;
                 float cardHeight = 150;
@@ -823,14 +912,14 @@ int main()
                 float cardSpacingY = 180;
                 float startX = 50;
                 float startY = 80;
-                
+
                 // Draw 6 player cards (3x2 grid)
                 for (int i = 0; i < 6; i++)
                 {
                     // Calculate card position (3 cards per row)
                     float cardX = startX + (i % 3) * cardSpacingX;
                     float cardY = startY + (i / 3) * cardSpacingY;
-                    
+
                     // Create card rectangle
                     sf::RectangleShape cardRect;
                     cardRect.setSize(sf::Vector2f(cardWidth, cardHeight));
@@ -838,13 +927,13 @@ int main()
                     cardRect.setFillColor(sf::Color(40, 40, 40)); // Dark gray background
                     cardRect.setOutlineThickness(2);
                     cardRect.setOutlineColor(sf::Color::White);
-                    
+
                     // Player name text
                     sf::Text playerName;
                     playerName.setFont(font);
                     playerName.setCharacterSize(18);
                     playerName.setFillColor(sf::Color::White);
-                    
+
                     if (i < static_cast<int>(activePlayers.size()))
                     {
                         // Real player
@@ -857,13 +946,13 @@ int main()
                         playerName.setString("Empty Slot");
                         playerName.setFillColor(sf::Color(150, 150, 150)); // Gray text for empty slots
                     }
-                    
+
                     playerName.setPosition(cardX + 10, cardY + 10);
-                    
+
                     // Draw card and name FIRST
                     window.draw(cardRect);
                     window.draw(playerName);
-                    
+
                     // Only draw buttons for active players AFTER the card
                     if (i < static_cast<int>(activePlayers.size()))
                     {
@@ -873,42 +962,42 @@ int main()
                         playTurnButton.setPosition(cardX + 20, cardY + 50);
                         playTurnButton.setOutlineThickness(1);
                         playTurnButton.setOutlineColor(sf::Color::White);
-                        
+
                         // Check if mouse is hovering over Play Turn button
                         sf::FloatRect playTurnBounds(cardX + 20, cardY + 50, 180, 30);
                         if (playTurnBounds.contains(mousePos))
                             playTurnButton.setFillColor(sf::Color::Yellow); // Hover color
                         else
                             playTurnButton.setFillColor(sf::Color(70, 70, 150)); // Normal blue
-                        
+
                         sf::Text playTurnText;
                         playTurnText.setFont(font);
                         playTurnText.setString("Play Turn");
                         playTurnText.setCharacterSize(14);
                         playTurnText.setFillColor(sf::Color::White);
                         playTurnText.setPosition(cardX + 65, cardY + 58);
-                        
+
                         // Show Stats button with hover effect
                         sf::RectangleShape showStatsButton;
                         showStatsButton.setSize(sf::Vector2f(180, 30));
                         showStatsButton.setPosition(cardX + 20, cardY + 90);
                         showStatsButton.setOutlineThickness(1);
                         showStatsButton.setOutlineColor(sf::Color::White);
-                        
+
                         // Check if mouse is hovering over Show Stats button
                         sf::FloatRect showStatsBounds(cardX + 20, cardY + 90, 180, 30);
                         if (showStatsBounds.contains(mousePos))
                             showStatsButton.setFillColor(sf::Color::Yellow); // Hover color
                         else
                             showStatsButton.setFillColor(sf::Color(150, 70, 70)); // Normal red
-                        
+
                         sf::Text showStatsText;
                         showStatsText.setFont(font);
                         showStatsText.setString("Show Stats");
                         showStatsText.setCharacterSize(14);
                         showStatsText.setFillColor(sf::Color::White);
                         showStatsText.setPosition(cardX + 60, cardY + 98);
-                        
+
                         // Draw buttons AFTER the card
                         window.draw(playTurnButton);
                         window.draw(playTurnText);
@@ -922,10 +1011,8 @@ int main()
     }
 
     // Clean up
-    if (gameInstance)
-    {
-        delete gameInstance;
-    }
+    // Don't delete singleton instances
+    gameInstance = nullptr; // Just reset pointer
 
     return 0;
 }
