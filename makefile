@@ -8,6 +8,12 @@ GUI_TARGET = sfml-app
 
 all: $(TARGET) $(TEST_TARGET) $(GUI_TARGET)
 
+Main: $(TARGET)
+	./$(TARGET)
+
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
 $(TARGET): main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
 	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o -lsfml-graphics -lsfml-window -lsfml-system
 
@@ -47,14 +53,14 @@ Merchant.o: Merchant.cpp Merchant.hpp Character.hpp Player.hpp
 Spy.o: Spy.cpp Spy.hpp Character.hpp Player.hpp
 	$(CXX) $(CXXFLAGS) -c Spy.cpp
 
-test.o: coup_tests.cpp
+coup_tests.o: coup_tests.cpp
 	$(CXX) $(CXXFLAGS) -c coup_tests.cpp
 
 valgrind: $(TARGET)
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
 
 clean:
-	rm -f $(TARGET) $(TEST_TARGET) *.o
+	rm -f $(TARGET) $(TEST_TARGET) $(GUI_TARGET) *.o
 
-PHONY: all clean valgrind
+.PHONY: all clean valgrind Main test
 
