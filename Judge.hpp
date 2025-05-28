@@ -14,5 +14,6 @@ private:
 public:
     Judge(Player* p, Game* g); 
     void Action() override;
+    void Action(Player* target) override; // Override new Action with target
     std::string getRoleName() const override { return "Judge"; }
 };

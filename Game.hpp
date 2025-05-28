@@ -18,6 +18,9 @@ using namespace std;
 #include <thread>    // For sleep_for
 #include <iomanip>   // For setw, setfill
 
+#include <queue>
+#include <string>
+
 
 
 class Game
@@ -46,6 +49,8 @@ private:
     static int initialCoins; // Static variable for configuring initial coins
     Game(const Game&) = delete; // Prevent copying
     Game& operator=(const Game&) = delete; // Prevent assignment
+
+    static std::queue<std::string> messageQueue;
 
 public:
     ~Game(); // Destructor to clean up the game
@@ -79,4 +84,10 @@ public:
     void resetPlayerStatus(Player* currentPlayer); // Function to reset player status at the end of their turn
     void addPlayerWithName(const string& playerName);
     static void cleanup(); // Static method to clean up singleton
+
+    static void addMessage(const std::string& message);
+    static std::string getNextMessage();
+    static bool hasMessages();
+    static void clearMessages();
+
 };

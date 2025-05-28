@@ -20,6 +20,7 @@ Judge::Judge(Player* p, Game* g) : Character(p, g){}
 void Judge::cancelBribe(Player &target)
 {
     target.setIsBribePrevented(true); // Set the target player as bribe prevented
+    Game::addMessage(owner->getName() + " has canceled the bribe on " + target.getName());
     cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
     game->nextTurn(); // Move to the next player's turn
     return;
@@ -35,6 +36,15 @@ void Judge::cancelBribe(Player &target)
 void Judge::Action()
 {
     cancelBribe(*owner);
+}
+
+// New Action that uses GUI-selected target
+void Judge::Action(Player* target) {
+    if (target != nullptr) {
+        cancelBribe(*target); // Calls private method
+    } else {
+        Game::addMessage("No target selected for Judge action.");
+    }
 }
 
 /**

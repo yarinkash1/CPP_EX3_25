@@ -38,6 +38,7 @@ void Governor::tax()
 void Governor::cancelTax(Player &target)
 {
     target.setIsTaxPrevented(true); // Set the target player as tax prevented
+    Game::addMessage(owner->getName() + " has canceled the tax on " + target.getName());
     cout << owner->getName() << " has canceled the tax on " << target.getName() << endl;
     game->nextTurn(); // Move to the next player's turn
     return;
@@ -53,6 +54,15 @@ void Governor::cancelTax(Player &target)
 void Governor::Action()
 {
     cancelTax(*owner);
+}
+
+// New Action that uses GUI-selected target
+void Governor::Action(Player* target) {
+    if (target != nullptr) {
+        cancelTax(*target); // Calls public method
+    } else {
+        Game::addMessage("No target selected for Governor action.");
+    }
 }
 
 /**

@@ -15,6 +15,7 @@ private:
 public:
     Spy(Player* p, Game* g); 
     void Action() override;
+    void Action(Player* target) override; // Override new Action with target
     string getRoleName() const override { return "Spy"; }
     bool getIsAlreadyPeeked() const { return alreadyPeeked; }
     void setAlreadyPeeked(bool value) { alreadyPeeked = value; }

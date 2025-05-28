@@ -183,6 +183,65 @@ GameSetupData showGameSetupPopup(sf::Font &font)
     return data;
 }
 
+void showMessagePopup(sf::Font &font)
+{
+    if (!Game::hasMessages())
+        return;
+
+    // Collect all messages
+    std::vector<std::string> messages;
+    while (Game::hasMessages())
+    {
+        messages.push_back(Game::getNextMessage());
+    }
+
+    sf::RenderWindow popup(sf::VideoMode(500, 200 + messages.size() * 25), "Game Messages");
+
+    // Title
+    sf::Text title("Game Messages", font, 20);
+    title.setFillColor(sf::Color::White);
+    title.setPosition(20, 20);
+
+    // Messages
+    std::vector<sf::Text> messageTexts;
+    for (size_t i = 0; i < messages.size(); i++)
+    {
+        sf::Text msgText(messages[i], font, 16);
+        msgText.setFillColor(sf::Color::Yellow);
+        msgText.setPosition(20, 60 + i * 25);
+        messageTexts.push_back(msgText);
+    }
+
+    // Close instruction
+    sf::Text closeText("Click anywhere or press any key to close", font, 14);
+    closeText.setFillColor(sf::Color::Cyan);
+    closeText.setPosition(20, 60 + messages.size() * 25 + 20);
+
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed ||
+                event.type == sf::Event::KeyPressed ||
+                event.type == sf::Event::MouseButtonPressed)
+            {
+                popup.close();
+                return;
+            }
+        }
+
+        popup.clear(sf::Color::Black);
+        popup.draw(title);
+        for (auto &msgText : messageTexts)
+        {
+            popup.draw(msgText);
+        }
+        popup.draw(closeText);
+        popup.display();
+    }
+}
+
 // Function to show forced coup popup
 void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
@@ -521,6 +580,22 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
     return selectedPlayer;
 }
 
+void executeRoleAction(Character *character, Player *target, const std::string &roleName)
+{
+    if (roleName == "Judge")
+    {
+        static_cast<Judge *>(character)->Action(target); // Use new Action with target
+    }
+    else if (roleName == "Spy")
+    {
+        static_cast<Spy *>(character)->Action(target); // Use new Action with target
+    }
+    else if (roleName == "Governor")
+    {
+        static_cast<Governor *>(character)->Action(target); // Use new Action with target
+    }
+}
+
 // Function to show player action selection popup
 void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
@@ -595,57 +670,88 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
     {
         // Check if player has enough coins for this action
         bool canAfford = true;
+        bool isAllowed = true; // Flag for status-based restrictions
 
         switch (i + 1) // Actions are numbered 1-8
         {
+        case 1:                                     // Gather
+            canAfford = true;                       // Free action
+            isAllowed = !player->getIsSanctioned(); // Cannot gather if sanctioned
+            break;
+        case 2:                                                                     // Tax
+            canAfford = true;                                                       // Free action
+            isAllowed = !player->getIsSanctioned() && !player->getIsTaxPrevented(); // Cannot tax if sanctioned or tax prevented
+            break;
         case 3: // Bribe
             canAfford = (player->getCoins() >= 4);
+            isAllowed = !player->getIsBribePrevented(); // Cannot bribe if bribe prevented
+            break;
+        case 4:                                                                                      // Arrest
+            canAfford = true;                                                                        // Free action
+            isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented(); // Cannot arrest if peek prevented or arrest prevented
             break;
         case 5: // Sanction
             canAfford = (player->getCoins() >= 3);
+            isAllowed = true; // No status restrictions for sanction
             break;
         case 6: // Coup
             canAfford = (player->getCoins() >= 7);
+            isAllowed = !player->getIsCoupPrevented(); // Cannot coup if coup prevented
             break;
         case 7: // Role-specific action
-            // Check role-specific costs
+            // Check role-specific costs and restrictions
             if (roleName == "Baron")
             { // Invest costs 3
                 canAfford = (player->getCoins() >= 3);
+                isAllowed = true; // No status restrictions for Baron's invest
             }
             else if (roleName == "General")
             { // Prevent Coup costs 5
                 canAfford = (player->getCoins() >= 5);
+                isAllowed = true; // No status restrictions for General's prevent coup
             }
-            // Other roles have free actions
+            else
+            {
+                canAfford = true; // Other roles have free actions
+                isAllowed = true; // No status restrictions for other role actions
+            }
+            break;
+        case 8:               // Skip Turn
+            canAfford = true; // Free action
+            isAllowed = true; // Always allowed to skip
             break;
         default:
-            canAfford = true; // Free actions
+            canAfford = true;
+            isAllowed = true;
             break;
         }
+
+        // Combine both conditions
+        bool buttonEnabled = canAfford && isAllowed;
 
         // Button background
         sf::RectangleShape button;
         button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
         button.setPosition(25, startY + i * 45);
+        button.setOutlineThickness(2);
 
-        // Set color based on affordability
-        if (canAfford)
+        // Set button colors based on availability
+        if (buttonEnabled)
         {
             button.setFillColor(sf::Color(60, 60, 60)); // Normal dark gray
+            button.setOutlineColor(sf::Color::White);
         }
         else
         {
-            button.setFillColor(sf::Color(30, 30, 30)); // Darker gray for unaffordable
+            button.setFillColor(sf::Color(30, 30, 30));       // Darker gray for disabled
+            button.setOutlineColor(sf::Color(100, 100, 100)); // Dimmer outline
         }
 
-        button.setOutlineThickness(2);
-        button.setOutlineColor(canAfford ? sf::Color::White : sf::Color(100, 100, 100)); // Dimmer outline
         actionButtons.push_back(button);
 
         // Button text
         sf::Text buttonText(actions[i], font, 16);
-        buttonText.setFillColor(canAfford ? sf::Color::White : sf::Color(120, 120, 120)); // Dimmer text
+        buttonText.setFillColor(buttonEnabled ? sf::Color::White : sf::Color(120, 120, 120)); // Dimmer text for disabled
         buttonText.setPosition(35, startY + i * 45 + 8);
         actionTexts.push_back(buttonText);
     }
@@ -678,26 +784,77 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 {
                     if (actionButtons[i].getGlobalBounds().contains(mousePos))
                     {
-                        // Check if player can afford this action
+                        // Recalculate if button is enabled (same logic as above)
                         bool canAfford = true;
+                        bool isAllowed = true;
+
                         switch (i + 1)
                         {
-                            case 3: canAfford = (player->getCoins() >= 4); break; // Bribe
-                            case 5: canAfford = (player->getCoins() >= 3); break; // Sanction
-                            case 6: canAfford = (player->getCoins() >= 7); break; // Coup
-                            case 7: // Role-specific
-                                if (roleName == "Baron") canAfford = (player->getCoins() >= 3);
-                                else if (roleName == "General") canAfford = (player->getCoins() >= 5);
-                                break;
-                            default: canAfford = true; break;
-                        }
-                        
-                        if (canAfford) {
-                            selectedAction = i + 1; // Only set if affordable
+                        case 1: // Gather
+                            canAfford = true;
+                            isAllowed = !player->getIsSanctioned();
                             break;
-                        } else {
-                            // Optional: Show a message for unaffordable actions
-                            cout << "Not enough coins for this action!" << endl;
+                        case 2: // Tax
+                            canAfford = true;
+                            isAllowed = !player->getIsSanctioned() && !player->getIsTaxPrevented();
+                            break;
+                        case 3: // Bribe
+                            canAfford = (player->getCoins() >= 4);
+                            isAllowed = !player->getIsBribePrevented();
+                            break;
+                        case 4: // Arrest
+                            canAfford = true;
+                            isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented();
+                            break;
+                        case 5: // Sanction
+                            canAfford = (player->getCoins() >= 3);
+                            isAllowed = true;
+                            break;
+                        case 6: // Coup
+                            canAfford = (player->getCoins() >= 7);
+                            isAllowed = !player->getIsCoupPrevented();
+                            break;
+                        case 7: // Role-specific action
+                            if (roleName == "Baron")
+                            {
+                                canAfford = (player->getCoins() >= 3);
+                                isAllowed = true;
+                            }
+                            else if (roleName == "General")
+                            {
+                                canAfford = (player->getCoins() >= 5);
+                                isAllowed = true;
+                            }
+                            else
+                            {
+                                canAfford = true;
+                                isAllowed = true;
+                            }
+                            break;
+                        case 8: // Skip Turn
+                            canAfford = true;
+                            isAllowed = true;
+                            break;
+                        }
+
+                        // Only allow click if both conditions are met
+                        if (canAfford && isAllowed)
+                        {
+                            selectedAction = i + 1;
+                            break;
+                        }
+                        else
+                        {
+                            // Optional: Show message why action is not available
+                            if (!canAfford)
+                            {
+                                Game::addMessage("Not enough coins for this action!");
+                            }
+                            else if (!isAllowed)
+                            {
+                                Game::addMessage("This action is currently prevented!");
+                            }
+                            showMessagePopup(font);
                         }
                     }
                 }
@@ -708,31 +865,63 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
         for (size_t i = 0; i < actionButtons.size(); i++)
         {
-            // Check affordability again for hover effects
+            // Only apply hover effects to enabled buttons
+            // Recalculate if button is enabled (simplified version)
             bool canAfford = true;
+            bool isAllowed = true;
+
             switch (i + 1)
             {
-                case 3: canAfford = (player->getCoins() >= 4); break; // Bribe
-                case 5: canAfford = (player->getCoins() >= 3); break; // Sanction
-                case 6: canAfford = (player->getCoins() >= 7); break; // Coup
-                case 7: // Role-specific
-                    if (roleName == "Baron") canAfford = (player->getCoins() >= 3);
-                    else if (roleName == "General") canAfford = (player->getCoins() >= 5);
-                    break;
-                default: canAfford = true; break;
+            case 1: // Gather
+                isAllowed = !player->getIsSanctioned();
+                break;
+            case 2: // Tax
+                isAllowed = !player->getIsSanctioned() && !player->getIsTaxPrevented();
+                break;
+            case 3: // Bribe
+                canAfford = (player->getCoins() >= 4);
+                isAllowed = !player->getIsBribePrevented();
+                break;
+            case 4: // Arrest
+                isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented();
+                break;
+            case 5: // Sanction
+                canAfford = (player->getCoins() >= 3);
+                break;
+            case 6: // Coup
+                canAfford = (player->getCoins() >= 7);
+                isAllowed = !player->getIsCoupPrevented();
+                break;
+            case 7: // Role-specific action
+                if (roleName == "Baron")
+                {
+                    canAfford = (player->getCoins() >= 3);
+                }
+                else if (roleName == "General")
+                {
+                    canAfford = (player->getCoins() >= 5);
+                }
+                break;
             }
-            
-            if (canAfford && actionButtons[i].getGlobalBounds().contains(mousePos))
+
+            bool buttonEnabled = canAfford && isAllowed;
+
+            if (buttonEnabled && actionButtons[i].getGlobalBounds().contains(mousePos))
             {
                 actionButtons[i].setFillColor(sf::Color::Yellow);
                 actionTexts[i].setFillColor(sf::Color::Black);
             }
-            else if (canAfford)
+            else if (buttonEnabled)
             {
                 actionButtons[i].setFillColor(sf::Color(60, 60, 60));
                 actionTexts[i].setFillColor(sf::Color::White);
             }
-            // Unaffordable buttons keep their dimmed appearance
+            else // ADD THIS ELSE BLOCK FOR DISABLED BUTTONS
+            {
+                // Keep disabled appearance - don't change on hover
+                actionButtons[i].setFillColor(sf::Color(30, 30, 30));  // Dark gray
+                actionTexts[i].setFillColor(sf::Color(120, 120, 120)); // Dimmed text
+            }
         }
 
         popup.clear(sf::Color::Black);
@@ -763,12 +952,15 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         {
         case 1:
             character->gather();
+            showMessagePopup(font); // Show any messages from the action
             break;
         case 2:
             character->tax();
+            showMessagePopup(font); // Show any messages from the action
             break;
         case 3: // Bribe
             character->bribe();
+            showMessagePopup(font); // Show any messages from the action
 
             // Check if bribe was successful (player still has turn and wasn't prevented)
             if (!player->getIsBribePrevented() && player->getCoins() >= 0) // Successful bribe
@@ -785,6 +977,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             if (target != nullptr)
             {
                 character->arrest(target); // Pass target to method
+                showMessagePopup(font);    // Show any messages from the action
             }
             break;
         }
@@ -794,6 +987,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             if (target != nullptr)
             {
                 character->sanction(target); // Pass target to method
+                showMessagePopup(font);      // Show any messages from the action
             }
             break;
         }
@@ -803,17 +997,32 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             if (target != nullptr)
             {
                 character->coup(target); // Pass target to method
+                showMessagePopup(font);  // Show any messages from the action
             }
             break;
         }
         case 7:
-            character->Action(); // Call role-specific action
+            if (roleName == "Judge" || roleName == "Spy" || roleName == "Governor")
+            {
+                Player *target = showTargetPlayerPopup(gameInstance, player, font);
+                if (target != nullptr)
+                {
+                    executeRoleAction(character, target, roleName);
+                }
+            }
+            else
+            {
+                character->Action(); // For roles that don't need targets
+            }
+            showMessagePopup(font);
             break;
         case 8:
         {
             // Skip turn
+            Game::addMessage(player->getName() + " skipped their turn.");
             gameInstance->nextTurn(); // Same logic as character classes
-            cout << player->getName() << " skipped their turn." << endl;
+            showMessagePopup(font);   // Now there will be a message to show
+            // cout << player->getName() << " skipped their turn." << endl;
             break;
         }
         break;
@@ -1006,30 +1215,51 @@ int main()
                         {
                             std::cout << "Developer Mode game started\n";
 
-                            // Debug constructor with specific roles
-                            vector<string> all_characters = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
+                            // Simple approach - use regular constructor then manually set roles
                             vector<string> player_names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
 
                             Game::configure(60);
 
-                            // Use the EXACT same pattern as PLAYING mode
                             try
                             {
-                                Game &game = Game::getInstance(player_names.size(), player_names); // Same signature as PLAYING
-                                gameInstance = &game;                                              // Same assignment pattern as PLAYING
+                                // Create game with regular constructor (random roles)
+                                Game &game = Game::getInstance(player_names.size(), player_names);
+                                gameInstance = &game;
 
-                                // Manually set roles after creation (if needed)
+                                // Manually assign specific roles
                                 vector<Player *> activePlayers = gameInstance->active_players();
-                                for (size_t i = 0; i < activePlayers.size() && i < all_characters.size(); i++)
+                                vector<string> roles = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
+
+                                for (size_t i = 0; i < activePlayers.size() && i < roles.size(); i++)
                                 {
-                                    // You might need to add a method to set roles or handle this differently
-                                    // depending on your Game class implementation
+                                    // Delete old role
+                                    delete activePlayers[i]->getRole();
+
+                                    // Create new specific role
+                                    Character *newRole = nullptr;
+                                    if (roles[i] == "Baron")
+                                        newRole = new Baron(activePlayers[i], gameInstance);
+                                    else if (roles[i] == "General")
+                                        newRole = new General(activePlayers[i], gameInstance);
+                                    else if (roles[i] == "Governor")
+                                        newRole = new Governor(activePlayers[i], gameInstance);
+                                    else if (roles[i] == "Judge")
+                                        newRole = new Judge(activePlayers[i], gameInstance);
+                                    else if (roles[i] == "Merchant")
+                                        newRole = new Merchant(activePlayers[i], gameInstance);
+                                    else if (roles[i] == "Spy")
+                                        newRole = new Spy(activePlayers[i], gameInstance);
+
+                                    // Assign new role
+                                    activePlayers[i]->setRole(newRole);
                                 }
 
-                                for (Player *player : activePlayers)
+                                cout << "=== DEV MODE ROLES ASSIGNED ===" << endl;
+                                for (size_t i = 0; i < activePlayers.size(); i++)
                                 {
-                                    player->printPlayerInfo();
+                                    cout << activePlayers[i]->getName() << " -> " << activePlayers[i]->getRole()->getRoleName() << endl;
                                 }
+                                cout << "===============================" << endl;
 
                                 // Switch to dev mode state
                                 currentState = DEV_MODE;

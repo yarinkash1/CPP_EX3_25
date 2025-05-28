@@ -18,18 +18,35 @@ public:
     void gather();
     virtual void tax();
     void bribe();
-    //void arrest();
-    //void sanction();
-    //void coup();
+    // void arrest();
+    // void sanction();
+    // void coup();
     virtual void chooseAction() = 0; // Function to choose an action (to be implemented in derived classes)
 
     // Special action handler (for role-specific actions):
     virtual void Action() = 0; // Pure virtual function for derived classes to implement their special actions
-    Player *target_player();                 // Helper function to get the target player
-    virtual std::string getRoleName() const = 0;
+                               // New virtual Action that accepts target (default calls Action())
+    virtual void Action(Player *target)
+    {
+        if (target != nullptr)
+        {
+            // Each role will override this to use the target
+            Action(); // Fallback to parameterless version
+        }
+        else
+        {
+            Action(); // Fallback to parameterless version
+        }
+    }
 
-    // Overloaded methods
-    void arrest(Player* target = nullptr);
-    void sanction(Player* target = nullptr);
-    void coup(Player* target = nullptr);
-};
+
+Player *target_player(); // Helper function to get the target player
+virtual std::string getRoleName() const = 0;
+
+// Overloaded methods
+void arrest(Player *target = nullptr);
+void sanction(Player *target = nullptr);
+void coup(Player *target = nullptr);
+friend void executeRoleAction(Character *character, Player *target, const std::string &roleName);
+}
+;

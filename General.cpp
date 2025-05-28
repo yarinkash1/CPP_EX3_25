@@ -22,6 +22,7 @@ void General::preventCoup(Player &target)
     owner->removeNumCoins(5); // Remove 5 coins from the owner
     game->changeCoinsInBank(+5); // Add 5 coins to the bank
     target.setIsCoupPrevented(true); // Set the target player as coup prevented
+    Game::addMessage(owner->getName() + " has prevented a coup on " + target.getName());
     cout << owner->getName() << " has prevented a coup on " << target.getName() << std::endl;
     game->nextTurn(); // Move to the next player's turn
     return;

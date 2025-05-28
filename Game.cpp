@@ -6,6 +6,8 @@ int Game::initialCoins = 50; // Default initial coins (can be changed by configu
 
 Game* Game::instance = nullptr;  // Singleton instance pointer
 
+std::queue<std::string> Game::messageQueue; // Queue to hold messages for the game
+
 
 /**
  * @brief Factory function to create a Character object based on the role.
@@ -113,7 +115,6 @@ void Game::addPlayerWithName(const string& playerName)
  */
 Game::Game(int numPlayers, const vector<string>& playerNames)
 {
-    cout << "New game started!" << endl;
 
     if (numPlayers < 2 || numPlayers > 6)
     {
@@ -129,9 +130,6 @@ Game::Game(int numPlayers, const vector<string>& playerNames)
     this->coinsInBank = initialCoins;
     this->currentPlayerIndex = 0;
     this->isGameOver = false;
-
-    cout << "Game initialized with " << numPlayers << " players and " << coinsInBank << " coins in the bank." << endl;
-    cout << "Adding players..." << endl;
     
     // Use the provided player names instead of asking for input
     for (const string& playerName : playerNames)
@@ -338,6 +336,7 @@ void Game::removePlayer(Player *player) // Function to remove a player from the 
         {
             activePlayers[i]->setIsActive(0);                                                       // Set the player to inactive
             players.erase(remove(players.begin(), players.end(), activePlayers[i]), players.end()); // Remove the player from the game
+           // Game::addMessage("Player " + activePlayers[i]->getName() + " has been removed from the game.");
             cout << "Player " << activePlayers[i]->getName() << " has been removed from the game." << endl;
             break;
         }
@@ -492,5 +491,28 @@ void Game::cleanup()
         delete instance;
         instance = nullptr;
         cout << "Game instance cleaned up." << endl;
+    }
+}
+
+void Game::addMessage(const std::string& message) {
+    messageQueue.push(message);
+}
+
+std::string Game::getNextMessage() {
+    if (!messageQueue.empty()) {
+        std::string msg = messageQueue.front();
+        messageQueue.pop();
+        return msg;
+    }
+    return "";
+}
+
+bool Game::hasMessages() {
+    return !messageQueue.empty();
+}
+
+void Game::clearMessages() {
+    while (!messageQueue.empty()) {
+        messageQueue.pop();
     }
 }
