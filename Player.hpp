@@ -26,7 +26,7 @@ protected:
     bool isCoupPrevented;            // Flag to indicate if the player is coup prevented
     bool isTaxPrevented;             // Flag to indicate if the player is tax prevented
     bool isBribePrevented;           // Flag to indicate if the player is bribe prevented
-    bool isArrestPrevented;          // Flag to indicate if the player is arrest prevented for their next turn
+    bool isArrested;                // Flag to indicate if the player is arrested
 
     Character *role; // Pointer to the role (e.g., Governor, Spy)
 
@@ -34,7 +34,7 @@ public:
     // Inline constructor with initializer list
     Player(string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
            bool isSanctioned = false, bool isPeekedAndArrestPrevented = false,
-           bool isCoupPrevented = false, bool isTaxPrevented = false, bool isBribePrevented = false, bool isArrestPrevented = false)
+           bool isCoupPrevented = false, bool isTaxPrevented = false, bool isBribePrevented = false, bool isArrested = false)
         : id(next_id++), // Increment ID for each new player
           name(name),
           is_active(is_active),
@@ -46,7 +46,7 @@ public:
           isCoupPrevented(isCoupPrevented),
           isTaxPrevented(isTaxPrevented),
           isBribePrevented(isBribePrevented),
-          isArrestPrevented(isArrestPrevented),
+          isArrested(isArrested),
           role(role)
     {
     }
@@ -72,7 +72,7 @@ public:
     bool getIsCoupPrevented() const { return isCoupPrevented; }                       //
     bool getIsTaxPrevented() const { return isTaxPrevented; }                         //
     bool getIsBribePrevented() const { return isBribePrevented; }                     //
-    bool getIsArrestPrevented() const { return isArrestPrevented; }
+    bool getIsArrested() const { return isArrested; }
 
     int getId() const { return id; }
     Character *getRole() const { return role; }
@@ -89,7 +89,7 @@ public:
     void setIsCoupPrevented(bool coup_prevented) { isCoupPrevented = coup_prevented; }
     void setIsTaxPrevented(bool tax_prevented) { isTaxPrevented = tax_prevented; }
     void setIsBribePrevented(bool bribe_prevented) { isBribePrevented = bribe_prevented; }
-    void setIsArrestPrevented(bool arrest_prevented) { isArrestPrevented = arrest_prevented; }
+    void setIsArrested(bool is_arrested) { isArrested = is_arrested; }
     static void resetIdCounter() { next_id = 1; }
     void setId(int new_id) { id = new_id; }
     void setRole(Character *new_role) { role = new_role; }

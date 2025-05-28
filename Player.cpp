@@ -41,7 +41,7 @@ void Player::printPlayerInfo()
     cout << "Is Coup Prevented: " << (isCoupPrevented ? "Yes" : "No") << endl;
     cout << "Is Tax Prevented: " << (isTaxPrevented ? "Yes" : "No") << endl;
     cout << "Is Bribe Prevented: " << (isBribePrevented ? "Yes" : "No") << endl;
-    cout << "Is Arrest Prevented: " << (isArrestPrevented ? "Yes" : "No") << endl;
+    cout << "Is Arrested: " << (isArrested ? "Yes" : "No") << endl;
     cout << "Its turn: " << (is_turn == true ? "Yes" : "No") << endl;
     cout << "----------------------------------------------------------------------------------------------------------------" << endl;
 }

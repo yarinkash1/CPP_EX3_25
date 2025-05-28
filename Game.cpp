@@ -275,10 +275,11 @@ void Game::resetPlayerStatus(Player *currentPlayer)
     {
         currentPlayer->setIsSanctioned(false); // Reset the sanctioned status after the player finished his turn
     }
-    if(currentPlayer->getIsArrestPrevented() == true)
-    {
-        currentPlayer->setIsArrestPrevented(false); // Reset the arrest prevented status after the player finished his turn
-    }
+    // cancel:
+    // if(currentPlayer->getIsArrested() == true)
+    // {
+    //     currentPlayer->setIsArrested(false); // Reset the arrest prevented status after the player finished his turn
+    // }
 }
 
 /**

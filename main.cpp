@@ -361,7 +361,7 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
         {"Coup Prevented:", player->getIsCoupPrevented() ? "Yes" : "No"},
         {"Tax Prevented:", player->getIsTaxPrevented() ? "Yes" : "No"},
         {"Bribe Prevented:", player->getIsBribePrevented() ? "Yes" : "No"},
-        {"Arrest Prevented:", player->getIsArrestPrevented() ? "Yes" : "No"}};
+        {"Arrested:", player->getIsArrested() ? "Yes" : "No"}};
 
     // Create table headers background
     sf::RectangleShape headerBg;
@@ -455,29 +455,61 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
 }
 
 // Function to show target player selection popup
-Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Font &font)
+Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Font &font, const std::string &actionType = "")
 {
     vector<Player *> activePlayers = gameInstance->active_players();
     vector<Player *> validTargets;
 
-    // Remove current player from targets
+    // Remove current player from targets and filter based on action type
     for (Player *player : activePlayers)
     {
         if (player->getId() != currentPlayer->getId())
         {
-            validTargets.push_back(player);
+            // Special filtering for arrest action
+            if (actionType == "arrest")
+            {
+                // Don't show players who are already arrested OR have 0 coins
+                if (!player->getIsArrested() && player->getCoins() > 0)
+                {
+                    validTargets.push_back(player);
+                }
+            }
+            else
+            {
+                // For all other actions, show all players except current player
+                validTargets.push_back(player);
+            }
         }
     }
 
     if (validTargets.empty())
     {
+        // Show message if no valid targets
+        if (actionType == "arrest")
+        {
+            Game::addMessage("No players available to arrest (all are already arrested or have 0 coins)!");
+        }
         return nullptr; // No valid targets
     }
 
     sf::RenderWindow popup(sf::VideoMode(400, 300 + validTargets.size() * 50), "Select Target Player");
 
-    // Title
-    sf::Text title("Choose a target player:", font, 20);
+    // Title - update to show action type
+    std::string titleText = "Choose a target player:";
+    if (actionType == "arrest")
+    {
+        titleText = "Choose a player to arrest:";
+    }
+    else if (actionType == "sanction")
+    {
+        titleText = "Choose a player to sanction:";
+    }
+    else if (actionType == "coup")
+    {
+        titleText = "Choose a player to coup:";
+    }
+
+    sf::Text title(titleText, font, 20);
     title.setFillColor(sf::Color::White);
     title.setPosition(20, 20);
 
@@ -501,9 +533,7 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
         playerButtons.push_back(button);
 
         // Button text
-        string buttonText = to_string(i + 1) + ". " + validTargets[i]->getName() +
-                            " (" + validTargets[i]->getRole()->getRoleName() + ") - " +
-                            to_string(validTargets[i]->getCoins()) + " coins";
+        string buttonText = to_string(i + 1) + ". " + validTargets[i]->getName();
         sf::Text text(buttonText, font, 16);
         text.setFillColor(sf::Color::White);
         text.setPosition(35, startY + i * 50 + 10);
@@ -686,9 +716,22 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             canAfford = (player->getCoins() >= 4);
             isAllowed = !player->getIsBribePrevented(); // Cannot bribe if bribe prevented
             break;
-        case 4:                                                                                      // Arrest
-            canAfford = true;                                                                        // Free action
-            isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented(); // Cannot arrest if peek prevented or arrest prevented
+        case 4:               // Arrest
+            canAfford = true; // Free action
+            // Check if there are any valid targets for arrest
+            {
+                vector<Player *> activePlayers = gameInstance->active_players();
+                bool hasValidTargets = false;
+                for (Player *p : activePlayers)
+                {
+                    if (p->getId() != player->getId() && !p->getIsArrested() && p->getCoins() > 0)
+                    {
+                        hasValidTargets = true;
+                        break;
+                    }
+                }
+                isAllowed = hasValidTargets; // Disable button if no valid targets
+            }
             break;
         case 5: // Sanction
             canAfford = (player->getCoins() >= 3);
@@ -709,6 +752,13 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             { // Prevent Coup costs 5
                 canAfford = (player->getCoins() >= 5);
                 isAllowed = true; // No status restrictions for General's prevent coup
+            }
+            else if (roleName == "Spy")
+            {
+                canAfford = true; // Peek is free
+                // Spy can't use peek action if already peeked this turn
+                Spy *spy = static_cast<Spy *>(player->getRole());
+                isAllowed = !spy->getIsAlreadyPeeked(); //  Disable button if already peeked
             }
             else
             {
@@ -804,7 +854,20 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             break;
                         case 4: // Arrest
                             canAfford = true;
-                            isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented();
+                            // Check if there are any valid targets for arrest
+                            {
+                                vector<Player *> activePlayers = gameInstance->active_players();
+                                bool hasValidTargets = false;
+                                for (Player *p : activePlayers)
+                                {
+                                    if (p->getId() != player->getId() && !p->getIsArrested() && p->getCoins() > 0)
+                                    {
+                                        hasValidTargets = true;
+                                        break;
+                                    }
+                                }
+                                isAllowed = hasValidTargets; // Disable button if no valid targets
+                            }
                             break;
                         case 5: // Sanction
                             canAfford = (player->getCoins() >= 3);
@@ -824,6 +887,13 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             {
                                 canAfford = (player->getCoins() >= 5);
                                 isAllowed = true;
+                            }
+
+                            else if (roleName == "Spy")
+                            {
+                                canAfford = true;
+                                Spy *spy = static_cast<Spy *>(player->getRole());
+                                isAllowed = !spy->getIsAlreadyPeeked(); // ✅ Prevent click if already peeked
                             }
                             else
                             {
@@ -883,7 +953,20 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 isAllowed = !player->getIsBribePrevented();
                 break;
             case 4: // Arrest
-                isAllowed = !player->getIsPeekedAndArrestPrevented() && !player->getIsArrestPrevented();
+                // Check if there are any valid targets for arrest
+                {
+                    vector<Player *> activePlayers = gameInstance->active_players();
+                    bool hasValidTargets = false;
+                    for (Player *p : activePlayers)
+                    {
+                        if (p->getId() != player->getId() && !p->getIsArrested() && p->getCoins() > 0)
+                        {
+                            hasValidTargets = true;
+                            break;
+                        }
+                    }
+                    isAllowed = hasValidTargets; // Disable button if no valid targets
+                }
                 break;
             case 5: // Sanction
                 canAfford = (player->getCoins() >= 3);
@@ -896,10 +979,23 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 if (roleName == "Baron")
                 {
                     canAfford = (player->getCoins() >= 3);
+                    isAllowed = true;
                 }
                 else if (roleName == "General")
                 {
                     canAfford = (player->getCoins() >= 5);
+                    isAllowed = true;
+                }
+                else if (roleName == "Spy")
+                {
+                    canAfford = true;
+                    Spy *spy = static_cast<Spy *>(player->getRole());
+                    isAllowed = !spy->getIsAlreadyPeeked(); // Disable button if already peeked
+                }
+                else
+                {
+                    canAfford = true;
+                    isAllowed = true;
                 }
                 break;
             }
@@ -973,48 +1069,79 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             break;
         case 4: // Arrest
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "arrest"); // ✅ Add "arrest" parameter
             if (target != nullptr)
             {
-                character->arrest(target); // Pass target to method
-                showMessagePopup(font);    // Show any messages from the action
+                character->arrest(target);
+                showMessagePopup(font);
             }
             break;
         }
         case 5: // Sanction
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "sanction"); // ✅ Add "sanction" parameter
             if (target != nullptr)
             {
-                character->sanction(target); // Pass target to method
-                showMessagePopup(font);      // Show any messages from the action
+                character->sanction(target);
+                showMessagePopup(font);
             }
             break;
         }
         case 6: // Coup
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "coup"); // ✅ Add "coup" parameter
             if (target != nullptr)
             {
-                character->coup(target); // Pass target to method
-                showMessagePopup(font);  // Show any messages from the action
+                character->coup(target);
+                showMessagePopup(font);
             }
             break;
         }
         case 7:
-            if (roleName == "Judge" || roleName == "Spy" || roleName == "Governor")
+            if (roleName == "Judge")
             {
-                Player *target = showTargetPlayerPopup(gameInstance, player, font);
+                Player *target = showTargetPlayerPopup(gameInstance, player, font, "judge"); // ✅ Add action type
                 if (target != nullptr)
                 {
-                    executeRoleAction(character, target, roleName);
+                    static_cast<Judge *>(character)->Action(target);
+                }
+                showMessagePopup(font);
+                gameInstance->nextTurn();
+            }
+            else if (roleName == "Spy")
+            {
+                // Check if Spy already peeked this turn
+                Spy *spy = static_cast<Spy *>(character);
+                if (spy->getIsAlreadyPeeked())
+                {
+                    Game::addMessage("You have already peeked at a player's coins this turn. Choose a different action.");
+                    showMessagePopup(font);
+                    // Don't end turn - let player choose another action
+                    return; // Stay in the same popup to choose another action
+                }
+                else
+                {
+                    Player *target = showTargetPlayerPopup(gameInstance, player, font, "spy"); // ✅ Add action type
+                    if (target != nullptr)
+                    {
+                        spy->Action(target);
+                        showMessagePopup(font);
+                        // Spy gets another turn - DON'T call nextTurn()
+                        // The popup will close and reopen for the same player
+                        return; // This will close current popup and reopen for same player
+                    }
                 }
             }
-            else
+            else if (roleName == "Governor")
             {
-                character->Action(); // For roles that don't need targets
+                Player *target = showTargetPlayerPopup(gameInstance, player, font, "governor"); // ✅ Add action type
+                if (target != nullptr)
+                {
+                    static_cast<Governor *>(character)->Action(target);
+                }
+                showMessagePopup(font);
+                gameInstance->nextTurn();
             }
-            showMessagePopup(font);
             break;
         case 8:
         {
@@ -1306,6 +1433,10 @@ int main()
                             cout << "Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                             if (activePlayers[i]->getIsTurn() == true)
                             {
+                                if (activePlayers[i]->getRole()->getRoleName() == "Spy")
+                                {
+                                    static_cast<Spy *>(activePlayers[i]->getRole())->setAlreadyPeeked(false);
+                                }
                                 // Check if player has more than 10 coins
                                 if (activePlayers[i]->getCoins() >= 10)
                                 {
@@ -1314,6 +1445,20 @@ int main()
                                 else
                                 {
                                     showPlayerActionPopup(activePlayers[i], gameInstance, font);
+
+                                    // Check if Spy used peek action and gets another turn
+                                    if (activePlayers[i]->getRole()->getRoleName() == "Spy")
+                                    {
+                                        Spy *spy = static_cast<Spy *>(activePlayers[i]->getRole());
+                                        if (spy->getIsAlreadyPeeked())
+                                        {
+                                            // Spy used peek action and gets another turn
+                                            Game::addMessage(activePlayers[i]->getName() + " (Spy) gets another turn!");
+                                            showMessagePopup(font);
+                                            // Show the action popup again for the same player
+                                            showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                        }
+                                    }
                                 }
                             }
                             else
@@ -1361,6 +1506,11 @@ int main()
                                 cout << "Dev Mode - Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                                 if (activePlayers[i]->getIsTurn() == true)
                                 {
+                                    // Reset Spy's peek flag at start of turn
+                                    if (activePlayers[i]->getRole()->getRoleName() == "Spy")
+                                    {
+                                        static_cast<Spy *>(activePlayers[i]->getRole())->setAlreadyPeeked(false);
+                                    }
                                     // Check if player has more than 10 coins
                                     if (activePlayers[i]->getCoins() >= 10)
                                     {
@@ -1369,6 +1519,20 @@ int main()
                                     else
                                     {
                                         showPlayerActionPopup(activePlayers[i], gameInstance, font);
+
+                                        // Check if Spy used peek action and gets another turn
+                                        if (activePlayers[i]->getRole()->getRoleName() == "Spy")
+                                        {
+                                            Spy *spy = static_cast<Spy *>(activePlayers[i]->getRole());
+                                            if (spy->getIsAlreadyPeeked())
+                                            {
+                                                // Spy used peek action and gets another turn
+                                                Game::addMessage(activePlayers[i]->getName() + " (Spy) gets another turn!");
+                                                showMessagePopup(font);
+                                                // Show the action popup again for the same player
+                                                showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                            }
+                                        }
                                     }
                                 }
                                 else

@@ -144,11 +144,14 @@ void Character::arrest(Player* target)
             return;
         }
     }
-    
+    // Transfer 1 coin from target to arresting player
+    target->removeNumCoins(1);           // Remove 1 coin from target
+    owner->addNumCoins(1);               // Give 1 coin to arresting player
+    target->setIsArrested(true);
     // Rest of arrest logic using 'target' parameter
     Game::addMessage("-- Arresting " + target->getName() + " --");
    // cout << "-- Arresting " << target->getName() << " --" << endl;
-    target->setIsArrestPrevented(true); // Example logic
+
     game->nextTurn();
 }
 

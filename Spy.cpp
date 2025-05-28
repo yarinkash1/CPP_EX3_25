@@ -23,17 +23,20 @@ void Spy::peekAndPreventArrest(Player &target)
     if (alreadyPeeked == true)
     {
         Game::addMessage("You have already peeked at a player's coins this turn. Choose a different action.");
-        cout << "You have already peeked at a player's coins this turn. Choose a different action" << endl;
-        chooseAction(); // Prompt the player to choose another action
+        // Remove: chooseAction();
+        // Instead, just return - GUI will handle showing the message
+        return;
     }
     else
     {
-        int target_num_coins = target.getCoins(); // Get the number of coins of the target player
-        Game::addMessage("You prevented arrest on " + target.getName() + " and he has " + to_string(target_num_coins) + " coins.");
-        cout << "You prevented arrest action on" << target.getName() << " and he has " << target_num_coins << " coins." << endl;
-        target.setIsArrestPrevented(true); // Set the target player as arrest prevented
-        chooseAction();       // Prompt the player to choose another action
-        alreadyPeeked = true; // Set the alreadyPeeked flag to true
+        int target_num_coins = target.getCoins();
+        Game::addMessage("You prevented arrest on " + target.getName());
+        Game::addMessage("You peeked at " + target.getName() + "'s coins: " + std::to_string(target_num_coins));
+        target.setIsPeekedAndArrestPrevented(true);
+        alreadyPeeked = true;
+
+        // DON'T call chooseAction() here - let GUI handle the extra turn
+        // DON'T call game->nextTurn() - Spy should keep the turn
     }
 }
 
@@ -50,10 +53,14 @@ void Spy::Action()
 }
 
 // New Action that uses GUI-selected target
-void Spy::Action(Player* target) {
-    if (target != nullptr) {
+void Spy::Action(Player *target)
+{
+    if (target != nullptr)
+    {
         peekAndPreventArrest(*target); // Calls public method
-    } else {
+    }
+    else
+    {
         Game::addMessage("No target selected for Spy action.");
     }
 }
