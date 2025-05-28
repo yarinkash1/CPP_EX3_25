@@ -184,24 +184,24 @@ GameSetupData showGameSetupPopup(sf::Font &font)
 }
 
 // Function to show forced coup popup
-void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
+void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 300), "Forced Coup - " + player->getName());
-    
+
     // Title
     sf::Text title("Too Many Coins!", font, 24);
     title.setFillColor(sf::Color::Red);
     title.setPosition(100, 30);
-    
+
     // Message
     sf::Text message(player->getName() + " has " + to_string(player->getCoins()) + " coins.", font, 16);
     message.setFillColor(sf::Color::White);
     message.setPosition(50, 80);
-    
+
     sf::Text forceMessage("Players with more than 10 coins must coup!", font, 14);
     forceMessage.setFillColor(sf::Color::Yellow);
     forceMessage.setPosition(50, 110);
-    
+
     // Coup button
     sf::RectangleShape coupButton;
     coupButton.setSize(sf::Vector2f(200, 40));
@@ -209,16 +209,16 @@ void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
     coupButton.setFillColor(sf::Color(150, 50, 50));
     coupButton.setOutlineThickness(2);
     coupButton.setOutlineColor(sf::Color::White);
-    
+
     sf::Text coupText("Coup (7 coins)", font, 16);
     coupText.setFillColor(sf::Color::White);
     coupText.setPosition(140, 165);
-    
+
     // Instructions
     sf::Text instruction("Click to coup or press ESC to cancel", font, 12);
     instruction.setFillColor(sf::Color::Cyan);
     instruction.setPosition(50, 220);
-    
+
     while (popup.isOpen())
     {
         sf::Event event;
@@ -230,27 +230,27 @@ void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
                 popup.close();
                 return;
             }
-            
+
             if (event.type == sf::Event::MouseButtonPressed)
             {
                 sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
-                
+
                 if (coupButton.getGlobalBounds().contains(mousePos))
                 {
                     // Execute coup
-                    Character* character = player->getRole();
+                    Character *character = player->getRole();
                     character->coup(nullptr); // Call the version with parameter, passing nullptr
-                    
+
                     // Use the gameInstance to progress the turn after coup
                     gameInstance->nextTurn();
-                    
+
                     cout << player->getName() << " was forced to coup due to having more than 10 coins." << endl;
                     popup.close();
                     return;
                 }
             }
         }
-        
+
         // Handle hover effect
         sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
         if (coupButton.getGlobalBounds().contains(mousePos))
@@ -263,9 +263,9 @@ void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
             coupButton.setFillColor(sf::Color(150, 50, 50));
             coupText.setFillColor(sf::Color::White);
         }
-        
+
         popup.clear(sf::Color::Black);
-        
+
         // Draw all elements
         popup.draw(title);
         popup.draw(message);
@@ -273,12 +273,10 @@ void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
         popup.draw(coupButton);
         popup.draw(coupText);
         popup.draw(instruction);
-        
+
         popup.display();
     }
 }
-
-
 
 // Function to show player stats in a popup window
 void showPlayerStatsPopup(Player *player, sf::Font &font)
@@ -398,40 +396,40 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
 }
 
 // Function to show target player selection popup
-Player* showTargetPlayerPopup(Game* gameInstance, Player* currentPlayer, sf::Font& font)
+Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Font &font)
 {
-    vector<Player*> activePlayers = gameInstance->active_players();
-    vector<Player*> validTargets;
-    
+    vector<Player *> activePlayers = gameInstance->active_players();
+    vector<Player *> validTargets;
+
     // Remove current player from targets
-    for (Player* player : activePlayers)
+    for (Player *player : activePlayers)
     {
         if (player->getId() != currentPlayer->getId())
         {
             validTargets.push_back(player);
         }
     }
-    
+
     if (validTargets.empty())
     {
         return nullptr; // No valid targets
     }
-    
+
     sf::RenderWindow popup(sf::VideoMode(400, 300 + validTargets.size() * 50), "Select Target Player");
-    
+
     // Title
     sf::Text title("Choose a target player:", font, 20);
     title.setFillColor(sf::Color::White);
     title.setPosition(20, 20);
-    
+
     // Create player buttons
     vector<sf::RectangleShape> playerButtons;
     vector<sf::Text> playerTexts;
-    
+
     float buttonWidth = 350;
     float buttonHeight = 40;
     float startY = 70;
-    
+
     for (size_t i = 0; i < validTargets.size(); i++)
     {
         // Button background
@@ -442,40 +440,40 @@ Player* showTargetPlayerPopup(Game* gameInstance, Player* currentPlayer, sf::Fon
         button.setOutlineThickness(2);
         button.setOutlineColor(sf::Color::White);
         playerButtons.push_back(button);
-        
+
         // Button text
-        string buttonText = to_string(i + 1) + ". " + validTargets[i]->getName() + 
-                           " (" + validTargets[i]->getRole()->getRoleName() + ") - " + 
-                           to_string(validTargets[i]->getCoins()) + " coins";
+        string buttonText = to_string(i + 1) + ". " + validTargets[i]->getName() +
+                            " (" + validTargets[i]->getRole()->getRoleName() + ") - " +
+                            to_string(validTargets[i]->getCoins()) + " coins";
         sf::Text text(buttonText, font, 16);
         text.setFillColor(sf::Color::White);
         text.setPosition(35, startY + i * 50 + 10);
         playerTexts.push_back(text);
     }
-    
+
     // Instructions
     sf::Text instruction("Click a player or press ESC to cancel", font, 14);
     instruction.setFillColor(sf::Color::Yellow);
     instruction.setPosition(20, startY + validTargets.size() * 50 + 20);
-    
-    Player* selectedPlayer = nullptr;
-    
+
+    Player *selectedPlayer = nullptr;
+
     while (popup.isOpen() && selectedPlayer == nullptr)
     {
         sf::Event event;
         while (popup.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed || 
+            if (event.type == sf::Event::Closed ||
                 (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
             {
                 popup.close();
                 return nullptr; // Cancel selection
             }
-            
+
             if (event.type == sf::Event::MouseButtonPressed)
             {
                 sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
-                
+
                 // Check which button was clicked
                 for (size_t i = 0; i < playerButtons.size(); i++)
                 {
@@ -487,7 +485,7 @@ Player* showTargetPlayerPopup(Game* gameInstance, Player* currentPlayer, sf::Fon
                 }
             }
         }
-        
+
         // Handle hover effects
         sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
         for (size_t i = 0; i < playerButtons.size(); i++)
@@ -503,26 +501,25 @@ Player* showTargetPlayerPopup(Game* gameInstance, Player* currentPlayer, sf::Fon
                 playerTexts[i].setFillColor(sf::Color::White);
             }
         }
-        
+
         popup.clear(sf::Color::Black);
-        
+
         // Draw all elements
         popup.draw(title);
         popup.draw(instruction);
-        
+
         for (size_t i = 0; i < playerButtons.size(); i++)
         {
             popup.draw(playerButtons[i]);
             popup.draw(playerTexts[i]);
         }
-        
+
         popup.display();
     }
-    
+
     popup.close();
     return selectedPlayer;
 }
-
 
 // Function to show player action selection popup
 void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
@@ -533,6 +530,11 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
     sf::Text title(player->getName() + " (" + player->getRole()->getRoleName() + ")", font, 20);
     title.setFillColor(sf::Color::White);
     title.setPosition(20, 20);
+
+    // Coins text
+    sf::Text coinsText("Coins: " + to_string(player->getCoins()), font, 16);
+    coinsText.setFillColor(sf::Color::Yellow);
+    coinsText.setPosition(20, 45);
 
     // Get role-specific actions
     vector<string> actions;
@@ -591,18 +593,59 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
 
     for (size_t i = 0; i < actions.size(); i++)
     {
+        // Check if player has enough coins for this action
+        bool canAfford = true;
+
+        switch (i + 1) // Actions are numbered 1-8
+        {
+        case 3: // Bribe
+            canAfford = (player->getCoins() >= 4);
+            break;
+        case 5: // Sanction
+            canAfford = (player->getCoins() >= 3);
+            break;
+        case 6: // Coup
+            canAfford = (player->getCoins() >= 7);
+            break;
+        case 7: // Role-specific action
+            // Check role-specific costs
+            if (roleName == "Baron")
+            { // Invest costs 3
+                canAfford = (player->getCoins() >= 3);
+            }
+            else if (roleName == "General")
+            { // Prevent Coup costs 5
+                canAfford = (player->getCoins() >= 5);
+            }
+            // Other roles have free actions
+            break;
+        default:
+            canAfford = true; // Free actions
+            break;
+        }
+
         // Button background
         sf::RectangleShape button;
         button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
         button.setPosition(25, startY + i * 45);
-        button.setFillColor(sf::Color(60, 60, 60));
+
+        // Set color based on affordability
+        if (canAfford)
+        {
+            button.setFillColor(sf::Color(60, 60, 60)); // Normal dark gray
+        }
+        else
+        {
+            button.setFillColor(sf::Color(30, 30, 30)); // Darker gray for unaffordable
+        }
+
         button.setOutlineThickness(2);
-        button.setOutlineColor(sf::Color::White);
+        button.setOutlineColor(canAfford ? sf::Color::White : sf::Color(100, 100, 100)); // Dimmer outline
         actionButtons.push_back(button);
 
         // Button text
         sf::Text buttonText(actions[i], font, 16);
-        buttonText.setFillColor(sf::Color::White);
+        buttonText.setFillColor(canAfford ? sf::Color::White : sf::Color(120, 120, 120)); // Dimmer text
         buttonText.setPosition(35, startY + i * 45 + 8);
         actionTexts.push_back(buttonText);
     }
@@ -635,8 +678,27 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 {
                     if (actionButtons[i].getGlobalBounds().contains(mousePos))
                     {
-                        selectedAction = i + 1; // Actions are numbered 1-8
-                        break;
+                        // Check if player can afford this action
+                        bool canAfford = true;
+                        switch (i + 1)
+                        {
+                            case 3: canAfford = (player->getCoins() >= 4); break; // Bribe
+                            case 5: canAfford = (player->getCoins() >= 3); break; // Sanction
+                            case 6: canAfford = (player->getCoins() >= 7); break; // Coup
+                            case 7: // Role-specific
+                                if (roleName == "Baron") canAfford = (player->getCoins() >= 3);
+                                else if (roleName == "General") canAfford = (player->getCoins() >= 5);
+                                break;
+                            default: canAfford = true; break;
+                        }
+                        
+                        if (canAfford) {
+                            selectedAction = i + 1; // Only set if affordable
+                            break;
+                        } else {
+                            // Optional: Show a message for unaffordable actions
+                            cout << "Not enough coins for this action!" << endl;
+                        }
                     }
                 }
             }
@@ -646,22 +708,38 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
         for (size_t i = 0; i < actionButtons.size(); i++)
         {
-            if (actionButtons[i].getGlobalBounds().contains(mousePos))
+            // Check affordability again for hover effects
+            bool canAfford = true;
+            switch (i + 1)
+            {
+                case 3: canAfford = (player->getCoins() >= 4); break; // Bribe
+                case 5: canAfford = (player->getCoins() >= 3); break; // Sanction
+                case 6: canAfford = (player->getCoins() >= 7); break; // Coup
+                case 7: // Role-specific
+                    if (roleName == "Baron") canAfford = (player->getCoins() >= 3);
+                    else if (roleName == "General") canAfford = (player->getCoins() >= 5);
+                    break;
+                default: canAfford = true; break;
+            }
+            
+            if (canAfford && actionButtons[i].getGlobalBounds().contains(mousePos))
             {
                 actionButtons[i].setFillColor(sf::Color::Yellow);
                 actionTexts[i].setFillColor(sf::Color::Black);
             }
-            else
+            else if (canAfford)
             {
                 actionButtons[i].setFillColor(sf::Color(60, 60, 60));
                 actionTexts[i].setFillColor(sf::Color::White);
             }
+            // Unaffordable buttons keep their dimmed appearance
         }
 
         popup.clear(sf::Color::Black);
 
         // Draw all elements
         popup.draw(title);
+        popup.draw(coinsText);
         popup.draw(instruction);
 
         for (size_t i = 0; i < actionButtons.size(); i++)
@@ -689,21 +767,30 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         case 2:
             character->tax();
             break;
-        case 3:
+        case 3: // Bribe
             character->bribe();
+
+            // Check if bribe was successful (player still has turn and wasn't prevented)
+            if (!player->getIsBribePrevented() && player->getCoins() >= 0) // Successful bribe
+            {
+                cout << "Extra turn! Choose another action." << endl;
+                // Show the popup again for extra turn
+                showPlayerActionPopup(player, gameInstance, font);
+                return; // Exit current popup
+            }
             break;
         case 4: // Arrest
         {
-            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font);
             if (target != nullptr)
             {
                 character->arrest(target); // Pass target to method
             }
             break;
         }
-        case 5: // Sanction  
+        case 5: // Sanction
         {
-            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font);
             if (target != nullptr)
             {
                 character->sanction(target); // Pass target to method
@@ -712,7 +799,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         }
         case 6: // Coup
         {
-            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            Player *target = showTargetPlayerPopup(gameInstance, player, font);
             if (target != nullptr)
             {
                 character->coup(target); // Pass target to method
@@ -788,7 +875,6 @@ void showNotYourTurnPopup(Player *player, sf::Font &font)
         popup.display();
     }
 }
-
 
 int main()
 {

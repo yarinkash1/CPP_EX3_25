@@ -87,7 +87,6 @@ void Character::bribe()
     if (owner->getCoins() < 4)
     {
         cout << "You don't have enough coins to perform the bribe action. choose another action" << endl;
-        chooseAction(); // Prompt the player to choose another action
         return;
     }
     else
@@ -104,12 +103,9 @@ void Character::bribe()
         {
             owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
             game->changeCoinsInBank(+4); // Add 4 coins to the bank
-            cout << "-- Bribe action performed. --\n"
-                 << endl;
+            cout << "-- Bribe action performed. --\n"<< endl;
             cout << "-- Player " << owner->getName() << " has another turn --" << endl;
-            chooseAction(); // Prompt the player to choose another action
         }
-        game->nextTurn(); // Move to the next player's turn once he finished bribing
         return;
     }
 }
