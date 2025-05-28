@@ -2,6 +2,7 @@
 
 #pragma once
 #include <string>
+#include <SFML/Graphics.hpp>
 #include "Character.hpp"
 using namespace std;
 
@@ -56,10 +57,9 @@ public:
     }
 
     void printPlayerInfo();
-
-    // Forward declaration to avoid dependency on sf::Font in header
-    class Font; // Forward declare Font if possible, or include <SFML/Graphics/Font.hpp> if needed
-    friend void showPlayerStatsPopup(Player *player, Font &font);
+    // Friend function declaration
+    friend void showPlayerStatsPopup(Player *player, sf::Font &font);
+    friend void showPlayerStatsPopup(Player *player, sf::Font &font);
 
     // Getters
     string getName() const { return name; }
@@ -95,3 +95,6 @@ public:
     void setRole(Character *new_role) { role = new_role; }
     void setIsTurn(bool turn) { is_turn = turn; }
 };
+
+// Function declaration only - implementation should be in .cpp file
+void showPlayerStatsPopup(Player *player, sf::Font &font);

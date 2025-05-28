@@ -186,14 +186,14 @@ GameSetupData showGameSetupPopup(sf::Font &font)
 // Function to show player stats in a popup window
 void showPlayerStatsPopup(Player *player, sf::Font &font)
 {
-    sf::RenderWindow popup(sf::VideoMode(500, 600), "Player Stats - " + player->getName());
+    sf::RenderWindow popup(sf::VideoMode(500, 700), "Player Stats - " + player->getName());
 
     // Title
     sf::Text title("Player Statistics", font, 24);
     title.setFillColor(sf::Color::White);
     title.setPosition(150, 20);
 
-    // Create table data - using printPlayerInfo data
+    // Create table data using ALL the getter methods from Player.hpp
     vector<pair<string, string>> stats = {
         {"Player ID:", to_string(player->getId())},
         {"Name:", player->getName()},
@@ -201,7 +201,34 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
         {"Is Active:", player->getIsActive() ? "Yes" : "No"},
         {"Win Counter:", to_string(player->getWinCounter())},
         {"Role:", player->getRole() ? player->getRole()->getRoleName() : "None"},
-        {"Is Turn:", player->getIsTurn() ? "Yes" : "No"}};
+        {"Is Turn:", player->getIsTurn() ? "Yes" : "No"},
+        {"Is Sanctioned:", player->getIsSanctioned() ? "Yes" : "No"},
+        {"Peek & Arrest Prevented:", player->getIsPeekedAndArrestPrevented() ? "Yes" : "No"},
+        {"Coup Prevented:", player->getIsCoupPrevented() ? "Yes" : "No"},
+        {"Tax Prevented:", player->getIsTaxPrevented() ? "Yes" : "No"},
+        {"Bribe Prevented:", player->getIsBribePrevented() ? "Yes" : "No"},
+        {"Arrest Prevented:", player->getIsArrestPrevented() ? "Yes" : "No"}};
+
+    // Create table headers background
+    sf::RectangleShape headerBg;
+    headerBg.setSize(sf::Vector2f(460, 30));
+    headerBg.setPosition(20, 60);
+    headerBg.setFillColor(sf::Color(70, 70, 70));
+    headerBg.setOutlineThickness(1);
+    headerBg.setOutlineColor(sf::Color::White);
+
+    sf::Text headerLabel("Attribute", font, 16);
+    headerLabel.setFillColor(sf::Color::White);
+    headerLabel.setPosition(30, 68);
+
+    sf::Text headerValue("Value", font, 16);
+    headerValue.setFillColor(sf::Color::White);
+    headerValue.setPosition(300, 68);
+
+    // Close instruction
+    sf::Text closeText("Press ESC or click X to close", font, 14);
+    closeText.setFillColor(sf::Color::Yellow);
+    closeText.setPosition(20, 650);
 
     while (popup.isOpen())
     {
@@ -220,28 +247,53 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
         // Draw title
         popup.draw(title);
 
+        // Draw table header
+        popup.draw(headerBg);
+        popup.draw(headerLabel);
+        popup.draw(headerValue);
+
         // Draw table rows
         for (size_t i = 0; i < stats.size(); i++)
         {
-            float rowY = 80 + i * 40;
+            float rowY = 100 + i * 35;
+
+            // Alternate row colors
+            sf::RectangleShape rowBg;
+            rowBg.setSize(sf::Vector2f(460, 35));
+            rowBg.setPosition(20, rowY);
+            rowBg.setFillColor(i % 2 == 0 ? sf::Color(40, 40, 40) : sf::Color(50, 50, 50));
+            rowBg.setOutlineThickness(1);
+            rowBg.setOutlineColor(sf::Color(100, 100, 100));
+            popup.draw(rowBg);
 
             // Draw attribute name
-            sf::Text attrText(stats[i].first, font, 16);
+            sf::Text attrText(stats[i].first, font, 14);
             attrText.setFillColor(sf::Color::White);
-            attrText.setPosition(30, rowY);
+            attrText.setPosition(30, rowY + 8);
             popup.draw(attrText);
 
-            // Draw attribute value
-            sf::Text valueText(stats[i].second, font, 16);
-            valueText.setFillColor(sf::Color::Cyan);
-            valueText.setPosition(250, rowY);
+            // Draw attribute value with color coding
+            sf::Text valueText(stats[i].second, font, 14);
+
+            // Color code the boolean values
+            if (stats[i].second == "Yes")
+            {
+                valueText.setFillColor(sf::Color::Green);
+            }
+            else if (stats[i].second == "No")
+            {
+                valueText.setFillColor(sf::Color::Red);
+            }
+            else
+            {
+                valueText.setFillColor(sf::Color::Cyan);
+            }
+
+            valueText.setPosition(300, rowY + 8);
             popup.draw(valueText);
         }
 
-        // Close instruction
-        sf::Text closeText("Press ESC to close", font, 14);
-        closeText.setFillColor(sf::Color::Yellow);
-        closeText.setPosition(30, 500);
+        // Draw close instruction
         popup.draw(closeText);
 
         popup.display();
@@ -626,12 +678,13 @@ int main()
                             vector<string> player_names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
 
                             Game::configure(60);
-                            
+
                             // Use the EXACT same pattern as PLAYING mode
-                            try {
+                            try
+                            {
                                 Game &game = Game::getInstance(player_names.size(), player_names); // Same signature as PLAYING
-                                gameInstance = &game; // Same assignment pattern as PLAYING
-                                
+                                gameInstance = &game;    // Same assignment pattern as PLAYING
+
                                 // Manually set roles after creation (if needed)
                                 vector<Player *> activePlayers = gameInstance->active_players();
                                 for (size_t i = 0; i < activePlayers.size() && i < all_characters.size(); i++)
@@ -639,7 +692,7 @@ int main()
                                     // You might need to add a method to set roles or handle this differently
                                     // depending on your Game class implementation
                                 }
-                                
+
                                 for (Player *player : activePlayers)
                                 {
                                     player->printPlayerInfo();
