@@ -611,8 +611,12 @@ int main()
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
             {
                 currentState = MENU;
-                // For singleton, just reset the pointer
-                gameInstance = nullptr; // Don't delete, just reset pointer
+                // Properly cleanup singleton before resetting pointer
+                if (gameInstance)
+                {
+                    Game::cleanup();        // Clean up the singleton instance
+                    gameInstance = nullptr; // Reset our local pointer
+                }
             }
 
             // Handle input based on current state
@@ -683,7 +687,7 @@ int main()
                             try
                             {
                                 Game &game = Game::getInstance(player_names.size(), player_names); // Same signature as PLAYING
-                                gameInstance = &game;    // Same assignment pattern as PLAYING
+                                gameInstance = &game;                                              // Same assignment pattern as PLAYING
 
                                 // Manually set roles after creation (if needed)
                                 vector<Player *> activePlayers = gameInstance->active_players();
@@ -1063,9 +1067,13 @@ int main()
         window.display();
     }
 
-    // Clean up
-    // Don't delete singleton instances
-    gameInstance = nullptr; // Just reset pointer
+    // Clean up at end of main() function
+    // Properly cleanup singleton instances
+    if (gameInstance)
+    {
+        Game::cleanup();
+        gameInstance = nullptr;
+    }
 
     return 0;
 }

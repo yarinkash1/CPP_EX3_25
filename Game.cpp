@@ -476,3 +476,21 @@ Game& Game::getInstance(int numPlayers, const vector<string>& playerNames)
     }
     return *instance;
 }
+
+/**
+ * @brief Clean up the singleton instance.
+ * This function deletes the singleton instance and resets the pointer to nullptr.
+ * Should be called when returning to menu or exiting the application.
+ *
+ * @param none
+ * @return void
+ * @throws none
+ */
+void Game::cleanup()
+{
+    if (instance) {
+        delete instance;
+        instance = nullptr;
+        cout << "Game instance cleaned up." << endl;
+    }
+}

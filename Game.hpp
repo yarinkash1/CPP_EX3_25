@@ -78,4 +78,5 @@ public:
 
     void resetPlayerStatus(Player* currentPlayer); // Function to reset player status at the end of their turn
     void addPlayerWithName(const string& playerName);
+    static void cleanup(); // Static method to clean up singleton
 };
