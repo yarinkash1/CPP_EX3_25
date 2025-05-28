@@ -183,6 +183,103 @@ GameSetupData showGameSetupPopup(sf::Font &font)
     return data;
 }
 
+// Function to show forced coup popup
+void showForcedCoupPopup(Player* player, Game* gameInstance, sf::Font& font)
+{
+    sf::RenderWindow popup(sf::VideoMode(400, 300), "Forced Coup - " + player->getName());
+    
+    // Title
+    sf::Text title("Too Many Coins!", font, 24);
+    title.setFillColor(sf::Color::Red);
+    title.setPosition(100, 30);
+    
+    // Message
+    sf::Text message(player->getName() + " has " + to_string(player->getCoins()) + " coins.", font, 16);
+    message.setFillColor(sf::Color::White);
+    message.setPosition(50, 80);
+    
+    sf::Text forceMessage("Players with more than 10 coins must coup!", font, 14);
+    forceMessage.setFillColor(sf::Color::Yellow);
+    forceMessage.setPosition(50, 110);
+    
+    // Coup button
+    sf::RectangleShape coupButton;
+    coupButton.setSize(sf::Vector2f(200, 40));
+    coupButton.setPosition(100, 150);
+    coupButton.setFillColor(sf::Color(150, 50, 50));
+    coupButton.setOutlineThickness(2);
+    coupButton.setOutlineColor(sf::Color::White);
+    
+    sf::Text coupText("Coup (7 coins)", font, 16);
+    coupText.setFillColor(sf::Color::White);
+    coupText.setPosition(140, 165);
+    
+    // Instructions
+    sf::Text instruction("Click to coup or press ESC to cancel", font, 12);
+    instruction.setFillColor(sf::Color::Cyan);
+    instruction.setPosition(50, 220);
+    
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed ||
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+                return;
+            }
+            
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+                
+                if (coupButton.getGlobalBounds().contains(mousePos))
+                {
+                    // Execute coup
+                    Character* character = player->getRole();
+                    character->coup(nullptr); // Call the version with parameter, passing nullptr
+                    
+                    // Use the gameInstance to progress the turn after coup
+                    gameInstance->nextTurn();
+                    
+                    cout << player->getName() << " was forced to coup due to having more than 10 coins." << endl;
+                    popup.close();
+                    return;
+                }
+            }
+        }
+        
+        // Handle hover effect
+        sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+        if (coupButton.getGlobalBounds().contains(mousePos))
+        {
+            coupButton.setFillColor(sf::Color::Yellow);
+            coupText.setFillColor(sf::Color::Black);
+        }
+        else
+        {
+            coupButton.setFillColor(sf::Color(150, 50, 50));
+            coupText.setFillColor(sf::Color::White);
+        }
+        
+        popup.clear(sf::Color::Black);
+        
+        // Draw all elements
+        popup.draw(title);
+        popup.draw(message);
+        popup.draw(forceMessage);
+        popup.draw(coupButton);
+        popup.draw(coupText);
+        popup.draw(instruction);
+        
+        popup.display();
+    }
+}
+
+
+
 // Function to show player stats in a popup window
 void showPlayerStatsPopup(Player *player, sf::Font &font)
 {
@@ -299,6 +396,133 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
         popup.display();
     }
 }
+
+// Function to show target player selection popup
+Player* showTargetPlayerPopup(Game* gameInstance, Player* currentPlayer, sf::Font& font)
+{
+    vector<Player*> activePlayers = gameInstance->active_players();
+    vector<Player*> validTargets;
+    
+    // Remove current player from targets
+    for (Player* player : activePlayers)
+    {
+        if (player->getId() != currentPlayer->getId())
+        {
+            validTargets.push_back(player);
+        }
+    }
+    
+    if (validTargets.empty())
+    {
+        return nullptr; // No valid targets
+    }
+    
+    sf::RenderWindow popup(sf::VideoMode(400, 300 + validTargets.size() * 50), "Select Target Player");
+    
+    // Title
+    sf::Text title("Choose a target player:", font, 20);
+    title.setFillColor(sf::Color::White);
+    title.setPosition(20, 20);
+    
+    // Create player buttons
+    vector<sf::RectangleShape> playerButtons;
+    vector<sf::Text> playerTexts;
+    
+    float buttonWidth = 350;
+    float buttonHeight = 40;
+    float startY = 70;
+    
+    for (size_t i = 0; i < validTargets.size(); i++)
+    {
+        // Button background
+        sf::RectangleShape button;
+        button.setSize(sf::Vector2f(buttonWidth, buttonHeight));
+        button.setPosition(25, startY + i * 50);
+        button.setFillColor(sf::Color(60, 60, 60));
+        button.setOutlineThickness(2);
+        button.setOutlineColor(sf::Color::White);
+        playerButtons.push_back(button);
+        
+        // Button text
+        string buttonText = to_string(i + 1) + ". " + validTargets[i]->getName() + 
+                           " (" + validTargets[i]->getRole()->getRoleName() + ") - " + 
+                           to_string(validTargets[i]->getCoins()) + " coins";
+        sf::Text text(buttonText, font, 16);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(35, startY + i * 50 + 10);
+        playerTexts.push_back(text);
+    }
+    
+    // Instructions
+    sf::Text instruction("Click a player or press ESC to cancel", font, 14);
+    instruction.setFillColor(sf::Color::Yellow);
+    instruction.setPosition(20, startY + validTargets.size() * 50 + 20);
+    
+    Player* selectedPlayer = nullptr;
+    
+    while (popup.isOpen() && selectedPlayer == nullptr)
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || 
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+                return nullptr; // Cancel selection
+            }
+            
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+                
+                // Check which button was clicked
+                for (size_t i = 0; i < playerButtons.size(); i++)
+                {
+                    if (playerButtons[i].getGlobalBounds().contains(mousePos))
+                    {
+                        selectedPlayer = validTargets[i];
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Handle hover effects
+        sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+        for (size_t i = 0; i < playerButtons.size(); i++)
+        {
+            if (playerButtons[i].getGlobalBounds().contains(mousePos))
+            {
+                playerButtons[i].setFillColor(sf::Color::Yellow);
+                playerTexts[i].setFillColor(sf::Color::Black);
+            }
+            else
+            {
+                playerButtons[i].setFillColor(sf::Color(60, 60, 60));
+                playerTexts[i].setFillColor(sf::Color::White);
+            }
+        }
+        
+        popup.clear(sf::Color::Black);
+        
+        // Draw all elements
+        popup.draw(title);
+        popup.draw(instruction);
+        
+        for (size_t i = 0; i < playerButtons.size(); i++)
+        {
+            popup.draw(playerButtons[i]);
+            popup.draw(playerTexts[i]);
+        }
+        
+        popup.display();
+    }
+    
+    popup.close();
+    return selectedPlayer;
+}
+
 
 // Function to show player action selection popup
 void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
@@ -468,15 +692,33 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         case 3:
             character->bribe();
             break;
-        case 4:
-            character->arrest();
+        case 4: // Arrest
+        {
+            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            if (target != nullptr)
+            {
+                character->arrest(target); // Pass target to method
+            }
             break;
-        case 5:
-            character->sanction();
+        }
+        case 5: // Sanction  
+        {
+            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            if (target != nullptr)
+            {
+                character->sanction(target); // Pass target to method
+            }
             break;
-        case 6:
-            character->coup();
+        }
+        case 6: // Coup
+        {
+            Player* target = showTargetPlayerPopup(gameInstance, player, font);
+            if (target != nullptr)
+            {
+                character->coup(target); // Pass target to method
+            }
             break;
+        }
         case 7:
             character->Action(); // Call role-specific action
             break;
@@ -546,6 +788,7 @@ void showNotYourTurnPopup(Player *player, sf::Font &font)
         popup.display();
     }
 }
+
 
 int main()
 {
@@ -747,7 +990,15 @@ int main()
                             cout << "Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                             if (activePlayers[i]->getIsTurn() == true)
                             {
-                                showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                // Check if player has more than 10 coins
+                                if (activePlayers[i]->getCoins() >= 10)
+                                {
+                                    showForcedCoupPopup(activePlayers[i], gameInstance, font);
+                                }
+                                else
+                                {
+                                    showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                }
                             }
                             else
                             {
@@ -794,7 +1045,15 @@ int main()
                                 cout << "Dev Mode - Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                                 if (activePlayers[i]->getIsTurn() == true)
                                 {
-                                    showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                    // Check if player has more than 10 coins
+                                    if (activePlayers[i]->getCoins() >= 10)
+                                    {
+                                        showForcedCoupPopup(activePlayers[i], gameInstance, font);
+                                    }
+                                    else
+                                    {
+                                        showPlayerActionPopup(activePlayers[i], gameInstance, font);
+                                    }
                                 }
                                 else
                                 {

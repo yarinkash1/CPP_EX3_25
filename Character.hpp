@@ -18,13 +18,18 @@ public:
     void gather();
     virtual void tax();
     void bribe();
-    void arrest();
-    void sanction();
-    void coup();
+    //void arrest();
+    //void sanction();
+    //void coup();
     virtual void chooseAction() = 0; // Function to choose an action (to be implemented in derived classes)
 
     // Special action handler (for role-specific actions):
     virtual void Action() = 0; // Pure virtual function for derived classes to implement their special actions
     Player *target_player();                 // Helper function to get the target player
     virtual std::string getRoleName() const = 0;
+
+    // Overloaded methods
+    void arrest(Player* target = nullptr);
+    void sanction(Player* target = nullptr);
+    void coup(Player* target = nullptr);
 };
