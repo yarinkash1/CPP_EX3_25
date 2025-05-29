@@ -67,6 +67,7 @@ void Baron::Action()
 
 void Baron::Action(Player *target)
 {
+    (void)target; // Suppress unused parameter warning
     // Empty - Baron doesn't use parameterized action
 }
 

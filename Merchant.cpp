@@ -56,6 +56,7 @@ void Merchant::Action()
 
 void Merchant::Action(Player* target)
 {
+    (void)target; // Suppress unused parameter warning
     // Empty - Merchant doesn't use parameterized action
 }
 
