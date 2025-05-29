@@ -25,7 +25,7 @@ public:
 
     // Special action handler (for role-specific actions):
     virtual void Action() = 0; // Pure virtual function for derived classes to implement their special actions
-                               // New virtual Action that accepts target (default calls Action())
+    // New virtual Action that accepts target (default calls Action())
     virtual void Action(Player *target)
     {
         if (target != nullptr)

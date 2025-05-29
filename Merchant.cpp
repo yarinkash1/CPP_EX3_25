@@ -5,6 +5,16 @@
 #include "Merchant.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list constructor for the Merchant class.
+ *
+ * This constructor initializes the Merchant object with a player and a game instances.
+ *
+ * @param p Pointer to the Player object that owns this character.
+ * @param g Pointer to the Game object that this character is part of.
+ * @return Merchant object.
+ * @throws None
+ */
 Merchant::Merchant(Player* p, Game* g) : Character(p, g){}
 
 /**
@@ -12,7 +22,8 @@ Merchant::Merchant(Player* p, Game* g) : Character(p, g){}
  *
  * This action is free and it allows the Merchant to add a coin to his total, but only if he has 3 or more coins.
  * It deducts 1 coin from the bank and adds it to the Merchant's total.
- *
+ *@note This action is passive and works automatically.
+ * 
  * @param None
  * @return void
  * @throws None
@@ -40,7 +51,7 @@ void Merchant::addCoin()
  */
 void Merchant::Action()
 {
-        addCoin();
+    addCoin();
 }
 
 /**
@@ -48,7 +59,8 @@ void Merchant::Action()
  *
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
- *
+ *@note This function is obsolete (the GUI handles the action selection now), but it is kept for terminal playing option.
+ * 
  * @param None
  * @return void
  * @throws None

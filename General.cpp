@@ -5,6 +5,15 @@
 #include "General.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list Constructor for the General class.
+ * 
+ * @param p Pointer to the Player who owns this General character.
+ * @param g Pointer to the Game instance in which this General character exists.
+ * @return General object
+ * @throws None
+ * 
+ */
 General::General(Player* p, Game* g) : Character(p, g){}
 
 /**
@@ -40,6 +49,14 @@ void General::Action()
     preventCoup(*owner);
 }
 
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the preventCoup() method of the General.
+ *
+ * @note This function allows the player to prevent a coup on another player(target).
+ * @param target Pointer to the Player object that is being targeted for the coup prevention.
+ * @return void
+ * @throws None
+ */
 void General::Action(Player* target)
 {
     if (target != nullptr)
@@ -55,6 +72,7 @@ void General::Action(Player* target)
 /**
  * @brief Prompts the player to choose an action and executes the selected action.
  *
+ * @note This function is obsolete (the GUI handles the action selection now), but it is kept for terminal playing option.
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
  *

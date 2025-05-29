@@ -5,13 +5,23 @@
 #include "Judge.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list constructor for the Judge class.
+ *
+ * This constructor initializes the Judge object with a player and a game instances.
+ *
+ * @param p Pointer to the Player object that owns this character.
+ * @param g Pointer to the Game object that this character is part of.
+ * @return Judge object.
+ * @throws None
+ */
 Judge::Judge(Player* p, Game* g) : Character(p, g){}
 
 /**
  * @brief Cancels the bribe action on a target player.
  *
  * This action is free (costs nothing). 
- * Sets the target player as bribe prevented, preventing them from performing the Bribe action.
+ * Sets the target player as bribe prevented, thus when clicking bribe not getting another turn and losing the coins paid.
  *
  * @param target The target player to cancel the bribe on.
  * @return void
@@ -38,11 +48,21 @@ void Judge::Action()
     cancelBribe(*owner);
 }
 
-// New Action that uses GUI-selected target
-void Judge::Action(Player* target) {
-    if (target != nullptr) {
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the cancelBribe() method of the Judge.
+ *
+ * @note This function allows the player to cancel bribe on another player(target).
+ * @param target Pointer to the Player object that is being targeted for the bribe cancellation.
+ * @return void
+ * @throws None
+ */
+void Judge::Action(Player* target) 
+{
+    if (target != nullptr) 
+    {
         cancelBribe(*target); // Calls private method
-    } else {
+    } else 
+    {
         Game::addMessage("No target selected for Judge action.");
     }
 }
@@ -52,6 +72,7 @@ void Judge::Action(Player* target) {
  *
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
+ * @note this function is Obsolete (the GUI handles the action selection now), but it is kept for terminal playing option.
  *
  * @param None
  * @return void

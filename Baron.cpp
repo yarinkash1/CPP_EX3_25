@@ -65,6 +65,7 @@ void Baron::Action()
     invest();
 }
 
+
 /**
  * @brief Prompts the player to choose an action and executes the selected action.
  *

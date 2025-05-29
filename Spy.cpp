@@ -5,6 +5,16 @@
 #include "Spy.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list constructor for the Spy class.
+ *
+ * This constructor initializes the Spy object with a player and a game instances.
+ *
+ * @param p Pointer to the Player object that owns this character.
+ * @param g Pointer to the Game object that this character is part of.
+ * @return Spy object.
+ * @throws None
+ */
 Spy::Spy(Player *p, Game *g) : Character(p, g) {}
 
 /**
@@ -52,7 +62,14 @@ void Spy::Action()
     peekAndPreventArrest(*owner);
 }
 
-// New Action that uses GUI-selected target
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the peekAndPreventArrest() method of the Spy.
+ *
+ * @note This function allows the player to peek at another player's coins and prevent their arrest.
+ * @param target Pointer to the Player object that is being targeted for peeking and preventing arrest.
+ * @return void
+ * @throws None
+ */
 void Spy::Action(Player *target)
 {
     if (target != nullptr)
@@ -70,6 +87,7 @@ void Spy::Action(Player *target)
  *
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
+ * @note This function is obsolete (the GUI handles the action selection now), but it is kept for terminal playing option.
  *
  * @param None
  * @return void

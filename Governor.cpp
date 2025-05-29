@@ -5,6 +5,16 @@
 #include "Governor.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list constructor for the Governor class.
+ *
+ * This constructor initializes the Governor object with a player and a game instances.
+ *
+ * @param p Pointer to the Player object that owns this character.
+ * @param g Pointer to the Game object that this character is part of.
+ * @return Governor object.
+ * @throws None
+ */
 Governor::Governor(Player *p, Game *g) : Character(p, g) {}
 
 /**
@@ -29,7 +39,8 @@ void Governor::tax()
  * @brief Cancels the tax action on a target player.
  *
  * This action is free (costs nothing).
- * Sets the target player as tax prevented, preventing them from being taxed.
+ * Sets the target player as tax prevented, preventing them from performing tax.
+ * @note The action will be blocked in the GUI if the player is already tax prevented.
  *
  * @param target The target player to cancel the tax on.
  * @return void
@@ -56,9 +67,18 @@ void Governor::Action()
     cancelTax(*owner);
 }
 
-// New Action that uses GUI-selected target
-void Governor::Action(Player* target) {
-    if (target != nullptr) {
+/**
+ * @brief This function delegates the pure virtual function Action() of the Character class to the cancelTax() method of the Governor.
+ *
+ * @note This function allows the player to cancel tax on another player(target).
+ * @param target Pointer to the Player object that is being targeted for the tax cancellation.
+ * @return void
+ * @throws None
+ */
+void Governor::Action(Player* target) 
+{
+    if (target != nullptr) 
+    {
         cancelTax(*target); // Calls public method
     } else {
         Game::addMessage("No target selected for Governor action.");
@@ -70,7 +90,8 @@ void Governor::Action(Player* target) {
  *
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
- *
+ *@note This function is obsolete (the GUI handles the action selection now), but it is kept for terminal playing option.
+ * 
  * @param None
  * @return void
  * @throws None
