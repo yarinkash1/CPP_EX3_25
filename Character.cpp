@@ -145,9 +145,10 @@ void Character::arrest(Player *target)
     }
     if(target->getRole()->getRoleName() == "Merchant")
     {
-        owner->removeNumCoins(2); // Remove 2 coins from the owner
+        target->removeNumCoins(2); // Remove 2 coins from the owner
         game->changeCoinsInBank(+2); // Add 2 coins to the bank
         Game::addMessage(target->getName() + " is a Merchant and pays 2 coins to the bank instead of losing them to you.");
+        
         game->nextTurn();
         return;
     }
@@ -212,7 +213,8 @@ void Character::sanction(Player *target)
     {
         owner->removeNumCoins(1); // Remove 1 coin from the owner
         game->changeCoinsInBank(+1); // Add 1 coin to the bank
-        Game::addMessage(target->getName() + " is a Judge and " +owner->getName() + " needs to pay another coin to the bank.");
+        Game::addMessage(target->getName() + " is a Judge!");
+        Game::addMessage(owner->getName() + " pays an extra coin to the bank.");
     }
     else if(target->getRole()->getRoleName() == "Baron")
     {

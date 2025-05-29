@@ -372,8 +372,57 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
             // Special filtering for arrest action
             if (actionType == "arrest")
             {
-                // Don't show players who are already arrested OR have 0 coins
-                if (!player->getIsArrested() && player->getCoins() > 0)
+                // Check if player is not already arrested
+                if (!player->getIsArrested())
+                {
+                    // Check coin requirements based on role
+                    bool hasEnoughCoins = false;
+                    
+                    if (player->getRole()->getRoleName() == "Merchant")
+                    {
+                        // Merchant needs 2+ coins (pays 2 to bank)
+                        hasEnoughCoins = (player->getCoins() >= 2);
+                    }
+                    else
+                    {
+                        // All other roles need 1+ coin (pay 1 to arresting player)
+                        hasEnoughCoins = (player->getCoins() >= 1);
+                    }
+                    
+                    if (hasEnoughCoins)
+                    {
+                        validTargets.push_back(player);
+                    }
+                }
+            }
+            // Special filtering for General's prevent coup action
+            else if (actionType == "general")
+            {
+                // Only show players who can voluntarily choose coup (less than 10 coins)
+                // Players with 10+ coins are forced to coup and can't be prevented
+                if (player->getCoins() < 10)
+                {
+                    validTargets.push_back(player);
+                }
+            }
+                        // Special filtering for sanction action
+            else if (actionType == "sanction")
+            {
+                // Check if current player can afford to sanction this target
+                bool canAffordSanction = false;
+                
+                if (player->getRole()->getRoleName() == "Judge")
+                {
+                    // Sanctioning a Judge costs 4 coins (3 + 1 extra)
+                    canAffordSanction = (currentPlayer->getCoins() >= 4);
+                }
+                else
+                {
+                    // Sanctioning other roles costs 3 coins
+                    canAffordSanction = (currentPlayer->getCoins() >= 3);
+                }
+                
+                if (canAffordSanction)
                 {
                     validTargets.push_back(player);
                 }
