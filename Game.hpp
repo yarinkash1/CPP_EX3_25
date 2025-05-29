@@ -67,9 +67,10 @@ public:
     static Game* getInstance(const std::vector<std::string>& playerNames,int numPlayers,const std::vector<std::string>& roles);
 
     void endGame(); // Function to end the game
-    void resetGame(); // Function to reset the game
     bool isGameFinished(); // Function to check if the game is finished
+    bool setGameFinished(bool finished); // Function to set the game as finished
     string winner(); // Function to get the winner of the game
+    string setWinnerName(const string& name); // Function to set the winner's name
 
     void addPlayer(); // Function to add a player to the game
     void removePlayer(Player* player); // Function to remove a player from the game
@@ -89,5 +90,5 @@ public:
     static std::string getNextMessage();
     static bool hasMessages();
     static void clearMessages();
-
+    vector<Player*> getPlayers(); // Function to get all players in the game
 };

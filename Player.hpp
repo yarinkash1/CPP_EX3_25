@@ -16,7 +16,6 @@ protected:
     int id;          // Player's ID
     string name;     // Player's name
     bool is_active;  // Flag to indicate if it's the player's turn
-    int win_counter; // Number of wins
     int coins;       // Number of coins the player has
     bool is_turn;    // Flag to indicate if it's the player's turn
 
@@ -32,13 +31,12 @@ protected:
 
 public:
     // Inline constructor with initializer list
-    Player(string name, Character *role, int coins = 0, bool is_active = true, int win_counter = 0,
+    Player(string name, Character *role, int coins = 0, bool is_active = true,
            bool isSanctioned = false, bool isPeekedAndArrestPrevented = false,
            bool isCoupPrevented = false, bool isTaxPrevented = false, bool isBribePrevented = false, bool isArrested = false)
         : id(next_id++), // Increment ID for each new player
           name(name),
           is_active(is_active),
-          win_counter(win_counter),
           coins(coins),
           is_turn(false),
           isSanctioned(isSanctioned),
@@ -64,7 +62,6 @@ public:
     // Getters
     string getName() const { return name; }
     bool getIsActive() const { return is_active; }
-    int getWinCounter() const { return win_counter; }
     int getCoins() const { return coins; }
 
     bool getIsSanctioned() const { return isSanctioned; }
@@ -80,7 +77,6 @@ public:
 
     // Setters
     void setIsActive(bool active) { is_active = active; }
-    void setWinCounter(int counter) { win_counter = counter; }
     void setCoins(int new_coins) { coins = new_coins; }
     void addNumCoins(int num_coins) { coins += num_coins; }
     void removeNumCoins(int num_coins);

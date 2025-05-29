@@ -34,7 +34,6 @@ void Player::printPlayerInfo()
     cout << "Name: " << name << endl;
     cout << "Coins: " << coins << endl;
     cout << "Is Active: " << (is_active ? "Yes" : "No") << endl;
-    cout << "Win Counter: " << win_counter << endl;
     cout << "Role: " << (role ? role->getRoleName() : "None") << endl;
     cout << "Is Sanctioned: " << (isSanctioned ? "Yes" : "No") << endl;
     cout << "Is Peeked and Arrest Prevented: " << (isPeekedAndArrestPrevented ? "Yes" : "No") << endl;

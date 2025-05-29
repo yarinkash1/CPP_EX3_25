@@ -353,7 +353,6 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
         {"Name:", player->getName()},
         {"Coins:", to_string(player->getCoins())},
         {"Is Active:", player->getIsActive() ? "Yes" : "No"},
-        {"Win Counter:", to_string(player->getWinCounter())},
         {"Role:", player->getRole() ? player->getRole()->getRoleName() : "None"},
         {"Is Turn:", player->getIsTurn() ? "Yes" : "No"},
         {"Is Sanctioned:", player->getIsSanctioned() ? "Yes" : "No"},
@@ -1162,6 +1161,55 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
     }
 }
 
+// Add this function to main.cpp (or wherever you handle popups)
+void showGameOverPopup(const std::string &winnerName, sf::Font &font)
+{
+    sf::RenderWindow popup(sf::VideoMode(400, 200), "Game Over!");
+    sf::Text title("GAME OVER!", font, 28);
+    title.setFillColor(sf::Color::Yellow);
+    title.setPosition(100, 30);
+
+    sf::Text winnerText("Winner: " + winnerName, font, 20);
+    winnerText.setFillColor(sf::Color::White);
+    winnerText.setPosition(100, 80);
+
+    sf::RectangleShape quitButton(sf::Vector2f(180, 40));
+    quitButton.setPosition(110, 140);
+    quitButton.setFillColor(sf::Color(150, 0, 0));
+
+    sf::Text quitText("Quit", font, 20);
+    quitText.setFillColor(sf::Color::White);
+    quitText.setPosition(180, 145);
+
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                popup.close();
+                exit(0);
+            }
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+                if (quitButton.getGlobalBounds().contains(mousePos))
+                {
+                    popup.close();
+                    exit(0); // Or set your state to MENU if you want to return to menu
+                }
+            }
+        }
+        popup.clear(sf::Color::Black);
+        popup.draw(title);
+        popup.draw(winnerText);
+        popup.draw(quitButton);
+        popup.draw(quitText);
+        popup.display();
+    }
+}
+
 // Function to show "Not Your Turn" message popup
 void showNotYourTurnPopup(Player *player, sf::Font &font)
 {
@@ -1460,7 +1508,22 @@ int main()
                                         }
                                     }
                                 }
+                                vector<Player *> currentActivePlayers = gameInstance->active_players();
+                                if (currentActivePlayers.size() <= 1)
+                                {
+                                    try
+                                    {
+                                        string winnerName = gameInstance->winner();
+                                        showGameOverPopup(winnerName, font);
+                                        // The popup will exit the program, so no need for further logic
+                                    }
+                                    catch (const invalid_argument &e)
+                                    {
+                                        Game::addMessage("Unexpected game state!");
+                                    }
+                                }
                             }
+
                             else
                             {
                                 showNotYourTurnPopup(activePlayers[i], font);
@@ -1532,6 +1595,20 @@ int main()
                                                 // Show the action popup again for the same player
                                                 showPlayerActionPopup(activePlayers[i], gameInstance, font);
                                             }
+                                        }
+                                    }
+                                    vector<Player *> currentActivePlayers = gameInstance->active_players();
+                                    if (currentActivePlayers.size() <= 1)
+                                    {
+                                        try
+                                        {
+                                            string winnerName = gameInstance->winner();
+                                            showGameOverPopup(winnerName, font);
+                                            // The popup will exit the program, so no need for further logic
+                                        }
+                                        catch (const invalid_argument &e)
+                                        {
+                                            Game::addMessage("Unexpected game state!");
                                         }
                                     }
                                 }

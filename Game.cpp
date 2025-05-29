@@ -294,15 +294,34 @@ void Game::resetPlayerStatus(Player *currentPlayer)
 void Game::nextTurn()
 {
     Player *currentPlayer = current_player();
-
-    resetPlayerStatus(currentPlayer); // Reset the current player's status at the end of their turn
-
-    currentPlayer->setIsTurn(false); // Set the current player to not have turn anymore
-    int num_of_active_players = active_players().size();
-    // The modulo ensures that if the current player is the last one in the list, the next index wraps around to 0 (the first player):
-    Player *nextPlayer = players[(currentPlayerIndex + 1) % num_of_active_players];
-    currentPlayerIndex = (currentPlayerIndex + 1) % num_of_active_players; // Move to the next player
-    nextPlayer->setIsTurn(true);                                           // Set the next player to have turn
+    resetPlayerStatus(currentPlayer);
+    currentPlayer->setIsTurn(false);
+    
+    // Find next active player in the original players vector
+    int nextIndex = currentPlayerIndex;
+    bool foundNextPlayer = false;
+    
+    // Try to find next active player starting from current position + 1
+    for (size_t i = 1; i < players.size(); i++)
+    {
+        nextIndex = (currentPlayerIndex + i) % players.size();
+        if (players[nextIndex]->getIsActive())
+        {
+            foundNextPlayer = true;
+            break;
+        }
+    }
+    
+    if (foundNextPlayer)
+    {
+        currentPlayerIndex = nextIndex;
+        players[currentPlayerIndex]->setIsTurn(true);
+        cout << "Turn moved to: " << players[currentPlayerIndex]->getName() << endl;
+    }
+    else
+    {
+        cout << "No active players found!" << endl;
+    }
 }
 
 /**
@@ -315,8 +334,23 @@ void Game::nextTurn()
  */
 Player *Game::current_player()
 {
-    vector<Player *> activePlayers = active_players();
-    return activePlayers[currentPlayerIndex];
+    // Make sure currentPlayerIndex points to an active player
+    if (currentPlayerIndex < players.size() && players[currentPlayerIndex]->getIsActive())
+    {
+        return players[currentPlayerIndex];
+    }
+    
+    // If current index is invalid, find first active player
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        if (players[i]->getIsActive())
+        {
+            currentPlayerIndex = i;
+            return players[i];
+        }
+    }
+    
+    return nullptr; // No active players
 }
 
 /**
@@ -330,16 +364,55 @@ Player *Game::current_player()
  */
 void Game::removePlayer(Player *player) // Function to remove a player from the game
 {
-    vector<Player *> activePlayers = active_players();
-    for (size_t i = 0; i < activePlayers.size(); i++)
+    bool wasCurrentPlayer = false;
+    
+    // Find and deactivate the player
+    for (size_t i = 0; i < players.size(); i++)
     {
-        if (activePlayers[i]->getName() == player->getName())
+        if (players[i]->getId() == player->getId())
         {
-            activePlayers[i]->setIsActive(0);                                                       // Set the player to inactive
-            players.erase(remove(players.begin(), players.end(), activePlayers[i]), players.end()); // Remove the player from the game
-           // Game::addMessage("Player " + activePlayers[i]->getName() + " has been removed from the game.");
-            cout << "Player " << activePlayers[i]->getName() << " has been removed from the game." << endl;
+            // Check if this player currently has the turn
+            wasCurrentPlayer = players[i]->getIsTurn();
+            
+            players[i]->setIsActive(false);     // Set the player to inactive
+            players[i]->setIsTurn(false);       // Remove their turn status
+            cout << "Player " << players[i]->getName() << " has been removed from the game." << endl;
             break;
+        }
+    }
+    
+    // If the removed player had the turn, use modified nextTurn logic
+    if (wasCurrentPlayer)
+    {
+        vector<Player*> activePlayers = active_players();
+        if (!activePlayers.empty())
+        {
+            // Find current position in active players and move to next
+            int activeIndex = 0;
+            for (size_t i = 0; i < activePlayers.size(); i++)
+            {
+                if (activePlayers[i]->getId() == activePlayers[currentPlayerIndex % activePlayers.size()]->getId())
+                {
+                    activeIndex = i;
+                    break;
+                }
+            }
+            
+            // Move to next active player
+            activeIndex = (activeIndex) % activePlayers.size(); // Stay at same position or wrap
+            activePlayers[activeIndex]->setIsTurn(true);
+            
+            // Update currentPlayerIndex to match the new active player in original players list
+            for (size_t i = 0; i < players.size(); i++)
+            {
+                if (players[i]->getId() == activePlayers[activeIndex]->getId())
+                {
+                    currentPlayerIndex = i;
+                    break;
+                }
+            }
+            
+            cout << "Turn moved to: " << activePlayers[activeIndex]->getName() << endl;
         }
     }
 }
@@ -404,27 +477,18 @@ void Game::endGame()
 }
 
 /**
- * @brief Reset the game to its initial state.
- * This function deletes all players, clears the players vector, resets the coins in the bank,
- * sets the current player index to 0, and marks the game as not over.
+ * @brief Get all players in the game (both active and inactive).
+ * This function returns a vector containing pointers to all players in the game.
  *
  * @param none
- * @return void
+ * @return vector<Player*> A vector of pointers to all Player objects.
  * @throws none
  */
-void Game::resetGame()
+vector<Player*> Game::getPlayers()
 {
-    for (Player *p : players)
-    {
-        delete p;
-    }
-    players.clear();
-    coinsInBank = 0;
-    currentPlayerIndex = 0;
-    isGameOver = false;
-    winner_name = "";
-    cout << "Game reset!" << endl;
+    return players;
 }
+
 
 /**
  * @brief Configure the game with a specified number of initial coins.
