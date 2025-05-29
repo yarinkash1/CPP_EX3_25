@@ -242,7 +242,6 @@ void showMessagePopup(sf::Font &font)
     }
 }
 
-
 // Function to show player stats in a popup window
 void showPlayerStatsPopup(Player *player, sf::Font &font)
 {
@@ -515,7 +514,6 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
     return selectedPlayer;
 }
 
-
 // Function to show forced coup popup
 void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
@@ -571,7 +569,7 @@ void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
                 if (coupButton.getGlobalBounds().contains(mousePos))
                 {
                     popup.close(); // Close this popup first
-                    
+
                     // Let player choose target
                     Player *target = showTargetPlayerPopup(gameInstance, player, font, "coup");
                     if (target != nullptr)
@@ -579,14 +577,14 @@ void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
                         // Execute coup with proper target
                         Character *character = player->getRole();
                         character->coup(target); // ✅ Pass the selected target
-                        
+
                         // Show any messages from the coup
                         showMessagePopup(font);
-                        
+
                         // DON'T call nextTurn() here - the coup method handles turn progression
                         // If game ended, coup() won't call nextTurn()
                         // If game continues, coup() will call nextTurn()
-                        
+
                         cout << player->getName() << " was forced to coup " << target->getName() << " due to having more than 10 coins." << endl;
                     }
                     return;
@@ -620,7 +618,6 @@ void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
         popup.display();
     }
 }
-
 
 void executeRoleAction(Character *character, Player *target, const std::string &roleName)
 {
@@ -676,7 +673,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
     }
     else if (roleName == "Merchant")
     {
-        roleSpecificAction = "7. Add Coin (free)";
+        roleSpecificAction = "No special action"; // Merchant has no special action
     }
     else if (roleName == "Spy")
     {
@@ -771,6 +768,12 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 // Spy can't use peek action if already peeked this turn
                 Spy *spy = static_cast<Spy *>(player->getRole());
                 isAllowed = !spy->getIsAlreadyPeeked(); //  Disable button if already peeked
+            }
+            else if (roleName == "Merchant")
+            {
+                // MAKE MERCHANT'S BUTTON NON-CLICKABLE
+                canAfford = false; // Set to false to disable the button
+                isAllowed = false; // Set to false to disable the button
             }
             else
             {
@@ -907,6 +910,12 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                                 Spy *spy = static_cast<Spy *>(player->getRole());
                                 isAllowed = !spy->getIsAlreadyPeeked(); // ✅ Prevent click if already peeked
                             }
+                            else if (roleName == "Merchant")
+                            {
+                                // PREVENT MERCHANT FROM CLICKING THIS BUTTON
+                                canAfford = false;
+                                isAllowed = false;
+                            }
                             else
                             {
                                 canAfford = true;
@@ -928,14 +937,15 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                         else
                         {
                             // Optional: Show message why action is not available
-                            if (!canAfford)
+                            if (!canAfford && roleName != "Merchant") // ✅ Don't show message for Merchant
                             {
                                 Game::addMessage("Not enough coins for this action!");
                             }
-                            else if (!isAllowed)
+                            else if (!isAllowed && roleName != "Merchant") // ✅ Don't show message for Merchant
                             {
                                 Game::addMessage("This action is currently prevented!");
                             }
+                            // For Merchant, do nothing - button is just disabled visually
                             showMessagePopup(font);
                         }
                     }
@@ -1003,6 +1013,12 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                     canAfford = true;
                     Spy *spy = static_cast<Spy *>(player->getRole());
                     isAllowed = !spy->getIsAlreadyPeeked(); // Disable button if already peeked
+                }
+                else if (roleName == "Merchant")
+                {
+                    // MERCHANT BUTTON ALWAYS DISABLED
+                    canAfford = false;
+                    isAllowed = false;
                 }
                 else
                 {
@@ -1494,6 +1510,13 @@ int main()
                             cout << "Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                             if (activePlayers[i]->getIsTurn() == true)
                             {
+                                // MERCHANT PASSIVE ABILITY - add this check at the start of every turn
+                                if (activePlayers[i]->getRole()->getRoleName() == "Merchant")
+                                {
+                                    static_cast<Merchant *>(activePlayers[i]->getRole())->Action();
+                                    showMessagePopup(font); // Show the passive ability message
+                                }
+
                                 if (activePlayers[i]->getRole()->getRoleName() == "Spy")
                                 {
                                     static_cast<Spy *>(activePlayers[i]->getRole())->setAlreadyPeeked(false);
@@ -1582,6 +1605,12 @@ int main()
                                 cout << "Dev Mode - Play Turn clicked for player: " << activePlayers[i]->getName() << endl;
                                 if (activePlayers[i]->getIsTurn() == true)
                                 {
+                                    // MERCHANT PASSIVE ABILITY - add this check at the start of every turn
+                                    if (activePlayers[i]->getRole()->getRoleName() == "Merchant")
+                                    {
+                                        static_cast<Merchant *>(activePlayers[i]->getRole())->Action();
+                                        showMessagePopup(font); // Show the passive ability message
+                                    }
                                     // Reset Spy's peek flag at start of turn
                                     if (activePlayers[i]->getRole()->getRoleName() == "Spy")
                                     {

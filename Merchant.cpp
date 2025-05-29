@@ -26,7 +26,7 @@ void Merchant::addCoin()
         owner->addNumCoins(1);
         Game::addMessage(owner->getName() + " has added 1 coin to his total.");
         cout << owner->getName() << " has added 1 coin to his total." << endl;
-        game->nextTurn(); // Move to the next player's turn
+        //game->nextTurn(); // Move to the next player's turn
         return;
     }
 }
