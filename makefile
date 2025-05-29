@@ -6,6 +6,13 @@ TARGET = main_exe
 TEST_TARGET = test_exe
 GUI_TARGET = sfml-app
 
+# Object files that both main and tests need
+GAME_OBJECTS = Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
+
+# SFML libraries
+SFML_LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+
+
 all: $(TARGET) $(TEST_TARGET) $(GUI_TARGET)
 
 Main: $(TARGET)
@@ -14,16 +21,16 @@ Main: $(TARGET)
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
-$(TARGET): main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
-	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o -lsfml-graphics -lsfml-window -lsfml-system
+$(TARGET): main.o %$(GAME_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o $(GAME_OBJECTS) $(SFML_LIBS)
 
-$(TEST_TARGET): coup_tests.o
-	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) coup_tests.o
+$(TEST_TARGET): coup_tests.o $(GAME_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) coup_tests.o $(GAME_OBJECTS) $(SFML_LIBS)
 
-$(GUI_TARGET): main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o
-	$(CXX) $(CXXFLAGS) -o $(GUI_TARGET)  main.o Game.o Player.o Character.o Baron.o General.o Governor.o Judge.o Merchant.o Spy.o -lsfml-graphics -lsfml-window -lsfml-system
+$(GUI_TARGET): main.o $(GAME_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(GUI_TARGET)  main.o $(GAME_OBJECTS) $(SFML_LIBS)
 
-main.o: main.cpp Game.hpp Player.hpp Character.hpp Baron.hpp
+main.o: main.cpp Game.hpp Player.hpp Character.hpp Baron.hpp General.hpp Governor.hpp Judge.hpp Merchant.hpp Spy.hpp
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
 Game.o: Game.cpp Game.hpp Player.hpp
@@ -53,7 +60,7 @@ Merchant.o: Merchant.cpp Merchant.hpp Character.hpp Player.hpp
 Spy.o: Spy.cpp Spy.hpp Character.hpp Player.hpp
 	$(CXX) $(CXXFLAGS) -c Spy.cpp
 
-coup_tests.o: coup_tests.cpp
+coup_tests.o: coup_tests.cpp Game.hpp Player.hpp Character.hpp Baron.hpp General.hpp Governor.hpp Judge.hpp Merchant.hpp Spy.hpp
 	$(CXX) $(CXXFLAGS) -c coup_tests.cpp
 
 valgrind: $(TARGET)

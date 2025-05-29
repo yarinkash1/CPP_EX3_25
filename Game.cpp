@@ -544,3 +544,34 @@ Character* cloneCharacter(const Character* original, Player* newOwner, Game* new
     
     return nullptr; // Unknown role type
 }
+
+/**
+ * @brief Reset the singleton Game instance.
+ * This function cleans up the current game instance, resets player states, and prepares for a new game.
+ * It deletes all players and their roles, resets game state variables, and sets the instance pointer to nullptr.
+ *
+ * @return void
+ * @throws none
+ */
+void Game::resetInstance()
+{
+    if (instance != nullptr) 
+    {
+        // Clean up all players
+        for (Player* player : instance->players) 
+        {
+            delete player; // This will also delete the Character role
+        }
+        instance->players.clear();
+        
+        // Reset game state
+        instance->currentPlayerIndex = 0;
+        instance->coinsInBank = initialCoins;
+        instance->isGameOver = false;
+        instance->winner_name = "";
+        
+        // Delete the singleton instance
+        delete instance;
+        instance = nullptr;
+    }
+}

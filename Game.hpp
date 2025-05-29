@@ -81,5 +81,6 @@ public:
 
     vector<Player*> getPlayers(); // Function to get all players in the game
 
-    Character* cloneCharacter(const Character* original, Player* newOwner, Game* newGame);
+    void resetInstance(); // Function to reset the singleton instance
+
 };
