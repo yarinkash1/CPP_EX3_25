@@ -43,8 +43,6 @@ private:
     ///////////////////////////////////////////////////////////////////////////////
 
 
-    // Private constructor for debugging purposes
-    Game(const std::vector<std::string>& playerNames,int numPlayers,const std::vector<std::string>& roles);
 
     static int initialCoins; // Static variable for configuring initial coins
     Game(const Game&) = delete; // Prevent copying
@@ -62,9 +60,6 @@ public:
 
     // Regular game creation
     static Game& getInstance(int numPlayers, const vector<string>& playerNames);
-        
-    // Overloaded getInstance for creating a game with specific players and roles(debugging purposes)
-    static Game* getInstance(const std::vector<std::string>& playerNames,int numPlayers,const std::vector<std::string>& roles);
 
     void endGame(); // Function to end the game
     bool isGameFinished(); // Function to check if the game is finished
@@ -72,7 +67,6 @@ public:
     string winner(); // Function to get the winner of the game
     string setWinnerName(const string& name); // Function to set the winner's name
 
-    void addPlayer(); // Function to add a player to the game
     void removePlayer(Player* player); // Function to remove a player from the game
     Player* current_player(); // Function to get the current player
     vector<Player*> active_players(); // Function to get all active players

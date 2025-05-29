@@ -145,75 +145,6 @@ Game::Game(int numPlayers, const vector<string>& playerNames)
 }
 
 /**
- * @brief Constructor for the Game class with custom player names and roles(for debugging purposes).
- * Initializes the game with a specified number of players and assigns roles to each player based on the provided vectors.
- * 
- * @param playerNames A vector of strings containing the names of the players.
- * @param numPlayers The number of players in the game.
- * @param roles A vector of strings containing the roles assigned to each player.
- * @return void
- * @throws invalid_argument if the number of player names or roles does not match numPlayers.
- *
- */
-Game::Game(const std::vector<std::string>& playerNames, int numPlayers, const std::vector<std::string>& roles) 
-{
-    if (playerNames.size() != static_cast<size_t>(numPlayers) || roles.size() != static_cast<size_t>(numPlayers)) 
-    {
-        throw std::invalid_argument("Number of players and roles must match numPlayers.");
-    }
-
-    // Step 1: Create Players with nullptr for role
-    for (int i = 0; i < numPlayers; ++i) 
-    {
-        players.push_back(new Player(playerNames[i], nullptr));  // temporarily nullptr
-    }
-
-    // Step 2: Create Character roles now that Player* and Game* exist
-    for (int i = 0; i < numPlayers; ++i) 
-    {
-        Character* character = createCharacterByRole(roles[i], players[i], this);
-        players[i]->setRole(character);  // Assuming you have a setter to assign role after construction
-    }
-
-    // Set the first player as has turn:
-    players[0]->setIsTurn(true);
-}
-
-
-/**
- * @brief Add a player to the game.
- * This function prompts the user for a player's name, creates a Player object with a random role(by using the createCharacterByRole function),
- * and adds the player to the game's player list.
- *
- * @param none
- * @return void
- * @throws none
- */
-void Game::addPlayer()
-{
-    printf("Enter player %d name\n", numPlayers + 1);
-    string name_of_player;
-    getline(cin, name_of_player);
-
-    Player *player = new Player(name_of_player, nullptr);
-
-    // Available roles
-    vector<string> available_roles = {"Baron", "General", "Governor", "Judge", "Merchant", "Spy"};
-    
-    // Randomly select a role (duplicates allowed)
-    random_device rd;
-    mt19937 g(rd());
-    uniform_int_distribution<int> dist(0, available_roles.size() - 1);
-    string role = available_roles[dist(g)];
-    
-    Character *character = createCharacterByRole(role, player, this);
-    player->setRole(character);
-    players.push_back(player);
-    numPlayers++; // Update the player count
-    printf("Player %s was added to the game with a role of %s.\n", name_of_player.c_str(), role.c_str());
-}
-
-/**
  * @brief Get a vector of active players in the game.
  * This function iterates through the players vector and returns a vector containing pointers to all active players (those with is_active set to true).
  *
@@ -275,11 +206,6 @@ void Game::resetPlayerStatus(Player *currentPlayer)
     {
         currentPlayer->setIsSanctioned(false); // Reset the sanctioned status after the player finished his turn
     }
-    // cancel:
-    // if(currentPlayer->getIsArrested() == true)
-    // {
-    //     currentPlayer->setIsArrested(false); // Reset the arrest prevented status after the player finished his turn
-    // }
 }
 
 /**
@@ -304,7 +230,7 @@ void Game::nextTurn()
     // Try to find next active player starting from current position + 1
     for (size_t i = 1; i < players.size(); i++)
     {
-        nextIndex = (currentPlayerIndex + i) % players.size();
+        nextIndex = (currentPlayerIndex + static_cast<int>(i)) % static_cast<int>(players.size());
         if (players[nextIndex]->getIsActive())
         {
             foundNextPlayer = true;
@@ -335,7 +261,7 @@ void Game::nextTurn()
 Player *Game::current_player()
 {
     // Make sure currentPlayerIndex points to an active player
-    if (currentPlayerIndex < players.size() && players[currentPlayerIndex]->getIsActive())
+    if (currentPlayerIndex >= 0 && static_cast<size_t>(currentPlayerIndex) < players.size() && players[currentPlayerIndex]->getIsActive())
     {
         return players[currentPlayerIndex];
     }
@@ -505,24 +431,6 @@ void Game::configure(int coins)
     initialCoins = coins;
 }
 
-/**
- * @brief Get the singleton instance of the Game class with specific player names and roles (for debugging purposes).
- * This function creates a new Game instance with the provided player names and roles if it doesn't already exist.
- *
- * @param playerNames A vector of strings containing the names of the players.
- * @param numPlayers The number of players in the game.
- * @param roles A vector of strings containing the roles assigned to each player.
- * @return Game* Pointer to the singleton Game instance.
- * @throws none
- */
-Game* Game::getInstance(const vector<string>& playerNames,int numPlayers,const vector<string>& roles) 
-{
-    if (!instance) 
-    {
-        instance = new Game(playerNames, numPlayers, roles);
-    }
-    return instance;
-}
 
 /**
  * @brief Get the singleton instance of the Game class with player setup.
@@ -559,11 +467,30 @@ void Game::cleanup()
     }
 }
 
-void Game::addMessage(const std::string& message) {
+//Messages in GUI functions:
+/**
+ * @brief Add a message to the game's message queue.
+ * This function adds a message to the static messageQueue for later retrieval.
+ *
+ * @param message The message to be added to the queue.
+ * @return void
+ * @throws none
+ */
+
+void Game::addMessage(const std::string& message) 
+{
     messageQueue.push(message);
 }
 
-std::string Game::getNextMessage() {
+/**
+ * @brief Get the next message from the game's message queue.
+ * This function retrieves and removes the front message from the static messageQueue.
+ *
+ * @return std::string The next message in the queue, or an empty string if the queue is empty.
+ * @throws none
+ */
+std::string Game::getNextMessage() 
+{
     if (!messageQueue.empty()) {
         std::string msg = messageQueue.front();
         messageQueue.pop();
@@ -572,11 +499,27 @@ std::string Game::getNextMessage() {
     return "";
 }
 
-bool Game::hasMessages() {
+/**
+ * @brief Check if there are any messages in the game's message queue.
+ * This function checks if the static messageQueue is not empty.
+ *
+ * @return bool True if there are messages, false otherwise.
+ * @throws none
+ */
+bool Game::hasMessages() 
+{
     return !messageQueue.empty();
 }
 
-void Game::clearMessages() {
+/**
+ * @brief Clear all messages from the game's message queue.
+ * This function empties the static messageQueue, removing all messages.
+ *
+ * @return void
+ * @throws none
+ */
+void Game::clearMessages() 
+{
     while (!messageQueue.empty()) {
         messageQueue.pop();
     }

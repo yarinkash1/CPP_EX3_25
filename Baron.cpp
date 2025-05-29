@@ -5,6 +5,15 @@
 #include "Player.hpp"
 #include "Game.hpp"
 
+/**
+ * @brief Initializer list Constructor for the Baron class.
+ * 
+ * @param p Pointer to the Player who owns this Baron character.
+ * @param g Pointer to the Game instance in which this Baron character exists.
+ * @return Baron object
+ * @throws None
+ * 
+ */
 Baron::Baron(Player* p, Game* g) : Character(p, g){}
 
 /**
@@ -12,6 +21,7 @@ Baron::Baron(Player* p, Game* g) : Character(p, g){}
  *
  * This action allows the Baron to invest 3 coins and receive 6 coins in return.
  * It checks if the player has enough coins before proceeding with the investment.
+ * Button is disabled in the GUI if the player does not have enough coins.
  *
  * @param None
  * @return void
@@ -58,6 +68,7 @@ void Baron::Action()
 /**
  * @brief Prompts the player to choose an action and executes the selected action.
  *
+ * @note This function is obsolete(the GUI handles the action selection now), but it is kept for terminal playing option.
  * This function displays a list of available actions and allows the player to select one.
  * It handles invalid input and retries if necessary.
  *

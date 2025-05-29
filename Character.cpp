@@ -5,7 +5,7 @@
 #include "Game.hpp"
 
 /**
- * @brief Initializer constructor for the Character class.
+ * @brief Initializer list constructor for the Character class.
  *
  * This constructor initializes the Character object with a player and a game instances.
  *
@@ -300,6 +300,7 @@ void Character::coup(Player *target)
 /**
  * @brief Prompts the player to select a target player to perform an action on.
  *
+ * @note This function is obsolete (the GUI handles the target selection now), but it is kept for terminal playing option.
  * This function displays a list of active players and allows the user to select one.
  * It ensures that the selected player is not the current player and is valid.
  *
