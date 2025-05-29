@@ -44,9 +44,6 @@ void Spy::peekAndPreventArrest(Player &target)
         Game::addMessage("You peeked at " + target.getName() + "'s coins: " + std::to_string(target_num_coins));
         target.setIsPeekedAndArrestPrevented(true);
         alreadyPeeked = true;
-
-        // DON'T call chooseAction() here - let GUI handle the extra turn
-        // DON'T call game->nextTurn() - Spy should keep the turn
     }
 }
 

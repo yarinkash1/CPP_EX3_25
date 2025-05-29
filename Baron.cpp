@@ -40,14 +40,12 @@ void Baron::invest()
         owner->setCoins(owner->getCoins() + 6);
 
         Game::addMessage(owner->getName() + " has invested 3 coins and received 6 coins.");
-        cout << owner->getName() << " has invested 3 coins and received 6 coins." << endl;
         // let gui handle the next turn here
         return;
     }
     else
     {
         Game::addMessage("You do not have enough coins to invest.");
-        cout << owner->getName() << " does not have enough coins to invest." << endl;
         chooseAction(); // Prompt the player to choose another action
     }
 

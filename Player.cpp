@@ -24,6 +24,8 @@ void Player::removeNumCoins(int num_coins)
 /**
  * @brief Print the current status of a player
  * 
+ * @note This function is obsolete because the GUI handles the player status display.
+ * It is kept for reference and debugging purposes.
  * @param none
  * @return void
  * @throws none

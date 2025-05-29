@@ -30,15 +30,12 @@ void Character::gather()
     if (owner->getIsSanctioned() == true)
     {
         Game::addMessage("You are sanctioned and cannot perform the gather action.");
-        // cout << "You are sanctioned and cannot perform the gather action." << endl;
-        chooseAction(); // Prompt the player to choose another action
     }
     else
     {
         game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
         owner->addNumCoins(1);       // Add 1 coin to the player's coins
         Game::addMessage("-- Gather action performed. --");
-        // cout << " -- Gather action performed. --" << endl;
         game->nextTurn(); // Move to the next player's turn
         return;
     }
@@ -60,15 +57,12 @@ void Character::tax()
     if (owner->getIsSanctioned() == true || owner->getIsTaxPrevented() == true)
     {
         Game::addMessage("You are sanctioned and cannot perform the tax action because you are blocked.");
-        // cout << "You are sanctioned and cannot perform the tax action because you are blocked." << endl;
-        chooseAction(); // Prompt the player to choose another action
     }
     else
     {
         game->changeCoinsInBank(-2); // Deduct 2 coins from the bank
         owner->addNumCoins(2);       // Add 2 coins to the player's coins
         Game::addMessage("-- Tax action performed. --");
-        // cout << "-- Tax action performed. --" << endl;
         game->nextTurn(); // Move to the next player's turn
         return;
     }
@@ -91,7 +85,6 @@ void Character::bribe()
     if (owner->getCoins() < 4)
     {
         Game::addMessage("You don't have enough coins to perform the bribe action. Choose another action.");
-        // cout << "You don't have enough coins to perform the bribe action. choose another action" << endl;
         return;
     }
     else
@@ -102,7 +95,6 @@ void Character::bribe()
             owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
             game->changeCoinsInBank(+4); // Add 4 coins to the bank the bank
             Game::addMessage("You lost the 4 coins you payed.");
-            //game->nextTurn(); // Move to the next player's turn
             return;
         }
         else
@@ -139,7 +131,6 @@ void Character::arrest(Player *target)
         if (target == nullptr)
         {
             Game::addMessage("-- Invalid target player. --");
-            // cout << "-- Invalid target player. --" << endl;
             return;
         }
     }
@@ -161,9 +152,7 @@ void Character::arrest(Player *target)
             Game::addMessage(target->getName() + " is a General and gets his coin back.");
     }
     target->setIsArrested(true);
-    // Rest of arrest logic using 'target' parameter
     Game::addMessage("-- Arresting " + target->getName() + " --");
-    // cout << "-- Arresting " << target->getName() << " --" << endl;
 
     game->nextTurn();
 }
@@ -186,7 +175,6 @@ void Character::sanction(Player *target)
     if (owner->getCoins() < 3)
     {
         Game::addMessage("You don't have enough coins to perform the sanction action.");
-        // cout << "You don't have enough coins to perform the sanction action." << endl;
         return;
     }
 
@@ -197,7 +185,6 @@ void Character::sanction(Player *target)
         if (target == nullptr)
         {
             Game::addMessage("-- Invalid target player. --");
-            //  cout << "-- Invalid target player. --" << endl;
             return;
         }
     }
@@ -206,7 +193,6 @@ void Character::sanction(Player *target)
     owner->removeNumCoins(3);
     game->changeCoinsInBank(+3);
     Game::addMessage("-- Sanctioning " + target->getName() + " --");
-    //  cout << "-- Sanctioning " << target->getName() << " --" << endl;
     target->setIsSanctioned(true); // Example logic
 
     if(target->getRole()->getRoleName() == "Judge")
@@ -243,7 +229,6 @@ void Character::coup(Player *target)
     if (owner->getCoins() < 7)
     {
         Game::addMessage("You don't have enough coins to perform the coup action.");
-        cout << "You don't have enough coins to perform the coup action." << endl;
         return;
     }
 
@@ -254,7 +239,6 @@ void Character::coup(Player *target)
         if (target == nullptr)
         {
             Game::addMessage("-- Invalid target player. --");
-            cout << "-- Invalid target player. --" << endl;
             return;
         }
     }
@@ -283,7 +267,6 @@ void Character::coup(Player *target)
     {
         string winnerName = game->winner(); // This will succeed if only 1 player remains
         Game::addMessage("Game Over! Winner: " + winnerName);
-        cout << "Game Over! Winner: " << winnerName << endl;
         
         return; // Don't call nextTurn() - let the popup handle next steps
     }
@@ -291,7 +274,7 @@ void Character::coup(Player *target)
     {
         // No winner yet (more than 1 active player), continue game normally
         Game::addMessage(owner->getName() + " eliminated " + target->getName() + "!");
-        cout << owner->getName() << " eliminated " << target->getName() << "!" << endl;
+
         game->nextTurn(); // Move to the next player's turn
         return;
     }
@@ -327,11 +310,9 @@ Player *Character::target_player()
     if (valid_targets.empty())
     {
         Game::addMessage("No valid targets available.");
-        cout << "No valid targets available." << endl;
         return nullptr;
     }
 
-    // Game::addMessage("Choose a target player from the list:");
     cout << "Choose a player to target from the list (1 - " << valid_targets.size() << ")" << endl;
     for (size_t i = 0; i < valid_targets.size(); i++)
     {

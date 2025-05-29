@@ -61,7 +61,6 @@ public:
     // Regular game creation
     static Game& getInstance(int numPlayers, const vector<string>& playerNames);
 
-    void endGame(); // Function to end the game
     bool isGameFinished(); // Function to check if the game is finished
     bool setGameFinished(bool finished); // Function to set the game as finished
     string winner(); // Function to get the winner of the game

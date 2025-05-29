@@ -36,7 +36,6 @@ void Merchant::addCoin()
         game->changeCoinsInBank(-1); // Deduct 1 coin from the bank
         owner->addNumCoins(1);
         Game::addMessage(owner->getName() + " has added 1 coin to his total.");
-        cout << owner->getName() << " has added 1 coin to his total." << endl;
         //game->nextTurn(); // Move to the next player's turn
         return;
     }

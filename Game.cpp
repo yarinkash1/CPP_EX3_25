@@ -215,7 +215,7 @@ void Game::resetPlayerStatus(Player *currentPlayer)
  *
  * @param none
  * @return void
- * @throws none
+ * @throws invalid_argument if no active players are found to take the next turn.
  */
 void Game::nextTurn()
 {
@@ -242,11 +242,10 @@ void Game::nextTurn()
     {
         currentPlayerIndex = nextIndex;
         players[currentPlayerIndex]->setIsTurn(true);
-        cout << "Turn moved to: " << players[currentPlayerIndex]->getName() << endl;
     }
     else
     {
-        cout << "No active players found!" << endl;
+        throw invalid_argument("No active players found to take the next turn.");
     }
 }
 
@@ -302,7 +301,6 @@ void Game::removePlayer(Player *player) // Function to remove a player from the 
             
             players[i]->setIsActive(false);     // Set the player to inactive
             players[i]->setIsTurn(false);       // Remove their turn status
-            cout << "Player " << players[i]->getName() << " has been removed from the game." << endl;
             break;
         }
     }
@@ -337,8 +335,6 @@ void Game::removePlayer(Player *player) // Function to remove a player from the 
                     break;
                 }
             }
-            
-            cout << "Turn moved to: " << activePlayers[activeIndex]->getName() << endl;
         }
     }
 }
@@ -379,28 +375,12 @@ bool Game::isGameFinished()
 {
     if (winner_name == "")
     {
-        cout << "No winner yet!" << endl;
+        // no winner yet
         return false;
     }
     return isGameOver = true;
 }
 
-/**
- * @brief End the game and announce the winner.
- * This function checks if the game is over and prints the winner's name.
- *
- * @param none
- * @return void
- * @throws none
- */
-void Game::endGame()
-{
-    if (isGameOver == true)
-    {
-        cout << "Game over!" << endl;
-        cout << "The winner is: " << winner_name << endl;
-    }
-}
 
 /**
  * @brief Get all players in the game (both active and inactive).
