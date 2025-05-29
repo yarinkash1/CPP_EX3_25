@@ -98,12 +98,11 @@ void Character::bribe()
     {
         if (owner->getIsBribePrevented() == true)
         {
-            Game::addMessage("You were bribe prevented and cannot perform the bribe action.");
-            //  cout << "You were bribe prevented and cannot perform the bribe action." << endl;
-            game->changeCoinsInBank(+4); // Add 4 coins to the bank the bank
+            Game::addMessage("You were bribe prevented by a judge and your turn ended.");
             owner->removeNumCoins(4);    // Remove 4 coins from the player's coins
+            game->changeCoinsInBank(+4); // Add 4 coins to the bank the bank
             Game::addMessage("You lost the 4 coins you payed.");
-            // cout << "You lost the 4 coins you payed." << endl;
+            //game->nextTurn(); // Move to the next player's turn
             return;
         }
         else
@@ -266,10 +265,9 @@ void Character::coup(Player *target)
             target->removeNumCoins(5); // Remove 5 coins from the target
             game->changeCoinsInBank(+5); // Add 5 coins to the bank
             Game::addMessage("General has prevented coup by paying 5 coins.");
+            game->nextTurn();
             return; // Coup action blocked
         }
-        game->nextTurn();
-        return; // Coup action blocked
     }
 
     // Perform coup

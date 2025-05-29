@@ -723,7 +723,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             break;
         case 3: // Bribe
             canAfford = (player->getCoins() >= 4);
-            isAllowed = !player->getIsBribePrevented(); // Cannot bribe if bribe prevented
+            // isAllowed = !player->getIsBribePrevented(); // Cannot bribe if bribe prevented
             break;
         case 4:               // Arrest
             canAfford = true; // Free action
@@ -873,7 +873,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             break;
                         case 3: // Bribe
                             canAfford = (player->getCoins() >= 4);
-                            isAllowed = !player->getIsBribePrevented();
+                            // isAllowed = !player->getIsBribePrevented();
                             break;
                         case 4: // Arrest
                             canAfford = true;
@@ -984,7 +984,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 break;
             case 3: // Bribe
                 canAfford = (player->getCoins() >= 4);
-                isAllowed = !player->getIsBribePrevented();
+                // isAllowed = !player->getIsBribePrevented();
                 break;
             // And in the hover effects section:
             case 4: // Arrest
@@ -1110,6 +1110,13 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 // Show the popup again for extra turn
                 showPlayerActionPopup(player, gameInstance, font);
                 return; // Exit current popup
+            }
+            else
+            {
+                // Bribe was prevented - player loses coins but no extra turn
+                cout << "Bribe prevented - turn ends normally." << endl;
+                gameInstance->nextTurn(); // ✅ Move to next player's turn here
+                // Don't call showPlayerActionPopup again - turn ends
             }
             break;
         case 4: // Arrest
