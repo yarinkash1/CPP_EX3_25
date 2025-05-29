@@ -503,3 +503,44 @@ void Game::clearMessages()
         messageQueue.pop();
     }
 }
+
+/**
+ * @brief Clone a Character object based on the original's role.
+ * This function creates a new Character object of the same type as the original,
+ * but with a new owner and game instance.
+ *
+ * @note Used for the rule of 3 in Player class to deep copy the role.
+ * 
+ * @param original Pointer to the original Character object to clone.
+ * @param newOwner Pointer to the new Player object that will own the cloned character.
+ * @param newGame Pointer to the Game object that the cloned character will be part of.
+ * @return Character* Pointer to the newly created cloned Character object, or nullptr if the role is unknown.
+ * @throws none
+ */
+Character* cloneCharacter(const Character* original, Player* newOwner, Game* newGame)
+{
+    if (original == nullptr) return nullptr;
+    
+    string roleName = original->getRoleName();
+    
+    if (roleName == "Baron") {
+        return new Baron(newOwner, newGame);
+    }
+    else if (roleName == "General") {
+        return new General(newOwner, newGame);
+    }
+    else if (roleName == "Governor") {
+        return new Governor(newOwner, newGame);
+    }
+    else if (roleName == "Judge") {
+        return new Judge(newOwner, newGame);
+    }
+    else if (roleName == "Merchant") {
+        return new Merchant(newOwner, newGame);
+    }
+    else if (roleName == "Spy") {
+        return new Spy(newOwner, newGame);
+    }
+    
+    return nullptr; // Unknown role type
+}

@@ -49,10 +49,18 @@ public:
     {
     }
 
-    ~Player()
-    {
-        delete role;
-    }
+    // -- Rule of 3:
+
+    /**
+    * Players are created once at game start
+    * Players are stored in vectors (no copying needed)
+    * Game over removes players (no copying needed)
+    */
+   
+    ~Player(){delete role;} // Destructor
+    Player(const Player& other) = delete; // Copy constructor
+    Player& operator=(const Player& other) = delete; // Copy assignment operator
+    // -- End of Rule of 3 --
 
     void printPlayerInfo();
     // Friend function declaration

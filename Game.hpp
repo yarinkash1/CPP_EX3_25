@@ -35,19 +35,13 @@ private:
 
     // Singleton-related
     Game(int numPlayers, const vector<string>& playerNames); // Private constructor for random roles
-    
-
-    ////////////////////////////////////////////////////////////////////////////////
-    static Game* instance;
-
-    ///////////////////////////////////////////////////////////////////////////////
-
-
-
+    static Game* instance; // Static instance for the singleton pattern
     static int initialCoins; // Static variable for configuring initial coins
+    // Rule of 3:
     Game(const Game&) = delete; // Prevent copying
     Game& operator=(const Game&) = delete; // Prevent assignment
 
+    // Static message queue for game messages:
     static std::queue<std::string> messageQueue;
 
 public:
@@ -79,9 +73,13 @@ public:
     void addPlayerWithName(const string& playerName);
     static void cleanup(); // Static method to clean up singleton
 
+    //GUI-related methods:
     static void addMessage(const std::string& message);
     static std::string getNextMessage();
     static bool hasMessages();
     static void clearMessages();
+
     vector<Player*> getPlayers(); // Function to get all players in the game
+
+    Character* cloneCharacter(const Character* original, Player* newOwner, Game* newGame);
 };
