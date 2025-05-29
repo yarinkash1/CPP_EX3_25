@@ -14,6 +14,14 @@ This game features completely new roles created for this version, except for the
 - Merchant  
 - Spy *(from Coup: Rebellion G54 expansion)*
 
+## Bonus Features
+
+ - Developer Mode -> can be toggled in the main.cpp with the
+   boolean named 'isDevMode' at the start of the file.
+
+   Starts game with 6 players with names already set each of them have a different role.
+   This lets you check all the edge cases through the GUI in a convenient way.
+
 ## Installation Instructions (GUI via WSL)
 
 Follow these steps to install the GUI components for running the game under **WSL (Windows Subsystem for Linux)**.

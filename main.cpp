@@ -11,15 +11,22 @@
 #include "Judge.hpp"         // Include the header file for the Judge class
 #include "Merchant.hpp"      // Include the header file for the Merchant class
 #include "Spy.hpp"           // Include the header file for the Spy class
-#include <vector>
-#include <sstream>
-#include <utility>
+#include <vector>            // Include vector for dynamic arrays
+#include <sstream>           // Include sstream for string stream operations
+#include <utility>           // Include utility for std::pair
 
 using namespace std;
 
 bool isDevMode = true; // Flag for developer mode
 
-// Helper to create a rectangle background for a button text
+/**
+ * @brief Creates a button shape based on the text size.
+ * This function creates a rectangle shape that can be used as a button in the GUI.
+ * 
+ * @param text The text to be displayed on the button.
+ * @return sf::RectangleShape The rectangle shape for the button.
+ * @throws None
+ */
 sf::RectangleShape createButtonShape(const sf::Text &text)
 {
     sf::RectangleShape shape;
@@ -31,7 +38,7 @@ sf::RectangleShape createButtonShape(const sf::Text &text)
     return shape;
 }
 
-// Struct to hold game setup data
+// Struct to hold game setup data(number of players, names and validity flag for the popup)
 struct GameSetupData
 {
     int numPlayers;
@@ -39,6 +46,14 @@ struct GameSetupData
     bool isValid;
 };
 
+/**
+ * @brief Displays a popup for game setup to enter the number of players and their names.
+ * This function creates a popup window where the user can enter the number of players and their names.
+ * 
+ * @param font The font to be used for text in the popup.
+ * @return GameSetupData Struct containing the number of players, player names, and validity flag.
+ * @throws None
+ */
 GameSetupData showGameSetupPopup(sf::Font &font)
 {
     GameSetupData data;
@@ -176,13 +191,20 @@ GameSetupData showGameSetupPopup(sf::Font &font)
             popup.draw(currentInput);
             popup.draw(playersList);
         }
-
         popup.display();
     }
-
     return data;
 }
 
+/**
+ * @brief Displays a popup window to show game messages.
+ * This function collects all messages from the game and displays them in a popup window.
+ * The popup can be closed by clicking anywhere or pressing any key.
+ * 
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws None
+ */
 void showMessagePopup(sf::Font &font)
 {
     if (!Game::hasMessages())
@@ -242,7 +264,16 @@ void showMessagePopup(sf::Font &font)
     }
 }
 
-// Function to show player stats in a popup window
+/**
+ * @brief Displays a popup window showing the statistics of a player.
+ * This function creates a popup window that displays various statistics of the given player.
+ * The statistics include player ID, name, coins, active status, role, turn status, and other flags.
+ * 
+ * @param player Pointer to the Player object whose statistics are to be displayed.
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws None
+ */
 void showPlayerStatsPopup(Player *player, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(500, 700), "Player Stats - " + player->getName());
@@ -358,7 +389,18 @@ void showPlayerStatsPopup(Player *player, sf::Font &font)
     }
 }
 
-// Function to show target player selection popup
+/**
+ * @brief Displays a popup window to select a target player for an action.
+ * This function creates a popup window that allows the current player to select a target player
+ * for actions like arrest, sanction, coup, etc. It filters valid targets based on the action type.
+ * 
+ * @param gameInstance Pointer to the Game instance.
+ * @param currentPlayer Pointer to the Player who is currently taking the action.
+ * @param font The font to be used for text in the popup.
+ * @param actionType The type of action being performed (e.g., "arrest", "sanction", "general").
+ * @return Player* Pointer to the selected target player, or nullptr if no valid targets are available.
+ * @throws None
+ */
 Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Font &font, const std::string &actionType = "")
 {
     vector<Player *> activePlayers = gameInstance->active_players();
@@ -377,7 +419,7 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
                 {
                     // Check coin requirements based on role
                     bool hasEnoughCoins = false;
-                    
+
                     if (player->getRole()->getRoleName() == "Merchant")
                     {
                         // Merchant needs 2+ coins (pays 2 to bank)
@@ -388,7 +430,7 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
                         // All other roles need 1+ coin (pay 1 to arresting player)
                         hasEnoughCoins = (player->getCoins() >= 1);
                     }
-                    
+
                     if (hasEnoughCoins)
                     {
                         validTargets.push_back(player);
@@ -405,12 +447,12 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
                     validTargets.push_back(player);
                 }
             }
-                        // Special filtering for sanction action
+            // Special filtering for sanction action
             else if (actionType == "sanction")
             {
                 // Check if current player can afford to sanction this target
                 bool canAffordSanction = false;
-                
+
                 if (player->getRole()->getRoleName() == "Judge")
                 {
                     // Sanctioning a Judge costs 4 coins (3 + 1 extra)
@@ -421,7 +463,7 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
                     // Sanctioning other roles costs 3 coins
                     canAffordSanction = (currentPlayer->getCoins() >= 3);
                 }
-                
+
                 if (canAffordSanction)
                 {
                     validTargets.push_back(player);
@@ -563,7 +605,17 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
     return selectedPlayer;
 }
 
-// Function to show forced coup popup
+/**
+ * @brief Displays a popup window to force a coup on a player with more than 10 coins.
+ * This function creates a popup window that informs the player that they have too many coins
+ * and must perform a coup. It allows them to select a target player for the coup.
+ * 
+ * @param player Pointer to the Player who is forced to coup.
+ * @param gameInstance Pointer to the Game instance.
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws None
+ */
 void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 300), "Forced Coup - " + player->getName());
@@ -625,16 +677,10 @@ void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
                     {
                         // Execute coup with proper target
                         Character *character = player->getRole();
-                        character->coup(target); // ✅ Pass the selected target
+                        character->coup(target); // Pass the selected target
 
                         // Show any messages from the coup
                         showMessagePopup(font);
-
-                        // DON'T call nextTurn() here - the coup method handles turn progression
-                        // If game ended, coup() won't call nextTurn()
-                        // If game continues, coup() will call nextTurn()
-
-                        cout << player->getName() << " was forced to coup " << target->getName() << " due to having more than 10 coins." << endl;
                     }
                     return;
                 }
@@ -668,6 +714,17 @@ void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
     }
 }
 
+/**
+ * @brief Executes the role-specific action for a character.
+ * This function checks the role of the character and calls the appropriate action method
+ * with the target player as an argument.
+ * 
+ * @param character Pointer to the Character object performing the action.
+ * @param target Pointer to the Player who is the target of the action.
+ * @param roleName The name of the role being executed.
+ * @return void
+ * @throws None
+ */
 void executeRoleAction(Character *character, Player *target, const std::string &roleName)
 {
     if (roleName == "Judge")
@@ -684,7 +741,17 @@ void executeRoleAction(Character *character, Player *target, const std::string &
     }
 }
 
-// Function to show player action selection popup
+/**
+ * @brief Displays a popup window for the player to choose their action.
+ * This function creates a popup window that allows the player to select an action based on their role.
+ * It also checks if the player has enough coins and if the action is allowed based on their status.
+ * 
+ * @param player Pointer to the Player object who is taking the action.
+ * @param gameInstance Pointer to the Game instance.
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws std::runtime_error if the player has no valid actions available.
+ */
 void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 500), "Choose Action - " + player->getName());
@@ -969,7 +1036,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             {
                                 canAfford = true;
                                 Spy *spy = static_cast<Spy *>(player->getRole());
-                                isAllowed = !spy->getIsAlreadyPeeked(); // ✅ Prevent click if already peeked
+                                isAllowed = !spy->getIsAlreadyPeeked(); // Prevent click if already peeked
                             }
                             else if (roleName == "Merchant")
                             {
@@ -998,11 +1065,11 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                         else
                         {
                             // Optional: Show message why action is not available
-                            if (!canAfford && roleName != "Merchant") // ✅ Don't show message for Merchant
+                            if (!canAfford && roleName != "Merchant") // Don't show message for Merchant
                             {
                                 Game::addMessage("Not enough coins for this action!");
                             }
-                            else if (!isAllowed && roleName != "Merchant") // ✅ Don't show message for Merchant
+                            else if (!isAllowed && roleName != "Merchant") // Don't show message for Merchant
                             {
                                 Game::addMessage("This action is currently prevented!");
                             }
@@ -1155,7 +1222,6 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             // Check if bribe was successful (player still has turn and wasn't prevented)
             if (!player->getIsBribePrevented() && player->getCoins() >= 0) // Successful bribe
             {
-                cout << "Extra turn! Choose another action." << endl;
                 // Show the popup again for extra turn
                 showPlayerActionPopup(player, gameInstance, font);
                 return; // Exit current popup
@@ -1163,14 +1229,13 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             else
             {
                 // Bribe was prevented - player loses coins but no extra turn
-                cout << "Bribe prevented - turn ends normally." << endl;
-                gameInstance->nextTurn(); // ✅ Move to next player's turn here
+                gameInstance->nextTurn(); // Move to next player's turn here
                 // Don't call showPlayerActionPopup again - turn ends
             }
             break;
         case 4: // Arrest
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font, "arrest"); // ✅ Add "arrest" parameter
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "arrest"); // Add "arrest" parameter
             if (target != nullptr)
             {
                 character->arrest(target);
@@ -1180,7 +1245,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         }
         case 5: // Sanction
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font, "sanction"); // ✅ Add "sanction" parameter
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "sanction"); // Add "sanction" parameter
             if (target != nullptr)
             {
                 character->sanction(target);
@@ -1190,7 +1255,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
         }
         case 6: // Coup
         {
-            Player *target = showTargetPlayerPopup(gameInstance, player, font, "coup"); // ✅ Add "coup" parameter
+            Player *target = showTargetPlayerPopup(gameInstance, player, font, "coup"); // Add "coup" parameter
             if (target != nullptr)
             {
                 character->coup(target);
@@ -1219,7 +1284,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             }
             else if (roleName == "Judge")
             {
-                Player *target = showTargetPlayerPopup(gameInstance, player, font, "judge"); // ✅ Add action type
+                Player *target = showTargetPlayerPopup(gameInstance, player, font, "judge"); // Add action type
                 if (target != nullptr)
                 {
                     static_cast<Judge *>(character)->Action(target);
@@ -1240,7 +1305,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 }
                 else
                 {
-                    Player *target = showTargetPlayerPopup(gameInstance, player, font, "spy"); // ✅ Add action type
+                    Player *target = showTargetPlayerPopup(gameInstance, player, font, "spy"); // Add action type
                     if (target != nullptr)
                     {
                         spy->Action(target);
@@ -1253,7 +1318,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             }
             else if (roleName == "Governor")
             {
-                Player *target = showTargetPlayerPopup(gameInstance, player, font, "governor"); // ✅ Add action type
+                Player *target = showTargetPlayerPopup(gameInstance, player, font, "governor"); // Add action type
                 if (target != nullptr)
                 {
                     static_cast<Governor *>(character)->Action(target);
@@ -1268,20 +1333,26 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             Game::addMessage(player->getName() + " skipped their turn.");
             gameInstance->nextTurn(); // Same logic as character classes
             showMessagePopup(font);   // Now there will be a message to show
-            // cout << player->getName() << " skipped their turn." << endl;
             break;
         }
         break;
         default:
-            cout << "Invalid action selected." << endl;
+            throw std::runtime_error("Invalid action selected");
             break;
         }
-
-        cout << player->getName() << " selected action " << selectedAction << ": " << actions[selectedAction - 1] << endl;
     }
 }
 
-// Add this function to main.cpp (or wherever you handle popups)
+/**
+ * @brief Displays a popup window to show the game over message and winner.
+ * This function creates a popup window that displays the game over message and the name of the winner.
+ * It also provides an option to quit the game or return to the main menu.
+ * 
+ * @param winnerName The name of the player who won the game.
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws None
+ */
 void showGameOverPopup(const std::string &winnerName, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 200), "Game Over!");
@@ -1330,7 +1401,16 @@ void showGameOverPopup(const std::string &winnerName, sf::Font &font)
     }
 }
 
-// Function to show "Not Your Turn" message popup
+/**
+ * @brief Displays a popup window to inform the player that it's not their turn.
+ * This function creates a popup window that shows a message indicating that the player
+ * is trying to take an action when it's not their turn.
+ * 
+ * @param player Pointer to the Player who attempted to take an action.
+ * @param font The font to be used for text in the popup.
+ * @return void
+ * @throws None
+ */
 void showNotYourTurnPopup(Player *player, sf::Font &font)
 {
     sf::RenderWindow popup(sf::VideoMode(400, 200), "Turn Error");
@@ -1380,6 +1460,16 @@ void showNotYourTurnPopup(Player *player, sf::Font &font)
     }
 }
 
+/**
+ * @brief Main function to run the SFML window and game logic.
+ * This function initializes the SFML window, handles game states, and manages user input.
+ * It also loads the font and sets up the main menu with buttons for starting the game,
+ * entering developer mode, or quitting.
+ * 
+ * @param None
+ * @return int Exit code of the program.
+ * @throws None
+ */
 int main()
 {
 
@@ -1462,7 +1552,6 @@ int main()
 
                     if (startButton.getGlobalBounds().contains(mousePos))
                     {
-                        std::cout << "Start Game clicked\n";
 
                         // Show popup for game setup
                         GameSetupData setupData = showGameSetupPopup(font);
@@ -1471,22 +1560,12 @@ int main()
                         {
                             try
                             {
-                                Game::configure(60);
+                                Game::configure(100);
                                 // Use the regular getInstance method (without roles parameter)
                                 Game &game = Game::getInstance(setupData.numPlayers, setupData.playerNames);
                                 gameInstance = &game; // Store the game instance
 
-                                printf(" ---------------------------------------------------------------------------------------------------------------------------- \n");
-                                cout << "Game started successfully!" << endl;
-
                                 vector<Player *> active_players = game.active_players();
-                                for (Player *player : active_players)
-                                {
-                                    player->printPlayerInfo();
-                                }
-
-                                int coins_in_bank = game.getCoinsInBank();
-                                cout << "Coins in bank: " << coins_in_bank << endl;
 
                                 // Switch to playing state
                                 currentState = PLAYING;
@@ -1500,8 +1579,6 @@ int main()
                         {
                             cout << "Game setup cancelled or invalid." << endl;
                         }
-
-                        printf(" ---------------------------------------------------------------------------------------------------------------------------- \n");
                     }
 
                     else if (devButton.getGlobalBounds().contains(mousePos))
@@ -1513,7 +1590,7 @@ int main()
                             // Simple approach - use regular constructor then manually set roles
                             vector<string> player_names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
 
-                            Game::configure(60);
+                            Game::configure(100);
 
                             try
                             {
@@ -1548,13 +1625,6 @@ int main()
                                     // Assign new role
                                     activePlayers[i]->setRole(newRole);
                                 }
-
-                                cout << "=== DEV MODE ROLES ASSIGNED ===" << endl;
-                                for (size_t i = 0; i < activePlayers.size(); i++)
-                                {
-                                    cout << activePlayers[i]->getName() << " -> " << activePlayers[i]->getRole()->getRoleName() << endl;
-                                }
-                                cout << "===============================" << endl;
 
                                 // Switch to dev mode state
                                 currentState = DEV_MODE;

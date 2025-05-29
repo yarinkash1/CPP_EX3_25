@@ -100,7 +100,6 @@ void Game::addPlayerWithName(const string& playerName)
     player->setRole(character);
     players.push_back(player);
     numPlayers++; // Update the player count
-    printf("Player %s was added to the game with a role of %s.\n", playerName.c_str(), role.c_str());
 }
 
 /**
