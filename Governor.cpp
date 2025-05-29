@@ -63,7 +63,7 @@ void Governor::cancelTax(Player &target)
  */
 void Governor::Action()
 {
-    // Empty - Governor doesn't use parameterless action
+    tax(); // calls the governor's tax method
 }
 
 /**

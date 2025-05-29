@@ -81,6 +81,6 @@ public:
 
     vector<Player*> getPlayers(); // Function to get all players in the game
 
-    void resetInstance(); // Function to reset the singleton instance
+    static void resetInstance(); // Function to reset the singleton instance
 
 };

@@ -21,7 +21,7 @@ Main: $(TARGET)
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
-$(TARGET): main.o %$(GAME_OBJECTS)
+$(TARGET): main.o $(GAME_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) main.o $(GAME_OBJECTS) $(SFML_LIBS)
 
 $(TEST_TARGET): coup_tests.o $(GAME_OBJECTS)

@@ -403,10 +403,14 @@ vector<Player*> Game::getPlayers()
  * 
  * @param coins The number of coins to set as initial coins.
  * @return void
- * @throws none
+ * @throws invalid_argument if the coins parameter is negative.
  */
 void Game::configure(int coins)
 {
+    if(coins < 0)
+    {
+        throw invalid_argument("Initial coins cannot be negative.");
+    }
     initialCoins = coins;
 }
 
