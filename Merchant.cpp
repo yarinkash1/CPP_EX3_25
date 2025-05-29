@@ -54,6 +54,11 @@ void Merchant::Action()
     addCoin();
 }
 
+void Merchant::Action(Player* target)
+{
+    // Empty - Merchant doesn't use parameterized action
+}
+
 /**
  * @brief Prompts the player to choose an action and executes the selected action.
  *

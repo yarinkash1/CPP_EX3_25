@@ -46,7 +46,7 @@ void General::preventCoup(Player &target)
  */
 void General::Action()
 {
-    preventCoup(*owner);
+    // Empty - General doesn't use parameterless action
 }
 
 /**

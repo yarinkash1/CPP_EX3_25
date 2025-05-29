@@ -14,5 +14,6 @@ private:
 public:
     Merchant(Player* p, Game* g); 
     void Action() override;
+    void Action(Player* target) override;
     std::string getRoleName() const override { return "Merchant"; }
 };

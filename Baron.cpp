@@ -65,6 +65,11 @@ void Baron::Action()
     invest();
 }
 
+void Baron::Action(Player *target)
+{
+    // Empty - Baron doesn't use parameterized action
+}
+
 
 /**
  * @brief Prompts the player to choose an action and executes the selected action.

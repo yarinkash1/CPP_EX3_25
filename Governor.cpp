@@ -64,7 +64,7 @@ void Governor::cancelTax(Player &target)
  */
 void Governor::Action()
 {
-    cancelTax(*owner);
+    // Empty - Governor doesn't use parameterless action
 }
 
 /**
@@ -80,7 +80,9 @@ void Governor::Action(Player* target)
     if (target != nullptr) 
     {
         cancelTax(*target); // Calls public method
-    } else {
+    } 
+    else 
+    {
         Game::addMessage("No target selected for Governor action.");
     }
 }

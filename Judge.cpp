@@ -45,7 +45,7 @@ void Judge::cancelBribe(Player &target)
  */
 void Judge::Action()
 {
-    cancelBribe(*owner);
+    // Empty - Judge doesn't use parameterless action
 }
 
 /**

@@ -59,7 +59,7 @@ void Spy::peekAndPreventArrest(Player &target)
  */
 void Spy::Action()
 {
-    peekAndPreventArrest(*owner);
+    // Empty - Spy doesn't use parameterless action
 }
 
 /**
