@@ -1143,7 +1143,25 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             break;
         }
         case 7:
-            if (roleName == "Judge")
+            if (roleName == "Baron")
+            {
+                // Baron's invest action
+                static_cast<Baron *>(character)->Action();
+                showMessagePopup(font);
+                gameInstance->nextTurn();
+            }
+            else if (roleName == "General")
+            {
+                // General's prevent coup action - needs target
+                Player *target = showTargetPlayerPopup(gameInstance, player, font, "general");
+                if (target != nullptr)
+                {
+                    static_cast<General *>(character)->Action(target);
+                    showMessagePopup(font);
+                    gameInstance->nextTurn();
+                }
+            }
+            else if (roleName == "Judge")
             {
                 Player *target = showTargetPlayerPopup(gameInstance, player, font, "judge"); // ✅ Add action type
                 if (target != nullptr)
