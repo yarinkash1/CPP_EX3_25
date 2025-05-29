@@ -242,100 +242,6 @@ void showMessagePopup(sf::Font &font)
     }
 }
 
-// Function to show forced coup popup
-void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
-{
-    sf::RenderWindow popup(sf::VideoMode(400, 300), "Forced Coup - " + player->getName());
-
-    // Title
-    sf::Text title("Too Many Coins!", font, 24);
-    title.setFillColor(sf::Color::Red);
-    title.setPosition(100, 30);
-
-    // Message
-    sf::Text message(player->getName() + " has " + to_string(player->getCoins()) + " coins.", font, 16);
-    message.setFillColor(sf::Color::White);
-    message.setPosition(50, 80);
-
-    sf::Text forceMessage("Players with more than 10 coins must coup!", font, 14);
-    forceMessage.setFillColor(sf::Color::Yellow);
-    forceMessage.setPosition(50, 110);
-
-    // Coup button
-    sf::RectangleShape coupButton;
-    coupButton.setSize(sf::Vector2f(200, 40));
-    coupButton.setPosition(100, 150);
-    coupButton.setFillColor(sf::Color(150, 50, 50));
-    coupButton.setOutlineThickness(2);
-    coupButton.setOutlineColor(sf::Color::White);
-
-    sf::Text coupText("Coup (7 coins)", font, 16);
-    coupText.setFillColor(sf::Color::White);
-    coupText.setPosition(140, 165);
-
-    // Instructions
-    sf::Text instruction("Click to coup or press ESC to cancel", font, 12);
-    instruction.setFillColor(sf::Color::Cyan);
-    instruction.setPosition(50, 220);
-
-    while (popup.isOpen())
-    {
-        sf::Event event;
-        while (popup.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed ||
-                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
-            {
-                popup.close();
-                return;
-            }
-
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
-
-                if (coupButton.getGlobalBounds().contains(mousePos))
-                {
-                    // Execute coup
-                    Character *character = player->getRole();
-                    character->coup(nullptr); // Call the version with parameter, passing nullptr
-
-                    // Use the gameInstance to progress the turn after coup
-                    gameInstance->nextTurn();
-
-                    cout << player->getName() << " was forced to coup due to having more than 10 coins." << endl;
-                    popup.close();
-                    return;
-                }
-            }
-        }
-
-        // Handle hover effect
-        sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
-        if (coupButton.getGlobalBounds().contains(mousePos))
-        {
-            coupButton.setFillColor(sf::Color::Yellow);
-            coupText.setFillColor(sf::Color::Black);
-        }
-        else
-        {
-            coupButton.setFillColor(sf::Color(150, 50, 50));
-            coupText.setFillColor(sf::Color::White);
-        }
-
-        popup.clear(sf::Color::Black);
-
-        // Draw all elements
-        popup.draw(title);
-        popup.draw(message);
-        popup.draw(forceMessage);
-        popup.draw(coupButton);
-        popup.draw(coupText);
-        popup.draw(instruction);
-
-        popup.display();
-    }
-}
 
 // Function to show player stats in a popup window
 void showPlayerStatsPopup(Player *player, sf::Font &font)
@@ -608,6 +514,113 @@ Player *showTargetPlayerPopup(Game *gameInstance, Player *currentPlayer, sf::Fon
     popup.close();
     return selectedPlayer;
 }
+
+
+// Function to show forced coup popup
+void showForcedCoupPopup(Player *player, Game *gameInstance, sf::Font &font)
+{
+    sf::RenderWindow popup(sf::VideoMode(400, 300), "Forced Coup - " + player->getName());
+
+    // Title
+    sf::Text title("Too Many Coins!", font, 24);
+    title.setFillColor(sf::Color::Red);
+    title.setPosition(100, 30);
+
+    // Message
+    sf::Text message(player->getName() + " has " + to_string(player->getCoins()) + " coins.", font, 16);
+    message.setFillColor(sf::Color::White);
+    message.setPosition(50, 80);
+
+    sf::Text forceMessage("Players with more than 10 coins must coup!", font, 14);
+    forceMessage.setFillColor(sf::Color::Yellow);
+    forceMessage.setPosition(50, 110);
+
+    // Coup button
+    sf::RectangleShape coupButton;
+    coupButton.setSize(sf::Vector2f(200, 40));
+    coupButton.setPosition(100, 150);
+    coupButton.setFillColor(sf::Color(150, 50, 50));
+    coupButton.setOutlineThickness(2);
+    coupButton.setOutlineColor(sf::Color::White);
+
+    sf::Text coupText("Choose Target to Coup", font, 16);
+    coupText.setFillColor(sf::Color::White);
+    coupText.setPosition(115, 165);
+
+    // Instructions
+    sf::Text instruction("Click to select target or press ESC to cancel", font, 12);
+    instruction.setFillColor(sf::Color::Cyan);
+    instruction.setPosition(50, 220);
+
+    while (popup.isOpen())
+    {
+        sf::Event event;
+        while (popup.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed ||
+                (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+            {
+                popup.close();
+                return;
+            }
+
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+
+                if (coupButton.getGlobalBounds().contains(mousePos))
+                {
+                    popup.close(); // Close this popup first
+                    
+                    // Let player choose target
+                    Player *target = showTargetPlayerPopup(gameInstance, player, font, "coup");
+                    if (target != nullptr)
+                    {
+                        // Execute coup with proper target
+                        Character *character = player->getRole();
+                        character->coup(target); // ✅ Pass the selected target
+                        
+                        // Show any messages from the coup
+                        showMessagePopup(font);
+                        
+                        // DON'T call nextTurn() here - the coup method handles turn progression
+                        // If game ended, coup() won't call nextTurn()
+                        // If game continues, coup() will call nextTurn()
+                        
+                        cout << player->getName() << " was forced to coup " << target->getName() << " due to having more than 10 coins." << endl;
+                    }
+                    return;
+                }
+            }
+        }
+
+        // Handle hover effect
+        sf::Vector2f mousePos = popup.mapPixelToCoords(sf::Mouse::getPosition(popup));
+        if (coupButton.getGlobalBounds().contains(mousePos))
+        {
+            coupButton.setFillColor(sf::Color::Yellow);
+            coupText.setFillColor(sf::Color::Black);
+        }
+        else
+        {
+            coupButton.setFillColor(sf::Color(150, 50, 50));
+            coupText.setFillColor(sf::Color::White);
+        }
+
+        popup.clear(sf::Color::Black);
+
+        // Draw all elements
+        popup.draw(title);
+        popup.draw(message);
+        popup.draw(forceMessage);
+        popup.draw(coupButton);
+        popup.draw(coupText);
+        popup.draw(instruction);
+
+        popup.display();
+    }
+}
+
 
 void executeRoleAction(Character *character, Player *target, const std::string &roleName)
 {

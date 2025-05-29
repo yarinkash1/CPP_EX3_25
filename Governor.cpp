@@ -20,7 +20,7 @@ void Governor::tax()
 {
     game->changeCoinsInBank(-3); // Deduct 3 coins from the bank
     owner->addNumCoins(3);       // Add 3 coins to the player's total
-    cout << owner->getName() << " has taken 3 coins from the bank." << endl;
+    Game::addMessage(" -- Tax action performed --");
     game->nextTurn(); // Move to the next player's turn
     return;
 }
