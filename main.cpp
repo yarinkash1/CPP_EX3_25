@@ -727,19 +727,27 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
             break;
         case 4:               // Arrest
             canAfford = true; // Free action
-            // Check if there are any valid targets for arrest
+                              // Check if arrest is prevented by Spy's peek ability
+            if (player->getIsPeekedAndArrestPrevented())
             {
-                vector<Player *> activePlayers = gameInstance->active_players();
-                bool hasValidTargets = false;
-                for (Player *p : activePlayers)
+                isAllowed = false; // Block the button if prevented by Spy
+            }
+            else
+            {
+                // Check if there are any valid targets for arrest
                 {
-                    if (p->getId() != player->getId() && !p->getIsArrested() && p->getCoins() > 0)
+                    vector<Player *> activePlayers = gameInstance->active_players();
+                    bool hasValidTargets = false;
+                    for (Player *p : activePlayers)
                     {
-                        hasValidTargets = true;
-                        break;
+                        if (p->getId() != player->getId() && !p->getIsArrested() && p->getCoins() > 0)
+                        {
+                            hasValidTargets = true;
+                            break;
+                        }
                     }
+                    isAllowed = hasValidTargets; // Disable button if no valid targets
                 }
-                isAllowed = hasValidTargets; // Disable button if no valid targets
             }
             break;
         case 5: // Sanction
@@ -869,7 +877,11 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             break;
                         case 4: // Arrest
                             canAfford = true;
-                            // Check if there are any valid targets for arrest
+                            if (player->getIsPeekedAndArrestPrevented())
+                            {
+                                isAllowed = false;
+                            }
+                            else
                             {
                                 vector<Player *> activePlayers = gameInstance->active_players();
                                 bool hasValidTargets = false;
@@ -974,8 +986,13 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                 canAfford = (player->getCoins() >= 4);
                 isAllowed = !player->getIsBribePrevented();
                 break;
+            // And in the hover effects section:
             case 4: // Arrest
-                // Check if there are any valid targets for arrest
+                if (player->getIsPeekedAndArrestPrevented())
+                {
+                    isAllowed = false;
+                }
+                else
                 {
                     vector<Player *> activePlayers = gameInstance->active_players();
                     bool hasValidTargets = false;
@@ -987,7 +1004,7 @@ void showPlayerActionPopup(Player *player, Game *gameInstance, sf::Font &font)
                             break;
                         }
                     }
-                    isAllowed = hasValidTargets; // Disable button if no valid targets
+                    isAllowed = hasValidTargets;
                 }
                 break;
             case 5: // Sanction

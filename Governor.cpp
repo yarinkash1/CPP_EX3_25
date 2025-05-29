@@ -40,7 +40,7 @@ void Governor::cancelTax(Player &target)
     target.setIsTaxPrevented(true); // Set the target player as tax prevented
     Game::addMessage(owner->getName() + " has canceled the tax on " + target.getName());
     cout << owner->getName() << " has canceled the tax on " << target.getName() << endl;
-    game->nextTurn(); // Move to the next player's turn
+    // let main handle the next turn here
     return;
 }
 

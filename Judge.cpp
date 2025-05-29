@@ -22,7 +22,7 @@ void Judge::cancelBribe(Player &target)
     target.setIsBribePrevented(true); // Set the target player as bribe prevented
     Game::addMessage(owner->getName() + " has canceled the bribe on " + target.getName());
     cout << owner->getName() << " has canceled the bribe on " << target.getName() << endl;
-    game->nextTurn(); // Move to the next player's turn
+    // let main handle the next turn here
     return;
 }
 

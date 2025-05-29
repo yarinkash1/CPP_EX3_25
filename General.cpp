@@ -24,7 +24,7 @@ void General::preventCoup(Player &target)
     target.setIsCoupPrevented(true); // Set the target player as coup prevented
     Game::addMessage(owner->getName() + " has prevented a coup on " + target.getName());
     cout << owner->getName() << " has prevented a coup on " << target.getName() << std::endl;
-    game->nextTurn(); // Move to the next player's turn
+    // let gui handle the next turn here
     return;
 }
 
@@ -38,6 +38,18 @@ void General::preventCoup(Player &target)
 void General::Action()
 {
     preventCoup(*owner);
+}
+
+void General::Action(Player* target)
+{
+    if (target != nullptr)
+    {
+        preventCoup(*target); // Delegate to existing preventCoup method
+    }
+    else
+    {
+        Game::addMessage("No target selected for General action.");
+    }
 }
 
 /**

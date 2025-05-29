@@ -14,5 +14,6 @@ private:
 public:
     General(Player* p, Game* g); 
     void Action() override;
+    void Action(Player* target); // Delegate to preventCoup with target
     std::string getRoleName() const override { return "General"; }
 };

@@ -31,7 +31,7 @@ void Baron::invest()
 
         Game::addMessage(owner->getName() + " has invested 3 coins and received 6 coins.");
         cout << owner->getName() << " has invested 3 coins and received 6 coins." << endl;
-        game->nextTurn(); // Move to the next player's turn
+        // let gui handle the next turn here
         return;
     }
     else
