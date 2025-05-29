@@ -122,7 +122,7 @@ void Character::bribe()
  * This action costs nothing and can be blocked or altered by specific roles.
  * It sets the target player as arrested causing them to lose 1 coin and giving it to the player who performed the arrest action on them.
  *
- * @note If the target player is a Merchant, he pays 2 coins to the bank instead of losing them to the player performing bribe on them.
+ * @note If the target player is a Merchant, he pays 2 coins to the bank instead of losing them to the player performing arrest on them.
  * If the target player is a General, he gets his coin back.
  * A spy can prevent a player from performing arrest on his next turn.
  *
@@ -144,9 +144,22 @@ void Character::arrest(Player *target)
             return;
         }
     }
+    if(target->getRole()->getRoleName() == "Merchant")
+    {
+        owner->removeNumCoins(2); // Remove 2 coins from the owner
+        game->changeCoinsInBank(+2); // Add 2 coins to the bank
+        Game::addMessage(target->getName() + " is a Merchant and pays 2 coins to the bank instead of losing them to you.");
+        game->nextTurn();
+        return;
+    }
     // Transfer 1 coin from target to arresting player
     target->removeNumCoins(1); // Remove 1 coin from target
     owner->addNumCoins(1);     // Give 1 coin to arresting player
+    if(target->getRole()->getRoleName() == "General")
+    {
+            target->addNumCoins(1); // Add 1 coin to the target
+            Game::addMessage(target->getName() + " is a General and gets his coin back.");
+    }
     target->setIsArrested(true);
     // Rest of arrest logic using 'target' parameter
     Game::addMessage("-- Arresting " + target->getName() + " --");
@@ -195,9 +208,35 @@ void Character::sanction(Player *target)
     Game::addMessage("-- Sanctioning " + target->getName() + " --");
     //  cout << "-- Sanctioning " << target->getName() << " --" << endl;
     target->setIsSanctioned(true); // Example logic
+
+    if(target->getRole()->getRoleName() == "Judge")
+    {
+        owner->removeNumCoins(1); // Remove 1 coin from the owner
+        game->changeCoinsInBank(+1); // Add 1 coin to the bank
+        Game::addMessage(target->getName() + " is a Judge and " +owner->getName() + " needs to pay another coin to the bank.");
+    }
+    else if(target->getRole()->getRoleName() == "Baron")
+    {
+        target->addNumCoins(1); // Add 1 coin to the target
+        Game::addMessage(target->getName() + " is a Baron and gets 1 coin as a compensation.");
+    }
+
     game->nextTurn();
 }
 
+/**
+ * @brief Performs the "coup" action on a target player.
+ *
+ * This action costs 7 coins and eliminates the target player from the game.
+ * It can be blocked by a General.
+ * If a player has more than 10 coins he is forced to perform a coup action.
+ *
+ * @note 
+ *
+ * @param target Pointer to the Player object that is being targeted for the coup.
+ * @return void
+ * @throws None
+ */
 void Character::coup(Player *target)
 {
     if (owner->getCoins() < 7)
@@ -217,6 +256,20 @@ void Character::coup(Player *target)
             cout << "-- Invalid target player. --" << endl;
             return;
         }
+    }
+
+    // Handle General preventing coup on himself
+    if (target->getRole()->getRoleName() == "General")
+    {
+        if(target->getCoins()>=5)
+        {
+            target->removeNumCoins(5); // Remove 5 coins from the target
+            game->changeCoinsInBank(+5); // Add 5 coins to the bank
+            Game::addMessage("General has prevented coup by paying 5 coins.");
+            return; // Coup action blocked
+        }
+        game->nextTurn();
+        return; // Coup action blocked
     }
 
     // Perform coup
