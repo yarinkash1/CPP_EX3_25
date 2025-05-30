@@ -136,6 +136,7 @@ void Character::arrest(Player *target)
     }
     if(target->getRole()->getRoleName() == "Merchant")
     {
+        target->setIsArrested(true);
         target->removeNumCoins(2); // Remove 2 coins from the owner
         game->changeCoinsInBank(+2); // Add 2 coins to the bank
         Game::addMessage(target->getName() + " is a Merchant and pays 2 coins to the bank instead of losing them to you.");
